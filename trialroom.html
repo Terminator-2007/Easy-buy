@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Easy Buy — AI Virtual Trial Room</title>
-  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="stylebg.css">
   <style>
     .trial-page {
@@ -389,13 +388,8 @@ const HF_TOKEN = t1 + t2 + t3;
     preview.src   = product.img;
     zone.classList.add('has-image');
     imageUrlToBase64(product.img, b64 => {
-      if (b64) {
-        garmentBase64 = b64;
-      } else {
-        // Fallback: try fetching with no-cors mode won't give us bytes,
-        // so prompt user to upload manually — but keep the preview visible
-        showToast('ℹ️ Garment auto-load failed — please upload the garment image manually using the upload zone below.');
-      }
+      if (b64) { garmentBase64 = b64; }
+      else { showToast('Could not auto-load garment — please upload it manually.'); }
     });
   }
 
@@ -427,26 +421,19 @@ const HF_TOKEN = t1 + t2 + t3;
   }
 
   function imageUrlToBase64(url, cb) {
-    // Use fetch + FileReader — avoids canvas CORS taint entirely
-    fetch(url)
-      .then(res => {
-        if (!res.ok) throw new Error('fetch failed');
-        return res.blob();
-      })
-      .then(blob => {
-        const reader = new FileReader();
-        reader.onload = e => {
-          const result = e.target.result;
-          if (result && result.includes(',')) {
-            cb(result.split(',')[1]);
-          } else {
-            cb(null);
-          }
-        };
-        reader.onerror = () => cb(null);
-        reader.readAsDataURL(blob);
-      })
-      .catch(() => cb(null));
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const c = document.createElement('canvas');
+        c.width = img.naturalWidth || img.width;
+        c.height = img.naturalHeight || img.height;
+        c.getContext('2d').drawImage(img, 0, 0);
+        cb(c.toDataURL('image/jpeg', 0.92).split(',')[1]);
+      } catch(e) { cb(null); }
+    };
+    img.onerror = () => cb(null);
+    img.src = url;
   }
 
   function clearPerson() {
@@ -530,20 +517,28 @@ const HF_TOKEN = t1 + t2 + t3;
 
               } else if (msg.msg === 'process_completed') {
                 clearTimeout(timer); reader.cancel();
-                // Log the entire raw output for debugging
                 console.log('IDM-VTON raw output:', JSON.stringify(msg.output));
-                // Check for server-side error
                 if (msg.output && msg.output.error) {
-                  reject(new Error('IDM-VTON server error: ' + msg.output.error));
+                  reject(new Error('IDM-VTON error: ' + msg.output.error));
                   return;
                 }
-                // Safely extract data — some versions wrap in .data, some don't
-                const rawData = msg.output?.data ?? msg.output ?? null;
-                if (!rawData) {
-                  reject(new Error('IDM-VTON returned an empty response. The space may have crashed silently. Please try again in 30 seconds.'));
+                // Handle multiple response shapes from IDM-VTON
+                let outputData = null;
+                if (msg.output && Array.isArray(msg.output.data)) {
+                  outputData = msg.output.data;
+                } else if (msg.output && msg.output.data) {
+                  outputData = [msg.output.data];
+                } else if (Array.isArray(msg.output)) {
+                  outputData = msg.output;
+                } else if (msg.output) {
+                  // Flatten whatever object we got into an array
+                  outputData = Object.values(msg.output).filter(v => v !== null && v !== undefined);
+                }
+                if (!outputData || outputData.length === 0) {
+                  reject(new Error('No image data in response: ' + JSON.stringify(msg.output).slice(0, 300)));
                   return;
                 }
-                resolve(rawData);
+                resolve(outputData);
                 return;
 
               } else if (msg.msg === 'queue_full') {
@@ -584,60 +579,68 @@ const HF_TOKEN = t1 + t2 + t3;
 
       const session_hash = Math.random().toString(36).slice(2, 12);
 
-      const qRes = await fetch(`https://${SPACE_DOMAIN}/queue/join`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${HF_TOKEN}`
-        },
-        body: JSON.stringify({
-          data: [
-            { path: personUrl,  url: personUrl,  orig_name: 'person.jpg',  mime_type: 'image/jpeg' },
-            { path: garmentUrl, url: garmentUrl, orig_name: 'garment.jpg', mime_type: 'image/jpeg' },
-            'A shirt', true, true, 30, 42
-          ],
-          fn_index: 0,
-          trigger_id: 6,
-          session_hash
-        })
-      });
+      // Try fn_index 0 first; IDM-VTON has been known to use 0 or 1
+      let outputData = null;
+      for (const fn_index of [0, 1]) {
+        const qRes = await fetch(`https://${SPACE_DOMAIN}/queue/join`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${HF_TOKEN}`
+          },
+          body: JSON.stringify({
+            data: [
+              { path: personUrl,  url: personUrl  },
+              { path: garmentUrl, url: garmentUrl },
+              'A shirt', true, true, 30, 42
+            ],
+            fn_index,
+            session_hash
+          })
+        });
 
-      if (!qRes.ok) {
-        const e = await qRes.text().catch(() => '');
-        throw new Error(`Queue error ${qRes.status}: ${e.slice(0, 160)}`);
+        if (!qRes.ok) {
+          const e = await qRes.text().catch(() => '');
+          if (fn_index === 1) throw new Error(`Queue error ${qRes.status}: ${e.slice(0, 160)}`);
+          continue;
+        }
+
+        try {
+          outputData = await pollResult(session_hash);
+          if (outputData && outputData.length > 0) break;
+        } catch(e) {
+          if (fn_index === 1) throw e;
+          // retry with next fn_index
+          setLoadingMsg('<strong>Retrying with alternate endpoint…</strong><br>Please don\'t close this tab.');
+        }
       }
 
-      const outputData = await pollResult(session_hash);
-
-      /* IDM-VTON Space can return the result image in several shapes.
-         Walk through all known formats until we find a url or path. */
-      let imgObj = null;
-
-      function extractImgObj(data) {
-        if (!data) return null;
-        // Shape: direct url string
-        if (typeof data === 'string' && (data.startsWith('http') || data.startsWith('/'))) return { url: data };
-        // Shape: {url, path}
-        if (data.url || data.path) return data;
-        // Shape: {image: {url, path}}
-        if (data.image && (data.image.url || data.image.path)) return data.image;
-        // Shape: array — recurse into first element
-        if (Array.isArray(data)) {
-          for (const item of data) {
-            const found = extractImgObj(item);
+      /* IDM-VTON Space can return the result image in many shapes.
+         Walk every known format recursively until we find a url/path/base64. */
+      function extractImgUrl(val) {
+        if (!val) return null;
+        // Direct URL string
+        if (typeof val === 'string' && (val.startsWith('http') || val.startsWith('data:'))) return val;
+        // Object with url or path
+        if (val.url) return val.url;
+        if (val.path) return `https://${SPACE_DOMAIN}/file=` + val.path;
+        // Nested under .image
+        if (val.image) return extractImgUrl(val.image);
+        // Array — try first element
+        if (Array.isArray(val) && val.length > 0) return extractImgUrl(val[0]);
+        // Object values fallback
+        if (typeof val === 'object') {
+          for (const k of Object.keys(val)) {
+            const found = extractImgUrl(val[k]);
             if (found) return found;
           }
         }
         return null;
       }
 
-      imgObj = extractImgObj(outputData);
+      resultImgUrl = extractImgUrl(outputData);
 
-      if (imgObj) {
-        resultImgUrl = imgObj.url
-          ? imgObj.url
-          : `https://${SPACE_DOMAIN}/file=` + imgObj.path;
-      } else {
+      if (!resultImgUrl) {
         throw new Error('Could not find image in response: ' + JSON.stringify(outputData).slice(0, 300));
       }
 
@@ -656,8 +659,6 @@ const HF_TOKEN = t1 + t2 + t3;
         msg = 'The IDM-VTON Space is starting up. Wait 30 seconds and try again.';
       } else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
         msg = 'Network error. Check your internet connection and try again.';
-      } else if (msg.includes('empty response') || msg.includes('crashed')) {
-        msg = 'IDM-VTON crashed silently on the server (this happens on the free public space). Please wait 30 seconds and try again, or upload a clearer full-body photo with a plain background.';
       }
       showError(msg);
     } finally {
