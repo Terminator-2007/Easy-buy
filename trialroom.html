@@ -529,13 +529,20 @@ const HF_TOKEN = t1 + t2 + t3;
 
               } else if (msg.msg === 'process_completed') {
                 clearTimeout(timer); reader.cancel();
+                // Log the entire raw output for debugging
+                console.log('IDM-VTON raw output:', JSON.stringify(msg.output));
+                // Check for server-side error
                 if (msg.output && msg.output.error) {
-                  reject(new Error('IDM-VTON error: ' + msg.output.error));
-                } else {
-                  const rawData = (msg.output && msg.output.data) ? msg.output.data : msg.output;
-                  console.log('IDM-VTON raw output:', JSON.stringify(msg.output));
-                  resolve(rawData);
+                  reject(new Error('IDM-VTON server error: ' + msg.output.error));
+                  return;
                 }
+                // Safely extract data — some versions wrap in .data, some don't
+                const rawData = msg.output?.data ?? msg.output ?? null;
+                if (!rawData) {
+                  reject(new Error('IDM-VTON returned an empty response. The space may have crashed silently. Please try again in 30 seconds.'));
+                  return;
+                }
+                resolve(rawData);
                 return;
 
               } else if (msg.msg === 'queue_full') {
@@ -584,11 +591,12 @@ const HF_TOKEN = t1 + t2 + t3;
         },
         body: JSON.stringify({
           data: [
-            { path: personUrl,  url: personUrl  },
-            { path: garmentUrl, url: garmentUrl },
+            { path: personUrl,  url: personUrl,  orig_name: 'person.jpg',  mime_type: 'image/jpeg' },
+            { path: garmentUrl, url: garmentUrl, orig_name: 'garment.jpg', mime_type: 'image/jpeg' },
             'A shirt', true, true, 30, 42
           ],
           fn_index: 0,
+          trigger_id: 6,
           session_hash
         })
       });
@@ -647,6 +655,8 @@ const HF_TOKEN = t1 + t2 + t3;
         msg = 'The IDM-VTON Space is starting up. Wait 30 seconds and try again.';
       } else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
         msg = 'Network error. Check your internet connection and try again.';
+      } else if (msg.includes('empty response') || msg.includes('crashed')) {
+        msg = 'IDM-VTON crashed silently on the server (this happens on the free public space). Please wait 30 seconds and try again, or upload a clearer full-body photo with a plain background.';
       }
       showError(msg);
     } finally {
