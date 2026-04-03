@@ -520,6 +520,7 @@ const HF_TOKEN = t1 + t2 + t3;
                 if (msg.output && msg.output.error) {
                   reject(new Error('IDM-VTON error: ' + msg.output.error));
                 } else {
+                  console.log('IDM-VTON raw output:', JSON.stringify(msg.output));
                   resolve(msg.output.data);
                 }
                 return;
@@ -585,8 +586,36 @@ const HF_TOKEN = t1 + t2 + t3;
       }
 
       const outputData = await pollResult(session_hash);
-      const imgObj     = outputData[0];
-      resultImgUrl     = imgObj.url || (`https://${SPACE_DOMAIN}/file=` + imgObj.path);
+
+      /* IDM-VTON Space can return the result image in several shapes.
+         Walk through all known formats until we find a url or path. */
+      let imgObj = null;
+
+      if (Array.isArray(outputData) && outputData.length > 0) {
+        const first = outputData[0];
+        if (first && (first.url || first.path)) {
+          /* shape A: [{url, path}, ...] */
+          imgObj = first;
+        } else if (Array.isArray(first) && first[0] && (first[0].url || first[0].path)) {
+          /* shape B: [[{url, path}], ...] */
+          imgObj = first[0];
+        } else if (first && first.image && (first.image.url || first.image.path)) {
+          /* shape C: [{image: {url, path}}, ...] */
+          imgObj = first.image;
+        } else if (typeof first === 'string' && first.startsWith('http')) {
+          /* shape D: ['https://...result.jpg', ...] */
+          resultImgUrl = first;
+        }
+      }
+
+      if (!resultImgUrl) {
+        if (!imgObj) {
+          throw new Error('Could not find image in response: ' + JSON.stringify(outputData).slice(0, 300));
+        }
+        resultImgUrl = imgObj.url
+          ? imgObj.url
+          : `https://${SPACE_DOMAIN}/file=` + imgObj.path;
+      }
 
       document.getElementById('result-person-img').src = document.getElementById('person-preview').src;
       document.getElementById('result-output-img').src = resultImgUrl;
