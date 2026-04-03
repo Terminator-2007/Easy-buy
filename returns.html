@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Easy Buy - Returns & Refunds</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="stylebg.css">
+  <style>
+    .returns-page { max-width: 760px; margin: 40px auto 100px; padding: 0 24px; }
+    .returns-page h2 { font-family: var(--font-logo); font-size: 2rem; font-weight: 400; margin-bottom: 28px; border-bottom: 2px solid var(--text-primary); padding-bottom: 10px; display: inline-block; }
+    .policy-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 28px 32px; box-shadow: var(--shadow-card); margin-bottom: 24px; }
+    .policy-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .policy-card p, .policy-card li { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+    .policy-card ul { padding-left: 20px; margin-top: 8px; }
+    .policy-card li { margin-bottom: 6px; }
+    .highlight-box { background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 4px; padding: 16px 20px; margin-bottom: 24px; font-size: 14px; color: #1b5e20; font-weight: 600; display: flex; align-items: center; gap: 12px; }
+    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+    .step-card { text-align: center; padding: 20px 14px; border: 1.5px solid var(--border); border-radius: 6px; }
+    .step-card .step-num { width: 32px; height: 32px; background: var(--text-primary); color: #fff; border-radius: 50%; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+    .step-card .step-icon { font-size: 26px; margin-bottom: 8px; }
+    .step-card p { font-size: 12.5px; color: var(--text-secondary); }
+    .back-links { display: flex; gap: 14px; margin-top: 32px; flex-wrap: wrap; }
+    .back-links a { padding: 12px 28px; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 3px; border: 1.5px solid var(--text-primary); transition: all var(--transition); }
+    .back-links a.primary { background: var(--text-primary); color: var(--white); }
+    .back-links a.primary:hover { background: #333; }
+    .back-links a.secondary { color: var(--text-primary); }
+    .back-links a.secondary:hover { background: var(--text-primary); color: var(--white); }
+    @media(max-width:600px){ .steps-grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+<header><h1>Easy Buy</h1></header>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="latest.html">Latest</a>
+  <a href="contact.html">Contact Us</a>
+</nav>
+
+<div class="returns-page">
+  <h2>↩️ Returns & Refunds</h2>
+
+  <div class="highlight-box">
+    🎉 Easy Buy offers <strong>15-day hassle-free returns</strong> on all eligible products — no questions asked.
+  </div>
+
+  <div class="policy-card">
+    <h3>📋 Return Policy</h3>
+    <ul>
+      <li>Items can be returned within <strong>15 days</strong> of delivery.</li>
+      <li>Products must be unused, unwashed, and in original packaging with tags intact.</li>
+      <li>Sale items marked "Final Sale" are not eligible for return.</li>
+      <li>Accessories, innerwear, and swimwear cannot be returned for hygiene reasons.</li>
+      <li>Defective or wrong items will be exchanged or refunded in full.</li>
+    </ul>
+  </div>
+
+  <div class="policy-card">
+    <h3>🔄 How to Return</h3>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-icon">📦</div>
+        <strong>Initiate Return</strong>
+        <p>Go to My Orders and select the item you want to return.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-icon">🚚</div>
+        <strong>Schedule Pickup</strong>
+        <p>We'll arrange a free pickup from your doorstep within 2 days.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-icon">💸</div>
+        <strong>Get Refund</strong>
+        <p>Refund credited to your original payment method within 5–7 days.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="policy-card">
+    <h3>💰 Refund Methods</h3>
+    <ul>
+      <li><strong>Credit/Debit Card:</strong> 5–7 business days</li>
+      <li><strong>UPI / Net Banking:</strong> 3–5 business days</li>
+      <li><strong>Easy Buy Wallet:</strong> Instant (bonus: 5% extra credit)</li>
+      <li><strong>Cash on Delivery orders:</strong> Refunded via bank transfer within 7 days</li>
+    </ul>
+  </div>
+
+  <div class="back-links">
+    <a href="index.html" class="primary">← Continue Shopping</a>
+    <a href="contact.html" class="secondary">Need Help?</a>
+  </div>
+</div>
+
+<script src="shop.js"></script>
+</body>
+</html>
