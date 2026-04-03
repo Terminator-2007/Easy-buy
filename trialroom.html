@@ -346,385 +346,370 @@
 </div>
 <script src="shop.js"></script>
 <script>
-  /* ═══════════════════════════════════════════════════════════
-     CONFIGURATION
-     Paste your Hugging Face token on the line below.
-     This is the ONLY place you need to edit.
-     Users will never see this key anywhere on the page.
-  ═══════════════════════════════════════════════════════════ */
 const t1 = 'hf_WORrprIUg';
-const t2 = 'ihxIshTZdMFxO'; 
-const t3 = 'GTyMuxpduuSQ'; 
+const t2 = 'ihxIshTZdMFxO';
+const t3 = 'GTyMuxpduuSQ';
 const HF_TOKEN = t1 + t2 + t3;
-  /* ═══════════════════════════════════════════════════════════ */
 
-  const SPACE_DOMAIN = 'yisol-idm-vton.hf.space';
+const SPACE_DOMAIN = 'yisol-idm-vton.hf.space';
 
-  let personBase64   = null;
-  let garmentBase64  = null;
-  let currentProduct = null;
-  let resultImgUrl   = null;
+let personBase64   = null;
+let garmentBase64  = null;
+let currentProduct = null;
+let resultImgUrl   = null;
 
-  window.addEventListener('DOMContentLoaded', () => {
-    const p = localStorage.getItem('trial_product');
-    if (p) {
-      currentProduct = JSON.parse(p);
-      loadGarmentFromProduct(currentProduct);
-    }
-    setupUploadZone('person-upload-zone',  'person-input',  'person-preview',  b64 => { personBase64  = b64; });
-    setupUploadZone('garment-upload-zone', 'garment-input', 'garment-preview', b64 => { garmentBase64 = b64; });
+window.addEventListener('DOMContentLoaded', () => {
+  const p = localStorage.getItem('trial_product');
+  if (p) {
+    currentProduct = JSON.parse(p);
+    loadGarmentFromProduct(currentProduct);
+  }
+  setupUploadZone('person-upload-zone',  'person-input',  'person-preview',  b64 => { personBase64  = b64; });
+  setupUploadZone('garment-upload-zone', 'garment-input', 'garment-preview', b64 => { garmentBase64 = b64; });
+});
+
+function loadGarmentFromProduct(product) {
+  document.getElementById('garment-placeholder').style.display = 'none';
+  const box = document.getElementById('garment-info-box');
+  box.style.display = 'flex';
+  document.getElementById('garment-name').textContent  = product.name;
+  document.getElementById('garment-color').textContent = product.color;
+  document.getElementById('garment-price').textContent = '₹' + product.price.toLocaleString('en-IN');
+  document.getElementById('garment-img-thumb').src     = product.img;
+  const preview = document.getElementById('garment-preview');
+  const zone    = document.getElementById('garment-upload-zone');
+  preview.src   = product.img;
+  zone.classList.add('has-image');
+  imageUrlToBase64(product.img, b64 => {
+    if (b64) { garmentBase64 = b64; }
+    else { showToast('Could not auto-load garment — please upload it manually.'); }
+  });
+}
+
+function setupUploadZone(zoneId, inputId, previewId, onLoad) {
+  const zone    = document.getElementById(zoneId);
+  const input   = document.getElementById(inputId);
+  const preview = document.getElementById(previewId);
+  input.addEventListener('change', () => {
+    if (input.files[0]) readFile(input.files[0], preview, zone, onLoad);
+  });
+  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if (f && f.type.startsWith('image/')) readFile(f, preview, zone, onLoad);
+  });
+}
+
+function readFile(file, preview, zone, onLoad) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    preview.src = e.target.result;
+    zone.classList.add('has-image');
+    onLoad(e.target.result.split(',')[1]);
+  };
+  reader.readAsDataURL(file);
+}
+
+function imageUrlToBase64(url, cb) {
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    try {
+      const c = document.createElement('canvas');
+      c.width = img.naturalWidth || img.width;
+      c.height = img.naturalHeight || img.height;
+      c.getContext('2d').drawImage(img, 0, 0);
+      cb(c.toDataURL('image/jpeg', 0.92).split(',')[1]);
+    } catch(e) { cb(null); }
+  };
+  img.onerror = () => cb(null);
+  img.src = url;
+}
+
+function clearPerson() {
+  personBase64 = null;
+  document.getElementById('person-upload-zone').classList.remove('has-image');
+  document.getElementById('person-preview').src = '';
+  document.getElementById('person-input').value = '';
+}
+
+function clearGarment() {
+  garmentBase64 = null;
+  document.getElementById('garment-upload-zone').classList.remove('has-image');
+  document.getElementById('garment-preview').src = '';
+  document.getElementById('garment-input').value = '';
+  document.getElementById('garment-info-box').style.display    = 'none';
+  document.getElementById('garment-placeholder').style.display = 'block';
+  localStorage.removeItem('trial_product');
+  currentProduct = null;
+}
+
+/* ═══════════════════════════════════════════════════════
+   GRADIO 4 API  — POST /gradio_api/call/tryon → event_id
+                   GET  /gradio_api/call/tryon/<id> → SSE
+   ═══════════════════════════════════════════════════════ */
+
+async function uploadImage(base64, attempt) {
+  attempt = attempt || 1;
+  const blob = base64ToBlob(base64);
+  const fd   = new FormData();
+  fd.append('files', blob, 'image.jpg');
+
+  const res = await fetch(`https://${SPACE_DOMAIN}/gradio_api/upload`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${HF_TOKEN}` },
+    body: fd
   });
 
-  function loadGarmentFromProduct(product) {
-    document.getElementById('garment-placeholder').style.display = 'none';
-    const box = document.getElementById('garment-info-box');
-    box.style.display = 'flex';
-    document.getElementById('garment-name').textContent  = product.name;
-    document.getElementById('garment-color').textContent = product.color;
-    document.getElementById('garment-price').textContent = '₹' + product.price.toLocaleString('en-IN');
-    document.getElementById('garment-img-thumb').src     = product.img;
-    const preview = document.getElementById('garment-preview');
-    const zone    = document.getElementById('garment-upload-zone');
-    preview.src   = product.img;
-    zone.classList.add('has-image');
-    imageUrlToBase64(product.img, b64 => {
-      if (b64) { garmentBase64 = b64; }
-      else { showToast('Could not auto-load garment — please upload it manually.'); }
-    });
+  if (res.status === 503 && attempt < 4) {
+    setLoadingMsg(`<strong>Space is waking up (attempt ${attempt}/3)…</strong><br>Retrying in 20 seconds.`);
+    await sleep(20000);
+    return uploadImage(base64, attempt + 1);
   }
-
-  function setupUploadZone(zoneId, inputId, previewId, onLoad) {
-    const zone    = document.getElementById(zoneId);
-    const input   = document.getElementById(inputId);
-    const preview = document.getElementById(previewId);
-    input.addEventListener('change', () => {
-      if (input.files[0]) readFile(input.files[0], preview, zone, onLoad);
-    });
-    zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag-over'); });
-    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-    zone.addEventListener('drop', e => {
-      e.preventDefault();
-      zone.classList.remove('drag-over');
-      const f = e.dataTransfer.files[0];
-      if (f && f.type.startsWith('image/')) readFile(f, preview, zone, onLoad);
-    });
+  if (!res.ok) {
+    const t = await res.text().catch(() => '');
+    throw new Error(`Upload failed (${res.status}): ${t.slice(0, 180)}`);
   }
+  const paths = await res.json();
+  return paths[0];
+}
 
-  function readFile(file, preview, zone, onLoad) {
-    const reader = new FileReader();
-    reader.onload = e => {
-      preview.src = e.target.result;
-      zone.classList.add('has-image');
-      onLoad(e.target.result.split(',')[1]);
-    };
-    reader.readAsDataURL(file);
-  }
+async function generateTryOn() {
+  if (!personBase64)  { showError('Please upload your photo first (Step 1).');          return; }
+  if (!garmentBase64) { showError('Please select or upload a garment image (Step 2).'); return; }
 
-  function imageUrlToBase64(url, cb) {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      try {
-        const c = document.createElement('canvas');
-        c.width = img.naturalWidth || img.width;
-        c.height = img.naturalHeight || img.height;
-        c.getContext('2d').drawImage(img, 0, 0);
-        cb(c.toDataURL('image/jpeg', 0.92).split(',')[1]);
-      } catch(e) { cb(null); }
-    };
-    img.onerror = () => cb(null);
-    img.src = url;
-  }
+  hideError();
+  document.getElementById('ai-result').classList.remove('show');
+  document.getElementById('queue-badge').style.display = 'none';
+  document.getElementById('trial-loading').classList.add('show');
+  document.getElementById('generate-btn').disabled = true;
 
-  function clearPerson() {
-    personBase64 = null;
-    document.getElementById('person-upload-zone').classList.remove('has-image');
-    document.getElementById('person-preview').src = '';
-    document.getElementById('person-input').value = '';
-  }
+  try {
+    setLoadingMsg('<strong>Uploading your photo…</strong><br>Please don\'t close this tab.');
+    const personPath  = await uploadImage(personBase64);
 
-  function clearGarment() {
-    garmentBase64 = null;
-    document.getElementById('garment-upload-zone').classList.remove('has-image');
-    document.getElementById('garment-preview').src = '';
-    document.getElementById('garment-input').value = '';
-    document.getElementById('garment-info-box').style.display    = 'none';
-    document.getElementById('garment-placeholder').style.display = 'block';
-    localStorage.removeItem('trial_product');
-    currentProduct = null;
-  }
+    setLoadingMsg('<strong>Uploading garment image…</strong><br>Please don\'t close this tab.');
+    const garmentPath = await uploadImage(garmentBase64);
 
-  async function uploadImage(base64, attempt) {
-    attempt = attempt || 1;
-    const blob = base64ToBlob(base64);
-    const fd   = new FormData();
-    fd.append('files', blob, 'image.jpg');
+    setLoadingMsg('<strong>Sending to IDM-VTON…</strong><br>Please don\'t close this tab.');
 
-    const res = await fetch(`https://${SPACE_DOMAIN}/upload`, {
+    const callRes = await fetch(`https://${SPACE_DOMAIN}/gradio_api/call/tryon`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${HF_TOKEN}` },
-      body: fd
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${HF_TOKEN}`
+      },
+      body: JSON.stringify({
+        data: [
+          { path: personPath,  orig_name: 'person.jpg'  },
+          { path: garmentPath, orig_name: 'garment.jpg' },
+          'A shirt',
+          true,
+          true,
+          30,
+          42
+        ]
+      })
     });
 
-    if (res.status === 503 && attempt < 4) {
-      setLoadingMsg(`<strong>Space is waking up (attempt ${attempt}/3)…</strong><br>Free HF Spaces sleep when idle. Retrying in 20 seconds.`);
-      await sleep(20000);
-      return uploadImage(base64, attempt + 1);
+    if (!callRes.ok) {
+      const e = await callRes.text().catch(() => '');
+      throw new Error(`Call failed (${callRes.status}): ${e.slice(0, 200)}`);
     }
-    if (!res.ok) {
-      const t = await res.text().catch(() => '');
-      throw new Error(`Upload failed (${res.status}): ${t.slice(0, 180)}`);
+
+    const { event_id } = await callRes.json();
+    if (!event_id) throw new Error('No event_id returned. The Space may be down.');
+
+    setLoadingMsg('<strong>Waiting in queue…</strong><br>IDM-VTON is processing your try-on.<br>Please don\'t close this tab.');
+
+    resultImgUrl = await streamResult(event_id);
+
+    document.getElementById('result-person-img').src = document.getElementById('person-preview').src;
+    document.getElementById('result-output-img').src = resultImgUrl;
+    document.getElementById('trial-loading').classList.remove('show');
+    document.getElementById('ai-result').classList.add('show');
+    document.getElementById('ai-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch(err) {
+    document.getElementById('trial-loading').classList.remove('show');
+    let msg = err.message || 'Unknown error';
+    if (msg.includes('401') || msg.includes('403')) {
+      msg = 'Token rejected. Make sure your HF token has "Read" and "Make calls to Inference Providers" permissions.';
+    } else if (msg.includes('503') || msg.toLowerCase().includes('sleep')) {
+      msg = 'The IDM-VTON Space is starting up. Wait 30 seconds and try again.';
+    } else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
+      msg = 'Network error. Check your internet connection and try again.';
     }
-    const urls = await res.json();
-    return urls[0];
+    showError(msg);
+  } finally {
+    document.getElementById('generate-btn').disabled = false;
   }
+}
 
-  function pollResult(session_hash) {
-    return new Promise(async (resolve, reject) => {
-      const url   = `https://${SPACE_DOMAIN}/queue/data?session_hash=${session_hash}`;
-      const timer = setTimeout(() => reject(new Error('Timed out after 3 minutes. Please try again.')), 180000);
-      try {
-        const res = await fetch(url, { headers: { 'Authorization': `Bearer ${HF_TOKEN}` } });
-        if (!res.ok) { clearTimeout(timer); reject(new Error(`Stream error ${res.status}`)); return; }
+function streamResult(event_id) {
+  return new Promise(async (resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('Timed out after 3 minutes. Please try again.')), 180000);
+    try {
+      const res = await fetch(
+        `https://${SPACE_DOMAIN}/gradio_api/call/tryon/${event_id}`,
+        { headers: { 'Authorization': `Bearer ${HF_TOKEN}` } }
+      );
+      if (!res.ok) {
+        clearTimeout(timer);
+        reject(new Error(`Stream error ${res.status}`));
+        return;
+      }
 
-        const reader  = res.body.getReader();
-        const decoder = new TextDecoder();
-        let   buffer  = '';
+      const reader  = res.body.getReader();
+      const decoder = new TextDecoder();
+      let   buffer  = '';
+      let   lastEvent = '';
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop();
 
-          for (const line of lines) {
-            if (!line.startsWith('data:')) continue;
+        for (const line of lines) {
+          const t = line.trim();
+          if (!t) continue;
+
+          if (t.startsWith('event:')) {
+            lastEvent = t.slice(6).trim();
+            continue;
+          }
+
+          if (t.startsWith('data:')) {
+            const raw = t.slice(5).trim();
             try {
-              const msg    = JSON.parse(line.slice(5).trim());
-              const badge  = document.getElementById('queue-badge');
+              const payload = JSON.parse(raw);
+              console.log('SSE [' + lastEvent + ']:', JSON.stringify(payload).slice(0, 300));
 
-              if (msg.msg === 'estimation') {
-                const pos  = msg.rank != null ? `Queue position: ${msg.rank + 1}` : '';
-                const wait = msg.rank_eta ? `~${Math.ceil(msg.rank_eta)}s wait` : '';
-                const info = [pos, wait].filter(Boolean).join(' · ');
+              if (lastEvent === 'error') {
+                clearTimeout(timer); reader.cancel();
+                reject(new Error('IDM-VTON error: ' + (payload.message || JSON.stringify(payload))));
+                return;
+              }
+
+              if (lastEvent === 'complete') {
+                clearTimeout(timer); reader.cancel();
+                const imgUrl = extractImgUrl(Array.isArray(payload) ? payload : [payload]);
+                if (!imgUrl) {
+                  reject(new Error('No image in result: ' + JSON.stringify(payload).slice(0, 300)));
+                } else {
+                  resolve(imgUrl);
+                }
+                return;
+              }
+
+              // queue/progress updates
+              const badge = document.getElementById('queue-badge');
+              if (payload && payload.rank != null) {
+                const info = `Queue: #${payload.rank + 1}` + (payload.rank_eta ? ` · ~${Math.ceil(payload.rank_eta)}s` : '');
                 if (badge) { badge.style.display = 'inline-block'; badge.textContent = info; }
                 setLoadingMsg(`<strong>Waiting in queue…</strong><br>${info}<br>Please don't close this tab.`);
-
-              } else if (msg.msg === 'process_starts') {
+              } else if (lastEvent === 'process_starts' || (payload && payload.msg === 'process_starts')) {
                 if (badge) { badge.style.display = 'inline-block'; badge.textContent = 'Generating…'; }
-                setLoadingMsg(`<strong>IDM-VTON is generating your try-on…</strong><br>Usually 20–50 seconds on free GPU.<br>Please don't close this tab.`);
-
-              } else if (msg.msg === 'process_completed') {
-                clearTimeout(timer); reader.cancel();
-                console.log('IDM-VTON raw output:', JSON.stringify(msg.output));
-                if (msg.output && msg.output.error) {
-                  reject(new Error('IDM-VTON error: ' + msg.output.error));
-                  return;
-                }
-                // Handle multiple response shapes from IDM-VTON
-                let outputData = null;
-                if (msg.output && Array.isArray(msg.output.data)) {
-                  outputData = msg.output.data;
-                } else if (msg.output && msg.output.data) {
-                  outputData = [msg.output.data];
-                } else if (Array.isArray(msg.output)) {
-                  outputData = msg.output;
-                } else if (msg.output) {
-                  // Flatten whatever object we got into an array
-                  outputData = Object.values(msg.output).filter(v => v !== null && v !== undefined);
-                }
-                if (!outputData || outputData.length === 0) {
-                  reject(new Error('No image data in response: ' + JSON.stringify(msg.output).slice(0, 300)));
-                  return;
-                }
-                resolve(outputData);
-                return;
-
-              } else if (msg.msg === 'queue_full') {
-                clearTimeout(timer); reader.cancel();
-                reject(new Error('Queue is full. Please wait a minute and try again.'));
-                return;
+                setLoadingMsg('<strong>IDM-VTON is generating your try-on…</strong><br>Usually 20–50 seconds.<br>Please don\'t close this tab.');
               }
             } catch(_) {}
           }
         }
-        clearTimeout(timer);
-        reject(new Error('Stream ended without a result. Please try again.'));
-      } catch(err) {
-        clearTimeout(timer);
-        reject(new Error('Connection error: ' + err.message));
       }
-    });
-  }
-
-  async function generateTryOn() {
-    if (!personBase64)  { showError('Please upload your photo first (Step 1).');          return; }
-    if (!garmentBase64) { showError('Please select or upload a garment image (Step 2).'); return; }
-
-    hideError();
-    document.getElementById('ai-result').classList.remove('show');
-    document.getElementById('queue-badge').style.display = 'none';
-    document.getElementById('trial-loading').classList.add('show');
-    document.getElementById('generate-btn').disabled = true;
-
-    try {
-      setLoadingMsg('<strong>Uploading your photo…</strong><br>Please don\'t close this tab.');
-      const personUrl  = await uploadImage(personBase64);
-
-      setLoadingMsg('<strong>Uploading garment image…</strong><br>Please don\'t close this tab.');
-      const garmentUrl = await uploadImage(garmentBase64);
-
-      setLoadingMsg('<strong>Joining the queue…</strong><br>Please don\'t close this tab.');
-
-      const session_hash = Math.random().toString(36).slice(2, 12);
-
-      // Try fn_index 0 first; IDM-VTON has been known to use 0 or 1
-      let outputData = null;
-      for (const fn_index of [0, 1]) {
-        const qRes = await fetch(`https://${SPACE_DOMAIN}/queue/join`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${HF_TOKEN}`
-          },
-          body: JSON.stringify({
-            data: [
-              { path: personUrl,  url: personUrl  },
-              { path: garmentUrl, url: garmentUrl },
-              'A shirt', true, true, 30, 42
-            ],
-            fn_index,
-            session_hash
-          })
-        });
-
-        if (!qRes.ok) {
-          const e = await qRes.text().catch(() => '');
-          if (fn_index === 1) throw new Error(`Queue error ${qRes.status}: ${e.slice(0, 160)}`);
-          continue;
-        }
-
-        try {
-          outputData = await pollResult(session_hash);
-          if (outputData && outputData.length > 0) break;
-        } catch(e) {
-          if (fn_index === 1) throw e;
-          // retry with next fn_index
-          setLoadingMsg('<strong>Retrying with alternate endpoint…</strong><br>Please don\'t close this tab.');
-        }
-      }
-
-      /* IDM-VTON Space can return the result image in many shapes.
-         Walk every known format recursively until we find a url/path/base64. */
-      function extractImgUrl(val) {
-        if (!val) return null;
-        // Direct URL string
-        if (typeof val === 'string' && (val.startsWith('http') || val.startsWith('data:'))) return val;
-        // Object with url or path
-        if (val.url) return val.url;
-        if (val.path) return `https://${SPACE_DOMAIN}/file=` + val.path;
-        // Nested under .image
-        if (val.image) return extractImgUrl(val.image);
-        // Array — try first element
-        if (Array.isArray(val) && val.length > 0) return extractImgUrl(val[0]);
-        // Object values fallback
-        if (typeof val === 'object') {
-          for (const k of Object.keys(val)) {
-            const found = extractImgUrl(val[k]);
-            if (found) return found;
-          }
-        }
-        return null;
-      }
-
-      resultImgUrl = extractImgUrl(outputData);
-
-      if (!resultImgUrl) {
-        throw new Error('Could not find image in response: ' + JSON.stringify(outputData).slice(0, 300));
-      }
-
-      document.getElementById('result-person-img').src = document.getElementById('person-preview').src;
-      document.getElementById('result-output-img').src = resultImgUrl;
-      document.getElementById('trial-loading').classList.remove('show');
-      document.getElementById('ai-result').classList.add('show');
-      document.getElementById('ai-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
+      clearTimeout(timer);
+      reject(new Error('Stream ended without a result. Please try again.'));
     } catch(err) {
-      document.getElementById('trial-loading').classList.remove('show');
-      let msg = err.message || 'Unknown error';
-      if (msg.includes('401') || msg.includes('403')) {
-        msg = 'Token rejected. Make sure your HF token has "Read" and "Make calls to Inference Providers" permissions.';
-      } else if (msg.includes('503') || msg.toLowerCase().includes('sleep')) {
-        msg = 'The IDM-VTON Space is starting up. Wait 30 seconds and try again.';
-      } else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
-        msg = 'Network error. Check your internet connection and try again.';
-      }
-      showError(msg);
-    } finally {
-      document.getElementById('generate-btn').disabled = false;
+      clearTimeout(timer);
+      reject(new Error('Connection error: ' + err.message));
     }
-  }
+  });
+}
 
-  function base64ToBlob(b64) {
-    const bytes = atob(b64);
-    const arr   = new Uint8Array(bytes.length);
-    for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
-    return new Blob([arr], { type: 'image/jpeg' });
+function extractImgUrl(val) {
+  if (!val) return null;
+  if (typeof val === 'string') {
+    if (val.startsWith('http') || val.startsWith('data:')) return val;
+    if (val.startsWith('/')) return `https://${SPACE_DOMAIN}/gradio_api/file=` + val;
   }
-
-  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-  function setLoadingMsg(html) {
-    const el = document.getElementById('loading-msg');
-    if (el) el.innerHTML = html;
+  if (Array.isArray(val)) {
+    for (const item of val) { const f = extractImgUrl(item); if (f) return f; }
   }
-
-  function showError(msg) {
-    document.getElementById('error-msg').textContent = msg;
-    document.getElementById('trial-error').classList.add('show');
+  if (val && typeof val === 'object') {
+    if (val.url) return val.url;
+    if (val.path) {
+      const p = val.path;
+      return p.startsWith('http') ? p : `https://${SPACE_DOMAIN}/gradio_api/file=` + p;
+    }
+    if (val.image) return extractImgUrl(val.image);
+    for (const k of Object.keys(val)) { const f = extractImgUrl(val[k]); if (f) return f; }
   }
+  return null;
+}
 
-  function hideError() {
-    document.getElementById('trial-error').classList.remove('show');
-  }
+function base64ToBlob(b64) {
+  const bytes = atob(b64);
+  const arr   = new Uint8Array(bytes.length);
+  for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+  return new Blob([arr], { type: 'image/jpeg' });
+}
 
-  function downloadResult() {
-    if (!resultImgUrl) return;
-    const a = document.createElement('a');
-    a.href = resultImgUrl;
-    a.download = 'easybuy-tryon.jpg';
-    a.click();
-  }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-  function addCurrentToCart() {
-    if (!currentProduct) { showToast('No product selected. Use "Try It On" from the shop first.'); return; }
-    let cart = JSON.parse(localStorage.getItem('myshop_cart') || '[]');
-    const existing = cart.find(c => c.id === currentProduct.id);
-    if (existing) { existing.qty++; }
-    else { cart.push({ ...currentProduct, id: Date.now(), qty: 1 }); }
-    localStorage.setItem('myshop_cart', JSON.stringify(cart));
-    showToast(`"${currentProduct.name}" added to Bag!`);
-    const btn = document.querySelector('.result-actions .btn-primary.green');
-    if (btn) { btn.textContent = '✓ Added!'; setTimeout(() => btn.textContent = '🛒 Add to Bag', 2000); }
-  }
+function setLoadingMsg(html) {
+  const el = document.getElementById('loading-msg');
+  if (el) el.innerHTML = html;
+}
 
-  function resetAll() {
-    clearPerson();
-    resultImgUrl = null;
-    document.getElementById('ai-result').classList.remove('show');
-    hideError();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+function showError(msg) {
+  document.getElementById('error-msg').textContent = msg;
+  document.getElementById('trial-error').classList.add('show');
+}
 
-  function showToast(msg) {
-    let t = document.getElementById('toast');
-    if (!t) { t = document.createElement('div'); t.id = 'toast'; document.body.appendChild(t); }
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(t._t);
-    t._t = setTimeout(() => t.classList.remove('show'), 3000);
-  }
+function hideError() {
+  document.getElementById('trial-error').classList.remove('show');
+}
+
+function downloadResult() {
+  if (!resultImgUrl) return;
+  const a = document.createElement('a');
+  a.href = resultImgUrl;
+  a.download = 'easybuy-tryon.jpg';
+  a.click();
+}
+
+function addCurrentToCart() {
+  if (!currentProduct) { showToast('No product selected. Use "Try It On" from the shop first.'); return; }
+  let cart = JSON.parse(localStorage.getItem('myshop_cart') || '[]');
+  const existing = cart.find(c => c.id === currentProduct.id);
+  if (existing) { existing.qty++; }
+  else { cart.push({ ...currentProduct, id: Date.now(), qty: 1 }); }
+  localStorage.setItem('myshop_cart', JSON.stringify(cart));
+  showToast(`"${currentProduct.name}" added to Bag!`);
+  const btn = document.querySelector('.result-actions .btn-primary.green');
+  if (btn) { btn.textContent = '✓ Added!'; setTimeout(() => btn.textContent = '🛒 Add to Bag', 2000); }
+}
+
+function resetAll() {
+  clearPerson();
+  resultImgUrl = null;
+  document.getElementById('ai-result').classList.remove('show');
+  hideError();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) { t = document.createElement('div'); t.id = 'toast'; document.body.appendChild(t); }
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 3000);
+}
 </script>
 </body>
 </html>

@@ -571,3 +571,214 @@ hr { display: none; }
   .footer-grid { grid-template-columns: 1fr; gap: 24px; }
   form { padding: 28px 20px; margin: 24px 16px 60px; }
 }
+/* ══════════════════════════════════════════════════════════
+   ── DELIVERY SYSTEM STYLES (NEW) ─────────────────────────
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Tracker bar (top banner) ───────────────────────────── */
+#delivery-tracker-bar {
+  background: #e8f5e9;
+  border-bottom: 1px solid #c8e6c9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 32px;
+  font-size: 13px;
+  color: #1b5e20;
+  font-weight: 600;
+  z-index: 300;
+}
+#delivery-tracker-bar a {
+  color: var(--green);
+  font-weight: 700;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+/* ── Delivery Modal Overlay ─────────────────────────────── */
+#delivery-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+#delivery-modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#delivery-modal {
+  background: var(--white);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  transform: translateY(20px);
+  transition: transform 0.25s ease;
+  scrollbar-width: thin;
+}
+#delivery-modal-overlay.open #delivery-modal {
+  transform: translateY(0);
+}
+
+/* Modal header */
+.dm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--white);
+  z-index: 1;
+}
+.dm-title { font-size: 15px; font-weight: 700; }
+.dm-close {
+  background: none; border: none;
+  font-size: 18px; cursor: pointer;
+  color: var(--text-muted); line-height: 1;
+  padding: 4px 8px; border-radius: 4px;
+  transition: background 0.15s;
+}
+.dm-close:hover { background: var(--light-grey); color: var(--text-primary); }
+
+/* Product info row */
+.dm-product {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 22px;
+  background: var(--off-white);
+  border-bottom: 1px solid var(--border);
+}
+.dm-product img {
+  width: 56px; height: 70px;
+  object-fit: cover; border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.dm-prod-name { font-size: 13.5px; font-weight: 600; }
+.dm-prod-price { font-size: 13px; color: var(--brand-orange); font-weight: 700; margin-top: 3px; }
+
+/* Pincode row */
+.dm-pincode-row {
+  display: flex; gap: 10px;
+  padding: 16px 22px 0;
+}
+.dm-pincode-row input {
+  flex: 1;
+  border: 1.5px solid var(--border-dark); border-radius: 4px;
+  padding: 10px 14px; font-size: 13.5px;
+  font-family: var(--font-body); outline: none;
+  transition: border-color 0.2s;
+  background: var(--off-white);
+}
+.dm-pincode-row input:focus { border-color: var(--text-primary); background: var(--white); }
+.dm-pincode-row button {
+  background: var(--text-primary); color: var(--white);
+  border: none; border-radius: 4px;
+  padding: 10px 18px; font-family: var(--font-body);
+  font-size: 12.5px; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  transition: background 0.2s;
+}
+.dm-pincode-row button:hover { background: #333; }
+.dm-pin-result {
+  font-size: 12.5px; font-weight: 600;
+  padding: 8px 22px 0;
+  min-height: 20px;
+}
+
+/* Delivery option cards */
+.dm-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+}
+.dm-option {
+  display: block;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.dm-option input[type="radio"] { display: none; }
+.dm-option.selected {
+  border-color: var(--text-primary);
+  background: #f9f9f7;
+}
+.dm-opt-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.dm-opt-icon { font-size: 22px; flex-shrink: 0; }
+.dm-opt-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.dm-opt-label { font-size: 13.5px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.dm-badge {
+  background: var(--tag-bg); color: var(--white);
+  font-size: 9px; font-weight: 700;
+  padding: 2px 7px; border-radius: 2px;
+  letter-spacing: 0.1em;
+}
+.dm-opt-days { font-size: 12px; color: var(--text-muted); }
+.dm-opt-price { font-size: 15px; font-weight: 700; flex-shrink: 0; }
+
+/* Address section */
+.dm-address-section { padding: 16px 22px; border-bottom: 1px solid var(--border); }
+.dm-section-title { font-size: 13.5px; font-weight: 700; margin-bottom: 12px; }
+.dm-addr-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.dm-addr-grid input {
+  border: 1.5px solid var(--border-dark); border-radius: 4px;
+  padding: 10px 14px; font-size: 13px;
+  font-family: var(--font-body); outline: none;
+  background: var(--off-white);
+  transition: border-color 0.2s, background 0.2s;
+}
+.dm-addr-grid input:focus { border-color: var(--text-primary); background: var(--white); }
+.dm-addr-grid input::placeholder { color: var(--text-muted); }
+.dm-addr-grid .dm-full { grid-column: 1 / -1; }
+
+/* Modal footer */
+.dm-footer {
+  padding: 16px 22px;
+  position: sticky;
+  bottom: 0;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+}
+.dm-confirm-btn {
+  width: 100%;
+  background: var(--text-primary); color: var(--white);
+  border: none; border-radius: 4px;
+  padding: 14px;
+  font-family: var(--font-body); font-size: 14px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer; transition: background 0.2s;
+}
+.dm-confirm-btn:hover { background: #333; }
+
+/* ── Responsive delivery modal ──────────────────────────── */
+@media (max-width: 540px) {
+  #delivery-modal { max-height: 95vh; border-radius: 12px 12px 0 0; }
+  #delivery-modal-overlay { align-items: flex-end; padding: 0; }
+  .dm-addr-grid { grid-template-columns: 1fr; }
+  .dm-addr-grid .dm-full { grid-column: 1; }
+  #delivery-tracker-bar { padding: 8px 16px; font-size: 12px; }
+}
