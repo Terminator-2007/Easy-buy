@@ -388,8 +388,13 @@ const HF_TOKEN = t1 + t2 + t3;
     preview.src   = product.img;
     zone.classList.add('has-image');
     imageUrlToBase64(product.img, b64 => {
-      if (b64) { garmentBase64 = b64; }
-      else { showToast('Could not auto-load garment — please upload it manually.'); }
+      if (b64) {
+        garmentBase64 = b64;
+      } else {
+        // Fallback: try fetching with no-cors mode won't give us bytes,
+        // so prompt user to upload manually — but keep the preview visible
+        showToast('ℹ️ Garment auto-load failed — please upload the garment image manually using the upload zone below.');
+      }
     });
   }
 
@@ -421,19 +426,26 @@ const HF_TOKEN = t1 + t2 + t3;
   }
 
   function imageUrlToBase64(url, cb) {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      try {
-        const c = document.createElement('canvas');
-        c.width = img.naturalWidth || img.width;
-        c.height = img.naturalHeight || img.height;
-        c.getContext('2d').drawImage(img, 0, 0);
-        cb(c.toDataURL('image/jpeg', 0.92).split(',')[1]);
-      } catch(e) { cb(null); }
-    };
-    img.onerror = () => cb(null);
-    img.src = url;
+    // Use fetch + FileReader — avoids canvas CORS taint entirely
+    fetch(url)
+      .then(res => {
+        if (!res.ok) throw new Error('fetch failed');
+        return res.blob();
+      })
+      .then(blob => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const result = e.target.result;
+          if (result && result.includes(',')) {
+            cb(result.split(',')[1]);
+          } else {
+            cb(null);
+          }
+        };
+        reader.onerror = () => cb(null);
+        reader.readAsDataURL(blob);
+      })
+      .catch(() => cb(null));
   }
 
   function clearPerson() {
@@ -520,8 +532,9 @@ const HF_TOKEN = t1 + t2 + t3;
                 if (msg.output && msg.output.error) {
                   reject(new Error('IDM-VTON error: ' + msg.output.error));
                 } else {
+                  const rawData = (msg.output && msg.output.data) ? msg.output.data : msg.output;
                   console.log('IDM-VTON raw output:', JSON.stringify(msg.output));
-                  resolve(msg.output.data);
+                  resolve(rawData);
                 }
                 return;
 
@@ -591,30 +604,32 @@ const HF_TOKEN = t1 + t2 + t3;
          Walk through all known formats until we find a url or path. */
       let imgObj = null;
 
-      if (Array.isArray(outputData) && outputData.length > 0) {
-        const first = outputData[0];
-        if (first && (first.url || first.path)) {
-          /* shape A: [{url, path}, ...] */
-          imgObj = first;
-        } else if (Array.isArray(first) && first[0] && (first[0].url || first[0].path)) {
-          /* shape B: [[{url, path}], ...] */
-          imgObj = first[0];
-        } else if (first && first.image && (first.image.url || first.image.path)) {
-          /* shape C: [{image: {url, path}}, ...] */
-          imgObj = first.image;
-        } else if (typeof first === 'string' && first.startsWith('http')) {
-          /* shape D: ['https://...result.jpg', ...] */
-          resultImgUrl = first;
+      function extractImgObj(data) {
+        if (!data) return null;
+        // Shape: direct url string
+        if (typeof data === 'string' && (data.startsWith('http') || data.startsWith('/'))) return { url: data };
+        // Shape: {url, path}
+        if (data.url || data.path) return data;
+        // Shape: {image: {url, path}}
+        if (data.image && (data.image.url || data.image.path)) return data.image;
+        // Shape: array — recurse into first element
+        if (Array.isArray(data)) {
+          for (const item of data) {
+            const found = extractImgObj(item);
+            if (found) return found;
+          }
         }
+        return null;
       }
 
-      if (!resultImgUrl) {
-        if (!imgObj) {
-          throw new Error('Could not find image in response: ' + JSON.stringify(outputData).slice(0, 300));
-        }
+      imgObj = extractImgObj(outputData);
+
+      if (imgObj) {
         resultImgUrl = imgObj.url
           ? imgObj.url
           : `https://${SPACE_DOMAIN}/file=` + imgObj.path;
+      } else {
+        throw new Error('Could not find image in response: ' + JSON.stringify(outputData).slice(0, 300));
       }
 
       document.getElementById('result-person-img').src = document.getElementById('person-preview').src;
