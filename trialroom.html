@@ -481,7 +481,7 @@ const HF_TOKEN = t1 + t2 + t3;
 
   function pollResult(session_hash) {
     return new Promise(async (resolve, reject) => {
-      const url   = `https://${SPACE_DOMAIN}/gradio/queue/data?session_hash=${session_hash}`;
+      const url   = `https://${SPACE_DOMAIN}/queue/data?session_hash=${session_hash}`;
       const timer = setTimeout(() => reject(new Error('Timed out after 3 minutes. Please try again.')), 180000);
       try {
         const res = await fetch(url, { headers: { 'Authorization': `Bearer ${HF_TOKEN}` } });
@@ -562,7 +562,7 @@ const HF_TOKEN = t1 + t2 + t3;
 
       const session_hash = Math.random().toString(36).slice(2, 12);
 
-      const qRes = await fetch(`https://${SPACE_DOMAIN}/gradio/queue/join`, {
+      const qRes = await fetch(`https://${SPACE_DOMAIN}/queue/join`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
