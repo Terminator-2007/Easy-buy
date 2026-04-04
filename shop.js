@@ -1,8 +1,19 @@
 (function () {
   'use strict';
 
-  /* ── Data ──────────────────────────────────────────────── */
+  /* ── Page detection ──────────────────────────────────── */
+  function getPage() {
+    return location.pathname.split('/').pop().replace(/\.html.*$/, '') || 'index';
+  }
 
+  const PAGE = getPage();
+  const IS_PRODUCT_PAGE = PAGE === 'index' || PAGE === 'latest';
+  const IS_CONTACT  = PAGE === 'contact';
+  const IS_DELIVERY = PAGE === 'delivery';
+  const IS_CART     = PAGE === 'cart';
+  const IS_TRIAL    = PAGE === 'trialroom';
+
+  /* ── Data ──────────────────────────────────────────────── */
   function getCartCount () {
     const cart = JSON.parse(localStorage.getItem('myshop_cart')) || [];
     return cart.reduce((sum, item) => sum + (item.qty || 1), 0);
@@ -44,8 +55,8 @@
     injectToast();
     initContactForm();
     setActiveNav();
-    injectDeliveryModal();       // ← NEW
-    injectDeliveryTrackerBar();  // ← NEW
+    injectDeliveryModal();
+    injectDeliveryTrackerBar();
   }
 
   /* ── 1. Utility top bar ─────────────────────────────────── */
@@ -54,10 +65,10 @@
     const bar = document.createElement('div');
     bar.id = 'topbar-util';
     bar.innerHTML = `
-      <a href="#">Sign In / Join Eb</a>
-      <a href="#">Customer Care</a>
+      <a href="signin.html">Sign In / Join EB</a>
+      <a href="customer-care.html">Customer Care</a>
       <a href="delivery.html" style="color:var(--green);font-weight:700;">🚚 Track Order</a>
-      <a href="#" class="visit-btn">Visit Easy buy</a>
+      <a href="index.html" class="visit-btn">Visit Easy Buy</a>
     `;
     document.body.prepend(bar);
   }
@@ -66,15 +77,14 @@
   function upgradeHeader () {
     const hdr = document.querySelector('header');
     if (!hdr) return;
-    const logoText = hdr.querySelector('h1')?.textContent || 'EB';
     hdr.innerHTML = `
-      <h1>${logoText}</h1>
+      <h1><a href="index.html" style="color:inherit;text-decoration:none;">Easy Buy</a></h1>
       <div id="header-search">
-        <input type="text" placeholder="Search EASY BUY" id="search-input" autocomplete="off">
+        <input type="text" placeholder="Search Easy Buy" id="search-input" autocomplete="off">
         <button type="button" aria-label="Search">&#128269;</button>
       </div>
       <div id="header-icons">
-        <div class="hdr-icon" title="Wishlist">&#9825;</div>
+        <a href="wishlist.html" class="hdr-icon" title="Wishlist">&#9825;</a>
         <a href="delivery.html" class="hdr-icon" title="Track Order" style="font-size:20px;text-decoration:none;">🚚</a>
         <a href="cart.html" class="hdr-icon" id="cart-icon" title="Bag">
           &#128716;
@@ -92,16 +102,35 @@
   }
 
   /* ── 3. Breadcrumb ─────────────────────────────────────── */
+  const PAGE_LABELS = {
+    'index':         'Home',
+    'latest':        'Latest',
+    'contact':       'Contact Us',
+    'delivery':      'Track Order',
+    'cart':          'My Bag',
+    'wishlist':      'Wishlist',
+    'signin':        'Sign In',
+    'about':         'About Us',
+    'blog':          'Blog',
+    'careers':       'Careers',
+    'customer-care': 'Customer Care',
+    'faq':           'FAQs',
+    'press':         'Press',
+    'returns':       'Returns',
+    'size-guide':    'Size Guide',
+    'trialroom':     'Trial Room',
+  };
+
   function injectBreadcrumb () {
     if (document.getElementById('breadcrumb')) return;
-    const isLatest   = location.pathname.includes('latest');
-    const isContact  = location.pathname.includes('contact');
-    const isDelivery = location.pathname.includes('delivery');
     const bc = document.createElement('div');
     bc.id = 'breadcrumb';
-    bc.innerHTML = `<a href="index.html">Home</a> <span class="sep">/</span> ${
-      isLatest ? 'Latest' : isContact ? 'Contact Us' : isDelivery ? 'Track Order' : 'Products'
-    }`;
+    if (PAGE === 'index') {
+      bc.innerHTML = `Home`;
+    } else {
+      const label = PAGE_LABELS[PAGE] || PAGE;
+      bc.innerHTML = `<a href="index.html">Home</a> <span class="sep">/</span> ${label}`;
+    }
     const hdr = document.querySelector('header');
     if (hdr) hdr.after(bc);
   }
@@ -205,7 +234,6 @@
       `)}
     `;
 
-    // Price slider
     const sl = sb.querySelector('#price-slider');
     const pv = sb.querySelector('#price-val');
     if (sl && pv) {
@@ -214,7 +242,6 @@
       });
     }
 
-    // Collapse toggles
     sb.querySelectorAll('.sidebar-toggle').forEach(btn => {
       btn.addEventListener('click', () => {
         const body = btn.nextElementSibling;
@@ -224,7 +251,6 @@
       });
     });
 
-    // Color swatch selection
     sb.querySelectorAll('.swatch').forEach(sw => {
       sw.addEventListener('click', () => sw.classList.toggle('selected'));
     });
@@ -244,12 +270,9 @@
   function buildCatHeading () {
     const mc = document.getElementById('main-content');
     if (!mc || document.getElementById('cat-heading')) return;
-    const isLatest   = location.pathname.includes('latest');
-    const isContact  = location.pathname.includes('contact');
-    const isDelivery = location.pathname.includes('delivery');
-    if (isContact || isDelivery) return;
-    const label = isLatest ? 'NEW ARRIVALS' : 'MEN\'S COLLECTION';
-    const title = isLatest ? 'Latest Drops' : 'All Products';
+    if (!IS_PRODUCT_PAGE) return;
+    const label = PAGE === 'latest' ? 'NEW ARRIVALS' : 'MEN\'S COLLECTION';
+    const title = PAGE === 'latest' ? 'Latest Drops' : 'All Products';
     const div = document.createElement('div');
     div.id = 'cat-heading';
     div.innerHTML = `<p class="cat-label">${label}</p><h2>${title}</h2>`;
@@ -260,9 +283,7 @@
   function buildToolbar () {
     const mc = document.getElementById('main-content');
     if (!mc || document.getElementById('toolbar')) return;
-    const isContact  = location.pathname.includes('contact');
-    const isDelivery = location.pathname.includes('delivery');
-    if (isContact || isDelivery) return;
+    if (!IS_PRODUCT_PAGE) return;
 
     const cards = document.querySelectorAll('.card');
     const toolbar = document.createElement('div');
@@ -314,7 +335,6 @@
       if (card.dataset.upgraded) return;
       card.dataset.upgraded = '1';
 
-      // Image wrap
       const img = card.querySelector('img');
       if (img && !img.closest('.card-img-wrap')) {
         const wrap = document.createElement('div');
@@ -322,7 +342,6 @@
         img.parentNode.insertBefore(wrap, img);
         wrap.appendChild(img);
 
-        // Wishlist
         const wl = document.createElement('button');
         wl.className = 'wishlist-btn';
         wl.innerHTML = '&#9825;';
@@ -333,7 +352,6 @@
           wl.innerHTML = wl.classList.contains('liked') ? '&#9829;' : '&#9825;';
         });
 
-        // Tag
         const tag = tags[i % tags.length];
         if (tag) {
           const t = document.createElement('div');
@@ -343,7 +361,6 @@
         }
       }
 
-      // Card body
       let body = card.querySelector('.card-body');
       if (!body) {
         body = document.createElement('div');
@@ -353,7 +370,6 @@
         card.appendChild(body);
       }
 
-      // Brand
       if (!body.querySelector('.card-brand')) {
         const brand = document.createElement('div');
         brand.className = 'card-brand';
@@ -361,7 +377,6 @@
         body.prepend(brand);
       }
 
-      // Rating
       if (!body.querySelector('.card-rating')) {
         const rating = fakeRating();
         const count  = fakeCount();
@@ -377,13 +392,11 @@
         else body.appendChild(ratingEl);
       }
 
-      // Price row
       const priceEl = body.querySelector('.price');
       if (priceEl && !body.querySelector('.card-price-row')) {
         const disc    = fakeDiscount();
         const priceN  = parseInt(priceEl.textContent.replace(/[₹,]/g, ''), 10);
         const mrp     = Math.round(priceN / (1 - disc / 100));
-        const offerPr = Math.round(priceN * 0.93);
 
         const row = document.createElement('div');
         row.className = 'card-price-row';
@@ -397,11 +410,10 @@
 
         const op = document.createElement('p');
         op.className = 'offer-price';
-        op.textContent = `₹${offerPr.toLocaleString('en-IN')}`;
+        op.textContent = `₹${Math.round(priceN * 0.93).toLocaleString('en-IN')}`;
         row.after(op);
       }
 
-      // ATC button
       const origBtn = body.querySelector('button');
       if (origBtn) origBtn.remove();
 
@@ -416,7 +428,6 @@
         });
       }
 
-      // Try It On button
       if (!card.querySelector('.card-tryon')) {
         const tryBtn = document.createElement('a');
         tryBtn.className = 'card-tryon';
@@ -428,7 +439,7 @@
 
         tryBtn.addEventListener('click', e => {
           e.stopPropagation();
-          const rawPriceText = card.querySelector('.card-price-row .price')?.textContent || card.innerText.match(/₹[\d,]+/)?.[0] || '₹0';
+          const rawPriceText = card.querySelector('.card-price-row .price')?.textContent || '₹0';
           const priceNumber = parseInt(rawPriceText.replace(/[₹,]/g, ''), 10);
           const imgEl = card.querySelector('img');
           const product = {
@@ -453,7 +464,7 @@
     const product = {
       id: Date.now(),
       name: card.querySelector('h3')?.textContent || 'Item',
-      brand: card.querySelector('.card-brand')?.textContent || 'MyShop',
+      brand: card.querySelector('.card-brand')?.textContent || 'Easy Buy',
       color: card.querySelector('.color')?.textContent || '',
       size: 'M', price: priceNumber,
       mrp: Math.round(priceNumber * 1.35),
@@ -471,22 +482,25 @@
     showToast(product.name + ' added to bag');
     setTimeout(() => { btn.classList.remove('added'); btn.textContent = 'ADD TO BAG'; }, 2000);
 
-    // Show delivery options modal after adding
     showDeliveryModal(product);
   }
 
   /* ── 9. Nav active state ────────────────────────────────── */
   function setActiveNav () {
-    const page = location.pathname.split('/').pop() || 'index.html';
-    document.querySelectorAll('#main-nav a').forEach(a => {
-      const href = a.getAttribute('href');
-      if (href && (href === page || (page === '' && href === 'index.html'))) {
-        a.classList.add('active');
+    const nav = document.querySelector('nav');
+    if (!nav) return;
+
+    // Upgrade existing nav links to be consistent
+    nav.querySelectorAll('a').forEach(a => {
+      const href = a.getAttribute('href') || '';
+      const hPage = href.replace(/\.html.*$/, '').replace(/^.*\//, '');
+      if (hPage === PAGE || (PAGE === 'index' && hPage === 'index')) {
+        a.style.color = 'var(--brand-orange)';
       }
     });
 
-    const nav = document.querySelector('nav');
-    if (nav && !nav.querySelector('a[href="trialroom.html"]')) {
+    // Add Trial Room link if not present
+    if (!nav.querySelector('a[href="trialroom.html"]')) {
       const trialLink = document.createElement('a');
       trialLink.href = 'trialroom.html';
       trialLink.target = '_blank';
@@ -498,7 +512,7 @@
     }
 
     // Add delivery tracking link to nav
-    if (nav && !nav.querySelector('a[href="delivery.html"]')) {
+    if (!nav.querySelector('a[href="delivery.html"]')) {
       const deliveryLink = document.createElement('a');
       deliveryLink.href = 'delivery.html';
       deliveryLink.innerHTML = '🚚 Track Order';
@@ -521,24 +535,25 @@
         <div class="footer-col">
           <h4>Customer Service</h4>
           <a href="delivery.html">Track My Order</a>
-          <a href="#">Returns & Refunds</a>
-          <a href="#">FAQs</a>
-          <a href="#">Size Guide</a>
+          <a href="returns.html">Returns & Refunds</a>
+          <a href="faq.html">FAQs</a>
+          <a href="size-guide.html">Size Guide</a>
+          <a href="customer-care.html">Customer Care</a>
           <a href="contact.html">Contact Us</a>
         </div>
         <div class="footer-col">
           <h4>Company</h4>
-          <a href="#">About Us</a>
-          <a href="#">Careers</a>
-          <a href="#">Press</a>
-          <a href="#">Blog</a>
+          <a href="about.html">About Us</a>
+          <a href="careers.html">Careers</a>
+          <a href="press.html">Press</a>
+          <a href="blog.html">Blog</a>
         </div>
         <div class="footer-col">
-          <h4>Connect</h4>
-          <a href="#">Instagram</a>
-          <a href="#">Facebook</a>
-          <a href="#">Twitter</a>
-          <a href="#">YouTube</a>
+          <h4>My Account</h4>
+          <a href="signin.html">Sign In / Register</a>
+          <a href="wishlist.html">My Wishlist</a>
+          <a href="cart.html">My Bag</a>
+          <a href="delivery.html">My Orders</a>
         </div>
       </div>
       <div class="footer-bottom">
@@ -573,6 +588,7 @@
     const btn = form.querySelector('button');
     if (!btn) return;
     btn.setAttribute('type', 'button');
+    btn.textContent = 'Send Message';
     btn.addEventListener('click', () => {
       const fields = form.querySelectorAll('input, textarea');
       let ok = true;
@@ -584,10 +600,10 @@
         }
       });
       if (ok) {
-        btn.textContent = '✓ Submitted Successfully';
+        btn.textContent = '✓ Message Sent!';
         btn.style.background = '#388e3c';
         showToast("Message sent! We'll get back to you.");
-        setTimeout(() => { btn.textContent = 'Submit'; btn.style.background = ''; form.reset(); }, 3000);
+        setTimeout(() => { btn.textContent = 'Send Message'; btn.style.background = ''; form.reset(); }, 3000);
       } else {
         showToast('Please fill in all fields.');
       }
@@ -603,43 +619,15 @@
   }
 
   /* ══════════════════════════════════════════════════════════
-     ── 14. DELIVERY SYSTEM (NEW) ────────────────────────────
+     ── 14. DELIVERY SYSTEM ──────────────────────────────────
      ══════════════════════════════════════════════════════════ */
 
   const DELIVERY_OPTIONS = [
-    {
-      id: 'standard',
-      label: 'Standard Delivery',
-      icon: '📦',
-      days: '5–7 business days',
-      price: 0,
-      priceLabel: 'FREE',
-      badge: '',
-      color: '#388e3c'
-    },
-    {
-      id: 'express',
-      label: 'Express Delivery',
-      icon: '⚡',
-      days: '2–3 business days',
-      price: 99,
-      priceLabel: '₹99',
-      badge: 'POPULAR',
-      color: '#c05200'
-    },
-    {
-      id: 'same_day',
-      label: 'Same Day Delivery',
-      icon: '🚀',
-      days: 'Today by 10 PM',
-      price: 199,
-      priceLabel: '₹199',
-      badge: 'FASTEST',
-      color: '#b71c1c'
-    }
+    { id: 'standard', label: 'Standard Delivery', icon: '📦', days: '5–7 business days', price: 0, priceLabel: 'FREE', badge: '', color: '#388e3c' },
+    { id: 'express',  label: 'Express Delivery',  icon: '⚡', days: '2–3 business days', price: 99, priceLabel: '₹99', badge: 'POPULAR', color: '#c05200' },
+    { id: 'same_day', label: 'Same Day Delivery',  icon: '🚀', days: 'Today by 10 PM',   price: 199, priceLabel: '₹199', badge: 'FASTEST', color: '#b71c1c' }
   ];
 
-  /* ── Delivery Modal ──────────────────────────────────────── */
   function injectDeliveryModal () {
     if (document.getElementById('delivery-modal')) return;
 
@@ -651,15 +639,12 @@
           <span class="dm-title">🚚 Choose Delivery Option</span>
           <button class="dm-close" id="dm-close-btn">✕</button>
         </div>
-
         <div class="dm-product" id="dm-product-info"></div>
-
         <div class="dm-pincode-row">
           <input type="text" id="dm-pincode" placeholder="Enter pincode to check delivery" maxlength="6">
           <button id="dm-check-btn">Check</button>
         </div>
         <p class="dm-pin-result" id="dm-pin-result"></p>
-
         <div class="dm-options" id="dm-options">
           ${DELIVERY_OPTIONS.map(opt => `
             <label class="dm-option" data-id="${opt.id}">
@@ -677,7 +662,6 @@
             </label>
           `).join('')}
         </div>
-
         <div class="dm-address-section" id="dm-address-section">
           <p class="dm-section-title">📍 Delivery Address</p>
           <div class="dm-addr-grid">
@@ -689,7 +673,6 @@
             <input type="text" placeholder="State" id="dm-state">
           </div>
         </div>
-
         <div class="dm-footer">
           <button class="dm-confirm-btn" id="dm-confirm-btn">✓ Confirm &amp; Place Order</button>
         </div>
@@ -698,32 +681,23 @@
 
     document.body.appendChild(overlay);
 
-    // Close
     document.getElementById('dm-close-btn').addEventListener('click', closeDeliveryModal);
     overlay.addEventListener('click', e => { if (e.target === overlay) closeDeliveryModal(); });
-
-    // Pincode check
     document.getElementById('dm-check-btn').addEventListener('click', checkPincode);
-
-    // Confirm order
     document.getElementById('dm-confirm-btn').addEventListener('click', confirmOrder);
 
-    // Highlight selected option
     overlay.querySelectorAll('.dm-option').forEach(opt => {
       opt.addEventListener('click', () => {
         overlay.querySelectorAll('.dm-option').forEach(o => o.classList.remove('selected'));
         opt.classList.add('selected');
       });
     });
-    // Default selected
     overlay.querySelector('.dm-option').classList.add('selected');
   }
 
   function showDeliveryModal (product) {
     const overlay = document.getElementById('delivery-modal-overlay');
     if (!overlay) return;
-
-    // Fill product info
     const info = document.getElementById('dm-product-info');
     info.innerHTML = `
       <img src="${product.img || ''}" alt="${product.name}" onerror="this.style.display='none'">
@@ -732,7 +706,6 @@
         <p class="dm-prod-price">₹${product.price.toLocaleString('en-IN')}</p>
       </div>
     `;
-
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
@@ -767,13 +740,9 @@
 
     if (!name || !phone || !addr1 || !city || !state) {
       showToast('⚠️ Please fill in your delivery address.');
-      // Highlight empty fields
       [
-        { id: 'dm-name', val: name },
-        { id: 'dm-phone', val: phone },
-        { id: 'dm-addr1', val: addr1 },
-        { id: 'dm-city', val: city },
-        { id: 'dm-state', val: state }
+        { id: 'dm-name', val: name }, { id: 'dm-phone', val: phone },
+        { id: 'dm-addr1', val: addr1 }, { id: 'dm-city', val: city }, { id: 'dm-state', val: state }
       ].forEach(({ id, val }) => {
         if (!val) {
           const el = document.getElementById(id);
@@ -787,14 +756,19 @@
     const selectedOpt = document.querySelector('input[name="delivery_opt"]:checked')?.value || 'standard';
     const opt = DELIVERY_OPTIONS.find(o => o.id === selectedOpt);
 
-    // Save order to localStorage
     const order = {
       id: 'EB' + Math.floor(Math.random() * 9000000 + 1000000),
       date: new Date().toISOString(),
       address: { name, phone, addr1, city, state },
       delivery: opt,
       status: 'confirmed',
-      steps: generateTrackingSteps(opt)
+      steps: [
+        { label: 'Order Confirmed', done: true, time: new Date().toLocaleString('en-IN') },
+        { label: 'Processing at Warehouse', done: false, time: '' },
+        { label: 'Shipped', done: false, time: '' },
+        { label: 'Out for Delivery', done: false, time: '' },
+        { label: 'Delivered', done: false, time: '' }
+      ]
     };
 
     let orders = JSON.parse(localStorage.getItem('myshop_orders')) || [];
@@ -806,26 +780,12 @@
     setTimeout(() => { window.location.href = 'delivery.html'; }, 1800);
   }
 
-  function generateTrackingSteps (opt) {
-    const now = new Date();
-    const steps = [
-      { label: 'Order Confirmed', done: true, time: now.toLocaleString('en-IN') },
-      { label: 'Processing at Warehouse', done: false, time: '' },
-      { label: 'Shipped', done: false, time: '' },
-      { label: 'Out for Delivery', done: false, time: '' },
-      { label: 'Delivered', done: false, time: '' }
-    ];
-    return steps;
-  }
-
   /* ── Delivery Tracker Bar ────────────────────────────────── */
   function injectDeliveryTrackerBar () {
     const orders = JSON.parse(localStorage.getItem('myshop_orders')) || [];
     if (!orders.length) return;
-
     const latest = orders[0];
     if (document.getElementById('delivery-tracker-bar')) return;
-
     const bar = document.createElement('div');
     bar.id = 'delivery-tracker-bar';
     bar.innerHTML = `
