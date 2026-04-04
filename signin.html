@@ -7,92 +7,274 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="stylebg.css">
   <style>
-    .placeholder-wrap {
-      max-width: 660px;
-      margin: 80px auto 120px;
-      padding: 0 24px;
-      text-align: center;
+    .auth-wrap {
+      min-height: calc(100vh - 200px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px 24px 80px;
     }
-    .placeholder-icon {
-      font-size: 64px;
-      margin-bottom: 24px;
-      display: block;
+    .auth-card {
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 10px; box-shadow: 0 4px 32px rgba(0,0,0,0.07);
+      width: 100%; max-width: 420px; padding: 40px 36px;
     }
-    .placeholder-wrap h2 {
-      font-family: var(--font-logo);
-      font-size: 2.2rem;
-      font-weight: 400;
-      margin-bottom: 16px;
+    .auth-logo { font-family: var(--font-logo); font-size: 2rem; text-align: center; margin-bottom: 8px; }
+    .auth-title { font-size: 15px; font-weight: 700; text-align: center; margin-bottom: 6px; }
+    .auth-sub { font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 28px; }
+
+    .auth-tabs { display: flex; border: 1.5px solid var(--border-dark); border-radius: 6px; overflow: hidden; margin-bottom: 28px; }
+    .auth-tab {
+      flex: 1; padding: 10px; font-size: 13px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+      background: none; border: none; font-family: var(--font-body);
+      color: var(--text-muted); transition: all 0.2s;
     }
-    .placeholder-wrap p {
-      font-size: 15px;
-      color: var(--text-secondary);
-      line-height: 1.7;
-      max-width: 500px;
-      margin: 0 auto 32px;
+    .auth-tab.active { background: var(--text-primary); color: var(--white); }
+
+    .auth-form { display: none; }
+    .auth-form.active { display: block; }
+
+    .auth-field { margin-bottom: 16px; }
+    .auth-field label { display: block; font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .auth-field input {
+      width: 100%; border: 1.5px solid var(--border-dark); border-radius: 5px;
+      padding: 12px 14px; font-size: 14px; font-family: var(--font-body);
+      outline: none; background: var(--off-white); transition: all 0.2s;
     }
-    .wip-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #fff8e1;
-      border: 1px solid #ffe082;
-      border-radius: 4px;
-      padding: 8px 18px;
-      font-size: 12.5px;
-      font-weight: 700;
-      color: #795548;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 36px;
+    .auth-field input:focus { border-color: var(--text-primary); background: var(--white); }
+    .auth-field input.error { border-color: var(--red); }
+
+    .auth-field-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .auth-field-row label { margin-bottom: 0; }
+    .auth-field-row a { font-size: 12px; color: var(--brand-orange); font-weight: 700; }
+
+    .password-wrap { position: relative; }
+    .password-wrap input { padding-right: 44px; }
+    .pw-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 16px; color: var(--text-muted); }
+
+    .auth-submit {
+      width: 100%; background: var(--text-primary); color: var(--white);
+      border: none; border-radius: 5px; padding: 14px; font-family: var(--font-body);
+      font-size: 14px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      cursor: pointer; transition: background 0.2s; margin-top: 8px;
     }
-    .back-links {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      flex-wrap: wrap;
+    .auth-submit:hover { background: #333; }
+
+    .auth-divider {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 12px; color: var(--text-muted); margin: 20px 0;
     }
-    .back-links a {
-      padding: 12px 28px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border-radius: 3px;
-      border: 1.5px solid var(--text-primary);
-      transition: all var(--transition);
+    .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .oauth-btns { display: flex; flex-direction: column; gap: 10px; }
+    .oauth-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 12px; border: 1.5px solid var(--border-dark); border-radius: 5px;
+      background: var(--white); cursor: pointer; font-family: var(--font-body);
+      font-size: 13.5px; font-weight: 600; transition: all 0.2s; width: 100%;
     }
-    .back-links a.primary {
-      background: var(--text-primary);
-      color: var(--white);
+    .oauth-btn:hover { border-color: var(--text-primary); background: var(--off-white); }
+
+    .auth-benefits {
+      display: flex; flex-direction: column; gap: 8px; margin: 20px 0;
+      background: var(--off-white); border-radius: 6px; padding: 16px;
     }
-    .back-links a.primary:hover { background: #333; }
-    .back-links a.secondary { color: var(--text-primary); }
-    .back-links a.secondary:hover { background: var(--text-primary); color: var(--white); }
+    .auth-benefit { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-secondary); }
+    .auth-benefit span:first-child { font-size: 16px; }
+
+    .success-screen { display: none; text-align: center; padding: 20px 0; }
+    .success-screen .success-icon { font-size: 56px; margin-bottom: 16px; }
+    .success-screen h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .success-screen p { font-size: 13.5px; color: var(--text-secondary); margin-bottom: 20px; }
+    .success-screen a { color: var(--brand-orange); font-weight: 700; text-decoration: underline; }
+
+    .field-error { font-size: 11.5px; color: var(--red); margin-top: 4px; display: none; }
+    .field-error.show { display: block; }
   </style>
 </head>
 <body>
-
-<header>
-  <h1>Easy Buy</h1>
-</header>
+<header><h1>Easy Buy</h1></header>
 <nav>
   <a href="index.html">Home</a>
   <a href="latest.html">Latest</a>
   <a href="contact.html">Contact Us</a>
 </nav>
 
-<div class="placeholder-wrap">
-  <span class="placeholder-icon">🔐</span>
-  <h2>Sign In</h2>
-  <div class="wip-badge">🚧 Coming Soon — Page Under Development</div>
-  <p>Sign in to your Easy Buy account or create a new one to track orders, save your wishlist, and enjoy a faster checkout.</p>
-  <div class="back-links">
-    <a href="index.html" class="primary">← Shop Now</a>
-    <a href="contact.html" class="secondary">Contact Us</a>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">Easy Buy</div>
+
+    <div id="auth-main">
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('signin')">Sign In</button>
+        <button class="auth-tab" onclick="switchTab('signup')">Register</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <div class="auth-form active" id="form-signin">
+        <div class="auth-field">
+          <label>Email Address</label>
+          <input type="email" id="si-email" placeholder="your@email.com">
+          <p class="field-error" id="si-email-err">Please enter a valid email address.</p>
+        </div>
+        <div class="auth-field">
+          <div class="auth-field-row">
+            <label>Password</label>
+            <a href="#" onclick="showReset(event)">Forgot password?</a>
+          </div>
+          <div class="password-wrap">
+            <input type="password" id="si-pass" placeholder="Your password">
+            <button class="pw-toggle" type="button" onclick="togglePw('si-pass', this)">👁</button>
+          </div>
+          <p class="field-error" id="si-pass-err">Please enter your password.</p>
+        </div>
+        <button class="auth-submit" onclick="handleSignIn()">Sign In →</button>
+        <div class="auth-divider">or sign in with</div>
+        <div class="oauth-btns">
+          <button class="oauth-btn" onclick="handleOAuth('Google')">🔵 Continue with Google</button>
+          <button class="oauth-btn" onclick="handleOAuth('Phone')">📱 Continue with Phone</button>
+        </div>
+      </div>
+
+      <!-- Register Form -->
+      <div class="auth-form" id="form-signup">
+        <div class="auth-benefits">
+          <div class="auth-benefit"><span>🚀</span><span>Faster checkout with saved addresses</span></div>
+          <div class="auth-benefit"><span>♡</span><span>Save items to your Wishlist</span></div>
+          <div class="auth-benefit"><span>📦</span><span>Track all your orders in one place</span></div>
+          <div class="auth-benefit"><span>🎁</span><span>Exclusive member-only offers</span></div>
+        </div>
+        <div class="auth-field">
+          <label>Full Name</label>
+          <input type="text" id="su-name" placeholder="Your full name">
+          <p class="field-error" id="su-name-err">Please enter your name.</p>
+        </div>
+        <div class="auth-field">
+          <label>Email Address</label>
+          <input type="email" id="su-email" placeholder="your@email.com">
+          <p class="field-error" id="su-email-err">Please enter a valid email.</p>
+        </div>
+        <div class="auth-field">
+          <label>Phone Number</label>
+          <input type="tel" id="su-phone" placeholder="+91 XXXXX XXXXX">
+        </div>
+        <div class="auth-field">
+          <label>Create Password</label>
+          <div class="password-wrap">
+            <input type="password" id="su-pass" placeholder="Min 8 characters">
+            <button class="pw-toggle" type="button" onclick="togglePw('su-pass', this)">👁</button>
+          </div>
+          <p class="field-error" id="su-pass-err">Password must be at least 8 characters.</p>
+        </div>
+        <button class="auth-submit" onclick="handleSignUp()">Create Account →</button>
+        <p style="font-size:11.5px;color:var(--text-muted);text-align:center;margin-top:14px;">By registering, you agree to our Terms of Service and Privacy Policy.</p>
+      </div>
+    </div>
+
+    <!-- Reset Password -->
+    <div id="reset-screen" style="display:none;">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-size:40px;margin-bottom:12px;">🔑</div>
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">Reset Your Password</h3>
+        <p style="font-size:13px;color:var(--text-muted);">Enter your email and we'll send you a reset link.</p>
+      </div>
+      <div class="auth-field">
+        <label>Email Address</label>
+        <input type="email" id="reset-email" placeholder="your@email.com">
+      </div>
+      <button class="auth-submit" onclick="handleReset()">Send Reset Link</button>
+      <button onclick="showMain()" style="width:100%;margin-top:10px;background:none;border:none;font-size:13px;color:var(--text-muted);cursor:pointer;font-family:var(--font-body);">← Back to Sign In</button>
+    </div>
+
+    <!-- Success Screen -->
+    <div class="success-screen" id="success-screen">
+      <div class="success-icon" id="success-icon">🎉</div>
+      <h3 id="success-title">Welcome back!</h3>
+      <p id="success-msg">You're now signed in. Redirecting you to the shop…</p>
+      <a href="index.html">Go to Shop →</a>
+    </div>
   </div>
 </div>
 
 <script src="shop.js"></script>
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && tab === 'signin') || (i === 1 && tab === 'signup'));
+  });
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  document.getElementById('form-' + tab).classList.add('active');
+}
+
+function togglePw(id, btn) {
+  const input = document.getElementById(id);
+  const isText = input.type === 'text';
+  input.type = isText ? 'password' : 'text';
+  btn.textContent = isText ? '👁' : '🙈';
+}
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = msg || el.textContent; el.classList.add('show'); }
+}
+function clearErrors() { document.querySelectorAll('.field-error').forEach(e => e.classList.remove('show')); }
+
+function handleSignIn() {
+  clearErrors();
+  const email = document.getElementById('si-email').value.trim();
+  const pass  = document.getElementById('si-pass').value;
+  let ok = true;
+  if (!email || !/\S+@\S+\.\S+/.test(email)) { showError('si-email-err'); ok = false; }
+  if (!pass) { showError('si-pass-err'); ok = false; }
+  if (!ok) return;
+  showSuccess('🎉', 'Welcome back!', 'Signing you in… redirecting to the shop.');
+}
+
+function handleSignUp() {
+  clearErrors();
+  const name  = document.getElementById('su-name').value.trim();
+  const email = document.getElementById('su-email').value.trim();
+  const pass  = document.getElementById('su-pass').value;
+  let ok = true;
+  if (!name) { showError('su-name-err'); ok = false; }
+  if (!email || !/\S+@\S+\.\S+/.test(email)) { showError('su-email-err'); ok = false; }
+  if (!pass || pass.length < 8) { showError('su-pass-err'); ok = false; }
+  if (!ok) return;
+  showSuccess('🎊', 'Account Created!', `Welcome to Easy Buy, ${name}! Redirecting you to the shop.`);
+}
+
+function handleOAuth(provider) {
+  showSuccess('✅', 'Signed in with ' + provider, 'You\'re all set. Redirecting to the shop…');
+}
+
+function showSuccess(icon, title, msg) {
+  document.getElementById('auth-main').style.display = 'none';
+  document.getElementById('reset-screen').style.display = 'none';
+  const ss = document.getElementById('success-screen');
+  document.getElementById('success-icon').textContent = icon;
+  document.getElementById('success-title').textContent = title;
+  document.getElementById('success-msg').textContent = msg;
+  ss.style.display = 'block';
+  setTimeout(() => { window.location.href = 'index.html'; }, 2800);
+}
+
+function showReset(e) {
+  e.preventDefault();
+  document.getElementById('auth-main').style.display = 'none';
+  document.getElementById('reset-screen').style.display = 'block';
+}
+
+function showMain() {
+  document.getElementById('auth-main').style.display = 'block';
+  document.getElementById('reset-screen').style.display = 'none';
+}
+
+function handleReset() {
+  const email = document.getElementById('reset-email').value.trim();
+  if (!email) return;
+  showMain();
+  const t = document.getElementById('toast');
+  if (t) { t.textContent = '📩 Password reset link sent to ' + email; t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 4000); }
+}
+</script>
 </body>
 </html>

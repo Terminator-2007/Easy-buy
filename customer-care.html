@@ -7,92 +7,208 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="stylebg.css">
   <style>
-    .placeholder-wrap {
-      max-width: 660px;
-      margin: 80px auto 120px;
-      padding: 0 24px;
-      text-align: center;
+    .cc-page { max-width: 840px; margin: 40px auto 100px; padding: 0 24px; }
+    .cc-page h2 { font-family: var(--font-logo); font-size: 2rem; font-weight: 400; margin-bottom: 6px; }
+    .cc-sub { font-size: 13.5px; color: var(--text-muted); margin-bottom: 36px; }
+
+    .cc-status {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 36px;
+      background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 6px;
+      padding: 14px 20px; font-size: 13.5px; color: #1b5e20; font-weight: 600;
     }
-    .placeholder-icon {
-      font-size: 64px;
-      margin-bottom: 24px;
-      display: block;
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); flex-shrink: 0; animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    .cc-channels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+    .cc-channel {
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 24px 20px;
+      text-align: center; transition: box-shadow 0.2s, border-color 0.2s;
     }
-    .placeholder-wrap h2 {
-      font-family: var(--font-logo);
-      font-size: 2.2rem;
-      font-weight: 400;
-      margin-bottom: 16px;
+    .cc-channel:hover { box-shadow: var(--shadow-hover); border-color: var(--border-dark); }
+    .cc-ch-icon { font-size: 32px; margin-bottom: 12px; }
+    .cc-ch-name { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .cc-ch-desc { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px; }
+    .cc-ch-avail { font-size: 11.5px; color: var(--text-muted); margin-bottom: 16px; font-weight: 600; }
+    .cc-ch-btn {
+      display: inline-block; padding: 10px 20px; font-size: 12.5px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; border-radius: 4px;
+      border: 1.5px solid var(--text-primary); background: var(--white);
+      transition: all 0.2s; cursor: pointer; font-family: var(--font-body); width: 100%;
     }
-    .placeholder-wrap p {
-      font-size: 15px;
-      color: var(--text-secondary);
-      line-height: 1.7;
-      max-width: 500px;
-      margin: 0 auto 32px;
+    .cc-ch-btn:hover, .cc-ch-btn.primary { background: var(--text-primary); color: var(--white); }
+    .cc-ch-btn.primary:hover { background: #333; }
+
+    .cc-topics { margin-bottom: 40px; }
+    .cc-topics h3 { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
+    .cc-topic-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .cc-topic {
+      display: flex; align-items: center; gap: 12px;
+      border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px;
+      cursor: pointer; transition: all 0.2s; text-decoration: none; color: var(--text-primary);
     }
-    .wip-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #fff8e1;
-      border: 1px solid #ffe082;
-      border-radius: 4px;
-      padding: 8px 18px;
-      font-size: 12.5px;
-      font-weight: 700;
-      color: #795548;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 36px;
+    .cc-topic:hover { border-color: var(--text-primary); background: var(--off-white); }
+    .cc-topic .topic-icon { font-size: 20px; flex-shrink: 0; }
+    .cc-topic .topic-text strong { display: block; font-size: 13px; font-weight: 700; }
+    .cc-topic .topic-text span { font-size: 12px; color: var(--text-muted); }
+
+    /* Chat widget */
+    .chat-widget {
+      position: fixed; bottom: 28px; right: 28px; z-index: 5000;
     }
-    .back-links {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      flex-wrap: wrap;
+    .chat-toggle {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--text-primary); color: var(--white);
+      border: none; font-size: 24px; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2); transition: background 0.2s;
+      display: flex; align-items: center; justify-content: center;
     }
-    .back-links a {
-      padding: 12px 28px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border-radius: 3px;
-      border: 1.5px solid var(--text-primary);
-      transition: all var(--transition);
+    .chat-toggle:hover { background: #333; }
+    .chat-window {
+      display: none; position: absolute; bottom: 68px; right: 0;
+      width: 320px; background: var(--white); border-radius: 12px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18); border: 1px solid var(--border); overflow: hidden;
     }
-    .back-links a.primary {
-      background: var(--text-primary);
-      color: var(--white);
+    .chat-window.open { display: flex; flex-direction: column; }
+    .chat-header {
+      background: var(--text-primary); color: var(--white);
+      padding: 14px 18px; display: flex; align-items: center; gap: 10px;
     }
-    .back-links a.primary:hover { background: #333; }
-    .back-links a.secondary { color: var(--text-primary); }
-    .back-links a.secondary:hover { background: var(--text-primary); color: var(--white); }
+    .chat-avatar { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .chat-header-info strong { display: block; font-size: 13.5px; }
+    .chat-header-info span { font-size: 11px; opacity: 0.7; }
+    .chat-messages { padding: 16px; min-height: 200px; max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+    .chat-msg { max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.55; }
+    .chat-msg.agent { background: var(--off-white); color: var(--text-primary); border-radius: 4px 12px 12px 12px; align-self: flex-start; }
+    .chat-msg.user { background: var(--text-primary); color: var(--white); border-radius: 12px 4px 12px 12px; align-self: flex-end; }
+    .chat-input-row { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border); }
+    .chat-input-row input {
+      flex: 1; border: 1.5px solid var(--border-dark); border-radius: 20px;
+      padding: 9px 14px; font-size: 13px; font-family: var(--font-body); outline: none;
+    }
+    .chat-input-row input:focus { border-color: var(--text-primary); }
+    .chat-send { background: var(--text-primary); color: var(--white); border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 14px; cursor: pointer; flex-shrink: 0; }
+
+    @media (max-width: 640px) {
+      .cc-channels { grid-template-columns: 1fr; }
+      .cc-topic-grid { grid-template-columns: 1fr 1fr; }
+      .chat-window { right: -8px; width: 290px; }
+    }
   </style>
 </head>
 <body>
-
-<header>
-  <h1>Easy Buy</h1>
-</header>
+<header><h1>Easy Buy</h1></header>
 <nav>
   <a href="index.html">Home</a>
   <a href="latest.html">Latest</a>
   <a href="contact.html">Contact Us</a>
 </nav>
 
-<div class="placeholder-wrap">
-  <span class="placeholder-icon">🎧</span>
-  <h2>Customer Care</h2>
-  <div class="wip-badge">🚧 Coming Soon — Page Under Development</div>
-  <p>Our support team is available 7 days a week to help you with orders, returns, sizing, and anything else you need.</p>
-  <div class="back-links">
-    <a href="index.html" class="primary">← Shop Now</a>
-    <a href="contact.html" class="secondary">Contact Us</a>
+<div class="cc-page">
+  <h2>🎧 Customer Care</h2>
+  <p class="cc-sub">We're here to help — every day, 9 AM to 9 PM IST.</p>
+
+  <div class="cc-status">
+    <div class="status-dot"></div>
+    Support is currently <strong>Online</strong> — average response time is under 5 minutes.
   </div>
+
+  <div class="cc-channels">
+    <div class="cc-channel">
+      <div class="cc-ch-icon">💬</div>
+      <div class="cc-ch-name">Live Chat</div>
+      <div class="cc-ch-desc">Get instant help from a real agent. Fastest way to resolve most issues.</div>
+      <div class="cc-ch-avail">⏱ Avg wait: &lt;2 min</div>
+      <button class="cc-ch-btn primary" onclick="toggleChat()">Start Chat</button>
+    </div>
+    <div class="cc-channel">
+      <div class="cc-ch-icon">📞</div>
+      <div class="cc-ch-name">Call Us</div>
+      <div class="cc-ch-desc">Speak directly with our support team. Best for complex order issues.</div>
+      <div class="cc-ch-avail">Mon–Sun, 9 AM – 9 PM IST</div>
+      <a href="tel:+918000123456" class="cc-ch-btn">📞 1800-123-456 (Free)</a>
+    </div>
+    <div class="cc-channel">
+      <div class="cc-ch-icon">📩</div>
+      <div class="cc-ch-name">Email Support</div>
+      <div class="cc-ch-desc">For non-urgent queries, documentation requests, or feedback.</div>
+      <div class="cc-ch-avail">Response within 24 hours</div>
+      <a href="contact.html" class="cc-ch-btn">Send Email</a>
+    </div>
+  </div>
+
+  <div class="cc-topics">
+    <h3>What can we help you with?</h3>
+    <div class="cc-topic-grid">
+      <a class="cc-topic" href="delivery.html"><div class="topic-icon">📦</div><div class="topic-text"><strong>Track My Order</strong><span>Order status & tracking</span></div></a>
+      <a class="cc-topic" href="returns.html"><div class="topic-icon">↩️</div><div class="topic-text"><strong>Returns & Refunds</strong><span>15-day return policy</span></div></a>
+      <a class="cc-topic" href="faq.html"><div class="topic-icon">❓</div><div class="topic-text"><strong>FAQs</strong><span>Common questions answered</span></div></a>
+      <a class="cc-topic" href="size-guide.html"><div class="topic-icon">📏</div><div class="topic-text"><strong>Size Guide</strong><span>Find your perfect fit</span></div></a>
+      <a class="cc-topic" href="trialroom.html"><div class="topic-icon">🤖</div><div class="topic-text"><strong>AI Trial Room</strong><span>Try before you buy</span></div></a>
+      <a class="cc-topic" href="contact.html"><div class="topic-icon">✍️</div><div class="topic-text"><strong>Send a Message</strong><span>Write to us directly</span></div></a>
+    </div>
+  </div>
+
+</div>
+
+<!-- Chat Widget -->
+<div class="chat-widget">
+  <div class="chat-window" id="chat-window">
+    <div class="chat-header">
+      <div class="chat-avatar">🎧</div>
+      <div class="chat-header-info">
+        <strong>Easy Buy Support</strong>
+        <span>🟢 Online — reply in &lt;2 min</span>
+      </div>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-msg agent">Hi! 👋 Welcome to Easy Buy Support. How can I help you today?</div>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="chat-input" placeholder="Type your message…" maxlength="200">
+      <button class="chat-send" onclick="sendChat()">➤</button>
+    </div>
+  </div>
+  <button class="chat-toggle" onclick="toggleChat()" id="chat-toggle-btn">💬</button>
 </div>
 
 <script src="shop.js"></script>
+<script>
+const RESPONSES = [
+  "Thanks for reaching out! Let me look into that for you.",
+  "I can help with that! Could you share your order number so I can check the details?",
+  "That's a great question. Our <a href='returns.html' style='color:var(--brand-orange);font-weight:700;'>returns policy</a> covers most items within 15 days of delivery.",
+  "I understand. Let me connect you with the right team. Alternatively, you can <a href='contact.html' style='color:var(--brand-orange);font-weight:700;'>send an email</a> and we'll respond within 24 hours.",
+  "For order tracking, please visit our <a href='delivery.html' style='color:var(--brand-orange);font-weight:700;'>Track Order</a> page — all your orders are saved there automatically.",
+  "Happy to help! Is there anything else I can assist you with?",
+];
+let responseIndex = 0;
+
+function toggleChat() {
+  const win = document.getElementById('chat-window');
+  const btn = document.getElementById('chat-toggle-btn');
+  const isOpen = win.classList.toggle('open');
+  btn.textContent = isOpen ? '✕' : '💬';
+}
+
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  const msgs = document.getElementById('chat-messages');
+  msgs.innerHTML += `<div class="chat-msg user">${msg}</div>`;
+  input.value = '';
+  msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => {
+    const resp = RESPONSES[responseIndex % RESPONSES.length];
+    responseIndex++;
+    msgs.innerHTML += `<div class="chat-msg agent">${resp}</div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 900);
+}
+
+document.getElementById('chat-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendChat();
+});
+</script>
 </body>
 </html>

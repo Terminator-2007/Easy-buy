@@ -7,92 +7,311 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="stylebg.css">
   <style>
-    .placeholder-wrap {
-      max-width: 660px;
-      margin: 80px auto 120px;
-      padding: 0 24px;
-      text-align: center;
+    .blog-page { max-width: 1000px; margin: 40px auto 100px; padding: 0 24px; }
+    .blog-page-title { font-family: var(--font-logo); font-size: 2rem; font-weight: 400; margin-bottom: 6px; }
+    .blog-page-sub { font-size: 13.5px; color: var(--text-muted); margin-bottom: 36px; }
+
+    .blog-cats { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 36px; }
+    .blog-cat {
+      padding: 7px 18px; border-radius: 20px; font-size: 12.5px; font-weight: 700;
+      border: 1.5px solid var(--border-dark); background: var(--white); cursor: pointer;
+      font-family: var(--font-body); letter-spacing: 0.04em; transition: all 0.2s;
     }
-    .placeholder-icon {
-      font-size: 64px;
-      margin-bottom: 24px;
-      display: block;
+    .blog-cat:hover { border-color: var(--text-primary); }
+    .blog-cat.active { background: var(--text-primary); color: var(--white); border-color: var(--text-primary); }
+
+    /* Featured post */
+    .blog-featured {
+      display: grid; grid-template-columns: 1.2fr 1fr; gap: 0;
+      border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden;
+      margin-bottom: 40px; cursor: pointer; transition: box-shadow 0.2s;
     }
-    .placeholder-wrap h2 {
-      font-family: var(--font-logo);
-      font-size: 2.2rem;
-      font-weight: 400;
-      margin-bottom: 16px;
+    .blog-featured:hover { box-shadow: var(--shadow-hover); }
+    .blog-featured-img {
+      background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 80px; min-height: 280px;
     }
-    .placeholder-wrap p {
-      font-size: 15px;
-      color: var(--text-secondary);
-      line-height: 1.7;
-      max-width: 500px;
-      margin: 0 auto 32px;
+    .blog-featured-body { padding: 36px 32px; display: flex; flex-direction: column; justify-content: center; }
+    .blog-featured-cat { font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brand-orange); margin-bottom: 12px; }
+    .blog-featured-title { font-family: var(--font-logo); font-size: 1.7rem; font-weight: 400; line-height: 1.3; margin-bottom: 14px; }
+    .blog-featured-excerpt { font-size: 13.5px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 20px; }
+    .blog-featured-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 16px; }
+
+    /* Grid posts */
+    .blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+    .blog-card {
+      border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+      cursor: pointer; transition: box-shadow 0.2s;
     }
-    .wip-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #fff8e1;
-      border: 1px solid #ffe082;
-      border-radius: 4px;
-      padding: 8px 18px;
-      font-size: 12.5px;
-      font-weight: 700;
-      color: #795548;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 36px;
+    .blog-card:hover { box-shadow: var(--shadow-hover); }
+    .blog-card-img {
+      height: 160px; display: flex; align-items: center; justify-content: center;
+      font-size: 52px; background: var(--off-white);
     }
-    .back-links {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      flex-wrap: wrap;
+    .blog-card-body { padding: 18px 18px 20px; }
+    .blog-card-cat { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brand-orange); margin-bottom: 8px; }
+    .blog-card-title { font-size: 14px; font-weight: 700; line-height: 1.45; margin-bottom: 8px; }
+    .blog-card-excerpt { font-size: 12.5px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .blog-card-meta { font-size: 11.5px; color: var(--text-muted); display: flex; gap: 10px; }
+
+    /* Article overlay */
+    .article-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6); z-index: 10000;
+      align-items: flex-start; justify-content: center;
+      padding: 24px 16px; overflow-y: auto;
     }
-    .back-links a {
-      padding: 12px 28px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border-radius: 3px;
-      border: 1.5px solid var(--text-primary);
-      transition: all var(--transition);
+    .article-overlay.open { display: flex; }
+    .article-modal {
+      background: var(--white); border-radius: 8px; width: 100%; max-width: 680px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25); margin: auto;
     }
-    .back-links a.primary {
-      background: var(--text-primary);
-      color: var(--white);
+    .article-hero-img {
+      height: 180px; display: flex; align-items: center; justify-content: center;
+      font-size: 70px; background: var(--off-white); border-radius: 8px 8px 0 0;
     }
-    .back-links a.primary:hover { background: #333; }
-    .back-links a.secondary { color: var(--text-primary); }
-    .back-links a.secondary:hover { background: var(--text-primary); color: var(--white); }
+    .article-body { padding: 32px 36px 40px; }
+    .article-cat { font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brand-orange); margin-bottom: 10px; }
+    .article-title { font-family: var(--font-logo); font-size: 1.8rem; font-weight: 400; line-height: 1.3; margin-bottom: 12px; }
+    .article-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+    .article-content { font-size: 14.5px; line-height: 1.85; color: var(--text-secondary); }
+    .article-content p { margin-bottom: 18px; }
+    .article-content h3 { font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 28px 0 10px; }
+    .article-content ul { padding-left: 20px; margin-bottom: 18px; }
+    .article-content li { margin-bottom: 7px; }
+    .article-close-bar {
+      position: sticky; top: 0; background: var(--white); z-index: 1;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      border-radius: 8px 8px 0 0;
+    }
+    .article-close-bar span { font-size: 13px; font-weight: 700; }
+    .article-close-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted); padding: 4px 8px; border-radius: 4px; }
+    .article-close-btn:hover { background: var(--light-grey); }
+
+    @media (max-width: 720px) {
+      .blog-featured { grid-template-columns: 1fr; }
+      .blog-featured-img { min-height: 160px; }
+      .blog-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 500px) {
+      .blog-grid { grid-template-columns: 1fr; }
+      .article-body { padding: 20px 20px 28px; }
+    }
   </style>
 </head>
 <body>
-
-<header>
-  <h1>Easy Buy</h1>
-</header>
+<header><h1>Easy Buy</h1></header>
 <nav>
   <a href="index.html">Home</a>
   <a href="latest.html">Latest</a>
   <a href="contact.html">Contact Us</a>
 </nav>
 
-<div class="placeholder-wrap">
-  <span class="placeholder-icon">✍️</span>
-  <h2>Blog</h2>
-  <div class="wip-badge">🚧 Coming Soon — Page Under Development</div>
-  <p>Style tips, trend guides, and fashion inspiration from the Easy Buy editorial team.</p>
-  <div class="back-links">
-    <a href="index.html" class="primary">← Shop Now</a>
-    <a href="contact.html" class="secondary">Contact Us</a>
+<div class="blog-page">
+  <h2 class="blog-page-title">✍️ Easy Buy Journal</h2>
+  <p class="blog-page-sub">Style tips, trend guides, and fashion inspiration from the Easy Buy editorial team.</p>
+
+  <div class="blog-cats" id="blog-cats">
+    <button class="blog-cat active" data-cat="all">All</button>
+    <button class="blog-cat" data-cat="style">Style Tips</button>
+    <button class="blog-cat" data-cat="trends">Trends</button>
+    <button class="blog-cat" data-cat="guides">Guides</button>
+    <button class="blog-cat" data-cat="tech">Tech & Fashion</button>
+  </div>
+
+  <div id="blog-featured-wrap"></div>
+  <div class="blog-grid" id="blog-grid"></div>
+</div>
+
+<!-- Article overlay -->
+<div class="article-overlay" id="article-overlay">
+  <div class="article-modal" id="article-modal">
+    <div class="article-close-bar">
+      <span>Easy Buy Journal</span>
+      <button class="article-close-btn" onclick="closeArticle()">✕ Close</button>
+    </div>
+    <div id="article-content-wrap"></div>
   </div>
 </div>
 
 <script src="shop.js"></script>
+<script>
+const ARTICLES = [
+  {
+    id: 1, cat: 'style', featured: true,
+    icon: '👔', bg: 'linear-gradient(135deg,#1a1a1a,#2d2d2d)',
+    title: '10 Ways to Style a White Shirt (That Aren\'t Boring)',
+    excerpt: 'The white shirt is the foundation of every wardrobe — but most people wear it the same way every day. Here\'s how to make it interesting again.',
+    date: '12 Mar 2025', readTime: '5 min read', author: 'Priya Nair',
+    body: `<p>The white shirt is arguably the most versatile piece of clothing ever made. It works with tailored trousers, denim, shorts, and even over dresses. But most people reach for the same combination every time.</p>
+<h3>1. Half-tuck it</h3><p>Pull just the front hem out slightly and leave the rest tucked in. This casual, editorial look works with high-waisted trousers or jeans and makes the outfit feel intentional rather than sloppy.</p>
+<h3>2. Layer over a crew-neck tee</h3><p>Wear the shirt open over a plain black or navy crew-neck tee. Button the bottom two buttons only. It works as an overshirt and adds structure to a casual look.</p>
+<h3>3. Oversized + cropped trousers</h3><p>Go one or two sizes up, tuck it in loosely at the front, and pair with ankle-length cropped trousers. The contrast between the voluminous top and the slim ankle creates a balanced silhouette.</p>
+<h3>4. Roll the sleeves up differently</h3><p>Instead of a standard fold, try the Italian roll: undo the cuff button, fold the cuff back once flat, then roll the whole sleeve up twice to reveal the inside of the cuff. It's a small detail that reads as effortlessly sophisticated.</p>
+<h3>5. Try it with linen trousers in summer</h3><p>A white linen shirt with matching white or stone linen trousers creates an all-neutral tonal look that's airy for Indian summers and surprisingly dressy.</p>`
+  },
+  {
+    id: 2, cat: 'trends',
+    icon: '🎨',
+    title: 'Earth Tones Are Taking Over Indian Street Style',
+    excerpt: 'From rust to terracotta to deep olive — here\'s why the 2025 colour palette looks like a spice market.',
+    date: '28 Feb 2025', readTime: '4 min read', author: 'Vikram Rao',
+    body: `<p>Walk through any major Indian city in 2025 and you'll notice something: the loud brights of the last decade have quietened down. In their place are warm, grounded earth tones that somehow feel both modern and deeply rooted in Indian visual culture.</p>
+<h3>Why earth tones work in India</h3><p>India has always had a rich relationship with natural dyes — saffron, indigo, madder red. The current earth tone trend feels less like a Western import and more like a homecoming. Rust orange, terracotta, dried turmeric yellow, and deep forest green photograph beautifully in Indian light.</p>
+<h3>How to wear them</h3><p>The key is to mix tones rather than match them exactly. Pair a rust shirt with olive trousers. Wear terracotta with cream or sand. Add a brown leather watch or canvas shoes to ground the palette.</p>
+<h3>What to avoid</h3><p>Earth tones can feel muddy if you layer too many at once without contrast. Keep one piece light — a white T-shirt underneath, or cream socks — to prevent the look from reading as dull.</p>`
+  },
+  {
+    id: 3, cat: 'guides',
+    icon: '📦',
+    title: 'How to Build a Capsule Wardrobe for Under ₹8,000',
+    excerpt: 'A complete, versatile wardrobe doesn\'t require a massive budget. Here\'s the exact 12-piece formula.',
+    date: '15 Feb 2025', readTime: '7 min read', author: 'Priya Nair',
+    body: `<p>A capsule wardrobe is a small collection of essential, versatile pieces that work together. The goal isn't minimalism for its own sake — it's building a wardrobe where everything earns its place.</p>
+<h3>The 12-piece formula</h3>
+<ul>
+<li>2 plain T-shirts (white + black or navy)</li>
+<li>1 graphic tee (choose a timeless design, not seasonal)</li>
+<li>1 casual shirt (linen or Oxford in a neutral)</li>
+<li>1 overshirt or light jacket</li>
+<li>2 trousers (one dark chino, one relaxed-fit denim)</li>
+<li>1 pair of cargo pants or track pants</li>
+<li>2 pairs of shoes (white sneakers + brown leather)</li>
+<li>1 smartwatch or classic watch</li>
+</ul>
+<h3>The cost breakdown on Easy Buy</h3>
+<p>Plain T-shirts: ₹450–600 each. A casual linen shirt: ₹1,200. Dark chino trousers: ₹1,300. Relaxed denim: ₹1,500. White sneakers: ₹2,000. That's a solid core wardrobe for around ₹7,500 — with enough left for a watch.</p>
+<h3>Maintenance tips</h3>
+<p>Wash clothes inside-out in cold water to preserve colour. Store knitwear folded, not hung. Rotate shoes so each pair has a day to breathe.</p>`
+  },
+  {
+    id: 4, cat: 'tech',
+    icon: '🤖',
+    title: 'We Built an AI Trial Room — Here\'s How It Actually Works',
+    excerpt: 'The Easy Buy Virtual Trial Room uses IDM-VTON to generate realistic try-ons. Here\'s what happens between upload and result.',
+    date: '5 Feb 2025', readTime: '6 min read', author: 'Arjun Mehta',
+    body: `<p>When we launched the AI Virtual Trial Room, a lot of customers asked the same question: "Is this actually AI, or is it just showing me a template?" The answer is genuinely the former — and the process is more interesting than you might think.</p>
+<h3>What IDM-VTON does</h3>
+<p>IDM-VTON (Improving Diffusion Models for Authentic Virtual Try-on) is a research model that takes two inputs — a photo of a person, and a photo of a garment — and generates a new image showing that garment on that person. It's not overlaying an image. It's generating a new one from scratch, using your body shape, posture, and lighting as reference.</p>
+<h3>The pipeline</h3>
+<p>When you hit Generate, here's what happens:</p>
+<ul>
+<li>Both images are uploaded to our inference server</li>
+<li>The model estimates body pose and segments the garment region</li>
+<li>A diffusion process generates the composite image, running ~30 inference steps</li>
+<li>The result is returned and displayed in your browser</li>
+</ul>
+<h3>What it can and can't do well</h3>
+<p>IDM-VTON works best with upper-body garments and clear, well-lit photos. It handles fabric texture and draping surprisingly well. It currently struggles with very detailed patterns or extreme poses — we're working on it.</p>`
+  },
+  {
+    id: 5, cat: 'style',
+    icon: '👟',
+    title: 'The Complete Guide to White Sneakers in 2025',
+    excerpt: 'Why white sneakers remain the most versatile item in your wardrobe — and how to keep them that way.',
+    date: '20 Jan 2025', readTime: '4 min read', author: 'Vikram Rao',
+    body: `<p>White sneakers have transcended trend status. They're a wardrobe staple at this point — the modern equivalent of a classic leather shoe, but more versatile and more forgiving.</p>
+<h3>Why they work with everything</h3>
+<p>White is technically neutral, but unlike black or brown shoes, white sneakers read as relaxed and contemporary. They lighten an outfit that might otherwise feel heavy. They work with tailored trousers, shorts, jeans, and casual pants alike.</p>
+<h3>Canvas vs leather vs knit</h3>
+<p>Canvas sneakers (think classic Converse-style) are breathable and casual. Leather-look sneakers are more structured and can pass as smart-casual. Knit uppers are the most comfortable but show dirt fastest. For maximum versatility, a clean leather-look white sneaker is the most useful investment.</p>
+<h3>Keeping them clean</h3>
+<p>Use a magic eraser on rubber soles. Wipe the upper with a damp cloth and a small amount of dish soap. For fabric, a gentle machine wash in a pillowcase works. Let them air dry — direct heat warps the sole adhesive.</p>`
+  },
+  {
+    id: 6, cat: 'trends',
+    icon: '📐',
+    title: 'Wide-Leg & Baggy: The Return of Relaxed Silhouettes',
+    excerpt: 'Slim-fit everything dominated the 2010s. Now the pendulum has swung — and it suits India perfectly.',
+    date: '10 Jan 2025', readTime: '3 min read', author: 'Priya Nair',
+    body: `<p>After a decade of slim cuts and skinny jeans, fashion's appetite for relaxed, roomy silhouettes has arrived in full force — and for once, a global trend actually makes sense for the Indian climate and lifestyle.</p>
+<h3>Why relaxed fits work in India</h3>
+<p>Looser cuts allow for airflow, which matters in a country where summer lasts eight months. There's also a natural design lineage — the kurta, the dhoti, the lungi — that makes Indian consumers instinctively comfortable with the relaxed aesthetic in a way that Western fashion markets might not be.</p>
+<h3>How to wear it without looking shapeless</h3>
+<p>The rule is: one fitted piece for every one relaxed piece. If you're wearing baggy trousers, tuck in a fitted T-shirt. If you're wearing an oversized tee, pair it with straight-cut chinos rather than wide-leg jeans. Contrast creates shape.</p>
+<h3>What's in our Latest collection</h3>
+<p>We've added loose-fit jeans, baggy cargo trousers, and relaxed-cut linen shirts to our catalogue this season. Browse the <a href="latest.html" style="color:var(--brand-orange);font-weight:700;">Latest page</a> to see them.</p>`
+  },
+];
+
+let activeCat = 'all';
+
+function renderBlog() {
+  const filtered = activeCat === 'all' ? ARTICLES : ARTICLES.filter(a => a.cat === activeCat);
+  const featured = filtered.find(a => a.featured) || filtered[0];
+  const rest = filtered.filter(a => a !== featured);
+
+  // Featured
+  const fw = document.getElementById('blog-featured-wrap');
+  if (featured) {
+    fw.innerHTML = `
+      <div class="blog-featured" onclick="openArticle(${featured.id})">
+        <div class="blog-featured-img" style="background:${featured.bg || 'var(--off-white)'}">${featured.icon}</div>
+        <div class="blog-featured-body">
+          <p class="blog-featured-cat">${catLabel(featured.cat)}</p>
+          <h3 class="blog-featured-title">${featured.title}</h3>
+          <p class="blog-featured-excerpt">${featured.excerpt}</p>
+          <div class="blog-featured-meta">
+            <span>✍️ ${featured.author}</span>
+            <span>📅 ${featured.date}</span>
+            <span>⏱ ${featured.readTime}</span>
+          </div>
+        </div>
+      </div>`;
+  } else { fw.innerHTML = ''; }
+
+  // Grid
+  const grid = document.getElementById('blog-grid');
+  grid.innerHTML = rest.map(a => `
+    <div class="blog-card" onclick="openArticle(${a.id})">
+      <div class="blog-card-img">${a.icon}</div>
+      <div class="blog-card-body">
+        <p class="blog-card-cat">${catLabel(a.cat)}</p>
+        <h3 class="blog-card-title">${a.title}</h3>
+        <p class="blog-card-excerpt">${a.excerpt}</p>
+        <div class="blog-card-meta"><span>✍️ ${a.author}</span><span>⏱ ${a.readTime}</span></div>
+      </div>
+    </div>`).join('');
+}
+
+function catLabel(cat) {
+  return { style:'Style Tips', trends:'Trends', guides:'Guides', tech:'Tech & Fashion' }[cat] || cat;
+}
+
+function openArticle(id) {
+  const a = ARTICLES.find(x => x.id === id);
+  if (!a) return;
+  document.getElementById('article-content-wrap').innerHTML = `
+    <div class="article-hero-img">${a.icon}</div>
+    <div class="article-body">
+      <p class="article-cat">${catLabel(a.cat)}</p>
+      <h2 class="article-title">${a.title}</h2>
+      <p class="article-meta">✍️ ${a.author} &nbsp;·&nbsp; 📅 ${a.date} &nbsp;·&nbsp; ⏱ ${a.readTime}</p>
+      <div class="article-content">${a.body}</div>
+    </div>`;
+  document.getElementById('article-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeArticle() {
+  document.getElementById('article-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('article-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('article-overlay')) closeArticle();
+});
+
+document.getElementById('blog-cats').addEventListener('click', e => {
+  const btn = e.target.closest('.blog-cat');
+  if (!btn) return;
+  document.querySelectorAll('.blog-cat').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeCat = btn.dataset.cat;
+  renderBlog();
+});
+
+renderBlog();
+</script>
 </body>
 </html>

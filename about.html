@@ -7,90 +7,204 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="stylebg.css">
   <style>
-    .placeholder-wrap {
-      max-width: 660px;
-      margin: 80px auto 120px;
-      padding: 0 24px;
-      text-align: center;
+    .about-page { max-width: 880px; margin: 40px auto 100px; padding: 0 24px; }
+
+    .about-hero {
+      background: var(--text-primary); color: var(--white);
+      border-radius: 10px; padding: 60px 56px; margin-bottom: 56px;
+      position: relative; overflow: hidden;
     }
-    .placeholder-icon {
-      font-size: 64px;
-      margin-bottom: 24px;
-      display: block;
+    .about-hero::before {
+      content: 'Easy Buy'; font-family: var(--font-logo);
+      font-size: 14rem; position: absolute; right: -60px; top: -40px;
+      opacity: 0.04; line-height: 1; pointer-events: none; white-space: nowrap;
     }
-    .placeholder-wrap h2 {
-      font-family: var(--font-logo);
-      font-size: 2.2rem;
-      font-weight: 400;
-      margin-bottom: 16px;
+    .about-hero h2 { font-family: var(--font-logo); font-size: 2.8rem; font-weight: 400; margin-bottom: 20px; position: relative; }
+    .about-hero p { font-size: 15px; line-height: 1.85; opacity: 0.8; max-width: 540px; position: relative; }
+
+    .about-stats {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 56px;
     }
-    .placeholder-wrap p {
-      font-size: 15px;
-      color: var(--text-secondary);
-      line-height: 1.7;
-      max-width: 500px;
-      margin: 0 auto 32px;
+    .stat-card {
+      text-align: center; border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 28px 16px; transition: box-shadow 0.2s;
     }
-    .wip-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #fff8e1;
-      border: 1px solid #ffe082;
-      border-radius: 4px;
-      padding: 8px 18px;
-      font-size: 12.5px;
-      font-weight: 700;
-      color: #795548;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 36px;
+    .stat-card:hover { box-shadow: var(--shadow-hover); }
+    .stat-num { font-family: var(--font-logo); font-size: 2.4rem; color: var(--text-primary); display: block; }
+    .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 6px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    .about-section { margin-bottom: 52px; }
+    .about-section-title {
+      font-family: var(--font-logo); font-size: 1.7rem; font-weight: 400;
+      margin-bottom: 20px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--text-primary); display: inline-block;
     }
-    .back-links {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      flex-wrap: wrap;
+    .about-section p { font-size: 14.5px; line-height: 1.85; color: var(--text-secondary); margin-bottom: 16px; }
+    .about-section p:last-child { margin-bottom: 0; }
+
+    .values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+    .value-card {
+      background: var(--off-white); border: 1px solid var(--border);
+      border-radius: 8px; padding: 24px 20px;
     }
-    .back-links a {
-      padding: 12px 28px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border-radius: 3px;
-      border: 1.5px solid var(--text-primary);
-      transition: all var(--transition);
+    .value-card .v-icon { font-size: 28px; margin-bottom: 12px; }
+    .value-card h4 { font-size: 13.5px; font-weight: 700; margin-bottom: 8px; }
+    .value-card p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.65; }
+
+    .timeline { position: relative; padding-left: 32px; }
+    .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); }
+    .tl-item { position: relative; margin-bottom: 28px; }
+    .tl-dot {
+      position: absolute; left: -32px; top: 4px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--text-primary); border: 2px solid var(--white);
+      outline: 2px solid var(--text-primary);
     }
-    .back-links a.primary {
-      background: var(--text-primary);
-      color: var(--white);
+    .tl-year { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--brand-orange); margin-bottom: 4px; }
+    .tl-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .tl-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+    .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px; }
+    .team-card { text-align: center; }
+    .team-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--off-white); border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; margin: 0 auto 12px;
     }
-    .back-links a.primary:hover { background: #333; }
-    .back-links a.secondary { color: var(--text-primary); }
-    .back-links a.secondary:hover { background: var(--text-primary); color: var(--white); }
+    .team-name { font-size: 13.5px; font-weight: 700; }
+    .team-role { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+    .about-cta {
+      background: var(--off-white); border: 1px solid var(--border); border-radius: 8px;
+      padding: 36px; text-align: center; margin-top: 48px;
+    }
+    .about-cta h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+    .about-cta p { font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; }
+    .about-cta .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .about-cta a {
+      padding: 12px 28px; font-size: 13px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; border-radius: 4px;
+      border: 1.5px solid var(--text-primary); transition: all 0.2s;
+    }
+    .about-cta a.primary { background: var(--text-primary); color: var(--white); }
+    .about-cta a.primary:hover { background: #333; }
+    .about-cta a.secondary { color: var(--text-primary); }
+    .about-cta a.secondary:hover { background: var(--text-primary); color: var(--white); }
+
+    @media (max-width: 680px) {
+      .about-hero { padding: 36px 28px; }
+      .about-hero h2 { font-size: 1.9rem; }
+      .about-stats { grid-template-columns: repeat(2, 1fr); }
+      .values-grid { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: repeat(2, 1fr); }
+    }
   </style>
 </head>
 <body>
-
-<header>
-  <h1>Easy Buy</h1>
-</header>
+<header><h1>Easy Buy</h1></header>
 <nav>
   <a href="index.html">Home</a>
   <a href="latest.html">Latest</a>
   <a href="contact.html">Contact Us</a>
 </nav>
 
-<div class="placeholder-wrap">
-  <span class="placeholder-icon">🏬</span>
-  <h2>About Us</h2>
-  <div class="wip-badge">🚧 Coming Soon — Page Under Development</div>
-  <p>Easy Buy is India's one-stop destination for fashion — quality clothing, accessories, and footwear at unbeatable prices.</p>
-  <div class="back-links">
-    <a href="index.html" class="primary">← Shop Now</a>
-    <a href="contact.html" class="secondary">Contact Us</a>
+<div class="about-page">
+
+  <div class="about-hero">
+    <h2>Fashion for Everyone.</h2>
+    <p>Easy Buy was founded with one simple belief: great style shouldn't cost a fortune. We're India's fastest-growing online fashion destination — bringing quality clothing, accessories, and footwear directly to your doorstep at prices that make sense.</p>
   </div>
+
+  <div class="about-stats">
+    <div class="stat-card">
+      <span class="stat-num">2M+</span>
+      <span class="stat-label">Happy Customers</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">5,000+</span>
+      <span class="stat-label">Products Listed</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">800+</span>
+      <span class="stat-label">Pincodes Served</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">4.6★</span>
+      <span class="stat-label">Average Rating</span>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h3 class="about-section-title">Our Story</h3>
+    <p>Easy Buy started in a small apartment in Bengaluru in 2021. Three friends — frustrated by the gap between aspirational fashion and what most people could actually afford — decided to build something different. No inflated markups. No confusing size charts that didn't apply to Indian body types. No slow delivery that made online shopping feel unreliable.</p>
+    <p>Today, Easy Buy ships over 50,000 orders a month across India. We've grown from three people to over 200, but our core mission hasn't changed: make fashion accessible to everyone, everywhere.</p>
+
+    <div class="timeline" style="margin-top:28px;">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <p class="tl-year">2021</p>
+        <p class="tl-title">Easy Buy is founded</p>
+        <p class="tl-desc">Launched with 48 products and a dream. First 100 orders fulfilled from a garage.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <p class="tl-year">2022</p>
+        <p class="tl-title">10,000 customers milestone</p>
+        <p class="tl-desc">Expanded to 500+ products and launched same-day delivery in 12 cities.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <p class="tl-year">2023</p>
+        <p class="tl-title">AI Virtual Trial Room</p>
+        <p class="tl-desc">Launched India's first accessible AI try-on feature powered by IDM-VTON technology.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <p class="tl-year">2024</p>
+        <p class="tl-title">Nationwide expansion</p>
+        <p class="tl-desc">Reached 800+ pincodes across all 28 states. Surpassed 2 million customers.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--brand-orange);outline-color:var(--brand-orange);"></div>
+        <p class="tl-year">2025</p>
+        <p class="tl-title">What's next</p>
+        <p class="tl-desc">Building the next generation of personalised fashion discovery. Stay tuned.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h3 class="about-section-title">Our Values</h3>
+    <div class="values-grid">
+      <div class="value-card"><div class="v-icon">💸</div><h4>Honest Pricing</h4><p>No artificial markups, no fake sale prices. What you see is what we believe is fair — every day.</p></div>
+      <div class="value-card"><div class="v-icon">🤝</div><h4>Customer First</h4><p>15-day returns, 7-day support, free delivery. We back every product we sell, no questions asked.</p></div>
+      <div class="value-card"><div class="v-icon">🌱</div><h4>Sustainable Fashion</h4><p>We're working toward carbon-neutral packaging by 2026 and supporting ethical manufacturing partners.</p></div>
+      <div class="value-card"><div class="v-icon">🇮🇳</div><h4>Made for India</h4><p>Size charts that reflect Indian body measurements. Brands that understand Indian style and climate.</p></div>
+      <div class="value-card"><div class="v-icon">🤖</div><h4>Tech-Driven</h4><p>From AI try-ons to smart search, we invest in tech that makes your shopping experience genuinely better.</p></div>
+      <div class="value-card"><div class="v-icon">🎨</div><h4>Style for All</h4><p>Fashion shouldn't be exclusive. We curate for every body type, taste, and budget.</p></div>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h3 class="about-section-title">The Team</h3>
+    <div class="team-grid">
+      <div class="team-card"><div class="team-avatar">👨‍💼</div><p class="team-name">Arjun Mehta</p><p class="team-role">Co-founder & CEO</p></div>
+      <div class="team-card"><div class="team-avatar">👩‍💻</div><p class="team-name">Priya Nair</p><p class="team-role">Co-founder & CTO</p></div>
+      <div class="team-card"><div class="team-avatar">👨‍🎨</div><p class="team-name">Vikram Rao</p><p class="team-role">Head of Design</p></div>
+      <div class="team-card"><div class="team-avatar">👩‍💰</div><p class="team-name">Ananya Singh</p><p class="team-role">Head of Operations</p></div>
+    </div>
+  </div>
+
+  <div class="about-cta">
+    <h3>Join millions of Easy Buy shoppers</h3>
+    <p>Discover fashion that fits your style and your budget — with free delivery, easy returns, and real AI try-ons.</p>
+    <div class="cta-btns">
+      <a href="index.html" class="primary">🛍️ Shop Now</a>
+      <a href="careers.html" class="secondary">💼 Join the Team</a>
+    </div>
+  </div>
+
 </div>
 
 <script src="shop.js"></script>

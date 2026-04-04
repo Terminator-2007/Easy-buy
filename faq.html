@@ -7,92 +7,219 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="stylebg.css">
   <style>
-    .placeholder-wrap {
-      max-width: 660px;
-      margin: 80px auto 120px;
-      padding: 0 24px;
-      text-align: center;
+    .faq-page { max-width: 800px; margin: 40px auto 100px; padding: 0 24px; }
+    .faq-page-title { font-family: var(--font-logo); font-size: 2rem; font-weight: 400; margin-bottom: 6px; }
+    .faq-page-sub { font-size: 13.5px; color: var(--text-muted); margin-bottom: 32px; }
+
+    .faq-search-wrap { position: relative; margin-bottom: 36px; }
+    .faq-search-wrap input {
+      width: 100%; border: 1.5px solid var(--border-dark); border-radius: 6px;
+      padding: 13px 16px 13px 44px; font-size: 14px; font-family: var(--font-body);
+      outline: none; background: var(--off-white); transition: border-color 0.2s, background 0.2s;
     }
-    .placeholder-icon {
-      font-size: 64px;
-      margin-bottom: 24px;
-      display: block;
+    .faq-search-wrap input:focus { border-color: var(--text-primary); background: var(--white); }
+    .faq-search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 17px; pointer-events: none; }
+
+    .faq-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+    .faq-tab {
+      padding: 7px 18px; border-radius: 20px; font-size: 12.5px; font-weight: 700;
+      border: 1.5px solid var(--border-dark); background: var(--white);
+      cursor: pointer; letter-spacing: 0.04em; transition: all 0.2s;
     }
-    .placeholder-wrap h2 {
-      font-family: var(--font-logo);
-      font-size: 2.2rem;
-      font-weight: 400;
-      margin-bottom: 16px;
+    .faq-tab:hover { border-color: var(--text-primary); }
+    .faq-tab.active { background: var(--text-primary); color: var(--white); border-color: var(--text-primary); }
+
+    .faq-section { margin-bottom: 36px; }
+    .faq-section-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--text-muted);
+      margin-bottom: 12px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
     }
-    .placeholder-wrap p {
-      font-size: 15px;
-      color: var(--text-secondary);
-      line-height: 1.7;
-      max-width: 500px;
-      margin: 0 auto 32px;
+
+    .faq-item { border: 1px solid var(--border); border-radius: 6px; margin-bottom: 8px; overflow: hidden; }
+    .faq-q {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px; cursor: pointer;
+      font-size: 14px; font-weight: 600; color: var(--text-primary);
+      background: var(--white); transition: background 0.15s; gap: 12px;
+      border: none; width: 100%; text-align: left; font-family: var(--font-body);
     }
-    .wip-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #fff8e1;
-      border: 1px solid #ffe082;
-      border-radius: 4px;
-      padding: 8px 18px;
-      font-size: 12.5px;
-      font-weight: 700;
-      color: #795548;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 36px;
+    .faq-q:hover { background: var(--off-white); }
+    .faq-q.open { background: var(--off-white); }
+    .faq-chevron { flex-shrink: 0; font-size: 18px; color: var(--text-muted); transition: transform 0.25s; }
+    .faq-q.open .faq-chevron { transform: rotate(45deg); }
+    .faq-a {
+      display: none; padding: 0 20px 18px;
+      font-size: 13.5px; color: var(--text-secondary); line-height: 1.75;
+      border-top: 1px solid var(--border); background: var(--off-white);
     }
-    .back-links {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      flex-wrap: wrap;
+    .faq-a.open { display: block; }
+    .faq-a a { color: var(--brand-orange); font-weight: 700; text-decoration: underline; }
+    .faq-a ul { padding-left: 20px; margin-top: 8px; }
+    .faq-a li { margin-bottom: 5px; }
+
+    .faq-no-results { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 14px; }
+    .faq-no-results .icon { font-size: 40px; margin-bottom: 12px; }
+
+    .faq-contact-cta {
+      background: var(--off-white); border: 1px solid var(--border); border-radius: 8px;
+      padding: 32px; text-align: center; margin-top: 40px;
     }
-    .back-links a {
-      padding: 12px 28px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border-radius: 3px;
-      border: 1.5px solid var(--text-primary);
-      transition: all var(--transition);
+    .faq-contact-cta h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .faq-contact-cta p { font-size: 13.5px; color: var(--text-secondary); margin-bottom: 20px; }
+    .faq-contact-cta .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .faq-contact-cta a {
+      padding: 11px 26px; font-size: 13px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; border-radius: 4px;
+      border: 1.5px solid var(--text-primary); transition: all 0.2s;
     }
-    .back-links a.primary {
-      background: var(--text-primary);
-      color: var(--white);
-    }
-    .back-links a.primary:hover { background: #333; }
-    .back-links a.secondary { color: var(--text-primary); }
-    .back-links a.secondary:hover { background: var(--text-primary); color: var(--white); }
+    .faq-contact-cta a.primary { background: var(--text-primary); color: var(--white); }
+    .faq-contact-cta a.primary:hover { background: #333; }
+    .faq-contact-cta a.secondary { color: var(--text-primary); }
+    .faq-contact-cta a.secondary:hover { background: var(--text-primary); color: var(--white); }
   </style>
 </head>
 <body>
-
-<header>
-  <h1>Easy Buy</h1>
-</header>
+<header><h1>Easy Buy</h1></header>
 <nav>
   <a href="index.html">Home</a>
   <a href="latest.html">Latest</a>
   <a href="contact.html">Contact Us</a>
 </nav>
 
-<div class="placeholder-wrap">
-  <span class="placeholder-icon">❓</span>
-  <h2>FAQs</h2>
-  <div class="wip-badge">🚧 Coming Soon — Page Under Development</div>
-  <p>Find answers to the most common questions about orders, delivery, payments, returns, and more.</p>
-  <div class="back-links">
-    <a href="index.html" class="primary">← Shop Now</a>
-    <a href="contact.html" class="secondary">Contact Us</a>
+<div class="faq-page">
+  <h2 class="faq-page-title">❓ Frequently Asked Questions</h2>
+  <p class="faq-page-sub">Quick answers to the most common questions about Easy Buy.</p>
+
+  <div class="faq-search-wrap">
+    <span class="faq-search-icon">🔍</span>
+    <input type="text" id="faq-search" placeholder="Search questions… e.g. 'cancel order', 'return policy'">
+  </div>
+
+  <div class="faq-tabs" id="faq-tabs">
+    <button class="faq-tab active" data-cat="all">All</button>
+    <button class="faq-tab" data-cat="orders">Orders</button>
+    <button class="faq-tab" data-cat="delivery">Delivery</button>
+    <button class="faq-tab" data-cat="returns">Returns</button>
+    <button class="faq-tab" data-cat="payment">Payment</button>
+    <button class="faq-tab" data-cat="account">Account</button>
+    <button class="faq-tab" data-cat="products">Products</button>
+  </div>
+
+  <div id="faq-list"></div>
+
+  <div class="faq-contact-cta">
+    <h3>Still have questions?</h3>
+    <p>Our support team is available 7 days a week, 9 AM – 9 PM IST.</p>
+    <div class="cta-btns">
+      <a href="contact.html" class="primary">📩 Contact Us</a>
+      <a href="customer-care.html" class="secondary">🎧 Customer Care</a>
+    </div>
   </div>
 </div>
 
 <script src="shop.js"></script>
+<script>
+const FAQS = [
+  { cat: 'orders', q: 'How do I place an order?', a: 'Browse our products on the <a href="index.html">Home</a> or <a href="latest.html">Latest</a> page, add items to your bag, and click <strong>Buy Now</strong> on a product card. You\'ll be prompted to select a delivery option and enter your address to confirm.' },
+  { cat: 'orders', q: 'Can I modify or cancel my order after placing it?', a: 'Orders can be cancelled or modified within <strong>30 minutes</strong> of placement. After that, the order is processed at our warehouse and cannot be changed. Please <a href="contact.html">contact us</a> immediately if you need to make a change.' },
+  { cat: 'orders', q: 'How do I track my order?', a: 'Visit the <a href="delivery.html">Track Order</a> page. Your order history is saved automatically — you\'ll see a live tracking stepper showing each stage from confirmation through to delivery.' },
+  { cat: 'orders', q: 'I placed an order but didn\'t receive a confirmation. What should I do?', a: 'Check your spam/junk folder first. If there\'s still no confirmation after 15 minutes, <a href="contact.html">contact our support team</a> with your name and order details and we\'ll look into it right away.' },
+  { cat: 'delivery', q: 'What delivery options are available?', a: '<ul><li><strong>Standard Delivery</strong> — FREE, 5–7 business days</li><li><strong>Express Delivery</strong> — ₹99, 2–3 business days</li><li><strong>Same Day Delivery</strong> — ₹199, order before 2 PM</li></ul>Availability depends on your pincode. You can check at checkout or on the <a href="delivery.html">Delivery</a> page.' },
+  { cat: 'delivery', q: 'Do you offer free delivery?', a: 'Yes! Standard Delivery is always FREE on all orders, with no minimum order value. Express and Same Day Delivery carry a small fee.' },
+  { cat: 'delivery', q: 'What if I\'m not home when delivery is attempted?', a: 'Our delivery partner will attempt delivery up to <strong>2 times</strong>. After that, the package will be held at a local hub for 3 days before being returned. Contact us to reschedule.' },
+  { cat: 'delivery', q: 'Can I change my delivery address after ordering?', a: 'Address changes are only possible within 30 minutes of placing the order and before the item is dispatched. <a href="contact.html">Contact support</a> as quickly as possible.' },
+  { cat: 'returns', q: 'What is the return policy?', a: 'Easy Buy offers <strong>15-day hassle-free returns</strong> on all eligible products. Items must be unused, unwashed, and in original packaging with tags intact. See the full <a href="returns.html">Returns & Refunds</a> page for details.' },
+  { cat: 'returns', q: 'How do I initiate a return?', a: 'Go to the <a href="delivery.html">My Orders</a> page, select the item, and click "Return." We\'ll schedule a free pickup from your doorstep within 2 business days.' },
+  { cat: 'returns', q: 'When will I get my refund?', a: '<ul><li><strong>Credit/Debit Card:</strong> 5–7 business days</li><li><strong>UPI / Net Banking:</strong> 3–5 business days</li><li><strong>Easy Buy Wallet:</strong> Instant (+ 5% bonus credit)</li><li><strong>Cash on Delivery:</strong> Bank transfer within 7 days</li></ul>' },
+  { cat: 'returns', q: 'Are there items that cannot be returned?', a: 'Yes. The following are non-returnable for hygiene or policy reasons: innerwear, swimwear, accessories, and items marked <strong>"Final Sale"</strong>. Defective or incorrect items are always eligible for a full refund or exchange.' },
+  { cat: 'payment', q: 'What payment methods do you accept?', a: 'We accept:<ul><li>Credit & Debit Cards (Visa, Mastercard, Rupay)</li><li>UPI (GPay, PhonePe, Paytm, BHIM)</li><li>Net Banking (all major banks)</li><li>Easy Buy Wallet</li><li>Cash on Delivery (selected pincodes)</li></ul>' },
+  { cat: 'payment', q: 'Is it safe to save my card on Easy Buy?', a: 'Yes. We use <strong>PCI-DSS compliant</strong> payment processing. Your card details are encrypted and never stored on our servers — they\'re tokenised by our payment partner.' },
+  { cat: 'payment', q: 'My payment failed but money was deducted. What do I do?', a: 'If your payment failed but the amount was deducted, it will be automatically refunded to your account within <strong>5–7 business days</strong>. If it doesn\'t appear, <a href="contact.html">contact us</a> with your transaction reference.' },
+  { cat: 'payment', q: 'Can I use a discount code or coupon?', a: 'Coupon support is coming soon! For now, watch out for sale events and limited-time deals on the <a href="latest.html">Latest</a> page.' },
+  { cat: 'account', q: 'How do I create an Easy Buy account?', a: 'Account creation is coming soon — our sign-in system is currently under development. In the meantime, you can shop and track orders without signing in. Visit <a href="signin.html">Sign In</a> to be notified when it\'s live.' },
+  { cat: 'account', q: 'I forgot my password. How do I reset it?', a: 'Password reset will be available once our account system launches. <a href="contact.html">Contact support</a> if you need urgent help with an existing account.' },
+  { cat: 'account', q: 'How do I save items to my Wishlist?', a: 'Wishlist functionality is under active development and will be available soon. In the meantime, you can add items directly to your bag to save them.' },
+  { cat: 'products', q: 'How do I find the right size?', a: 'Visit our <a href="size-guide.html">Size Guide</a> for detailed measurements across all product categories including T-shirts, shirts, pants, and shoes.' },
+  { cat: 'products', q: 'Can I try clothes virtually before buying?', a: 'Yes! Use our <a href="trialroom.html">AI Virtual Trial Room</a> — upload your photo, select any garment, and our AI will generate a realistic try-on preview. It\'s powered by IDM-VTON technology.' },
+  { cat: 'products', q: 'Are the product images accurate to the actual item?', a: 'We photograph all products under standard lighting conditions to represent colours as accurately as possible. Slight variations may occur due to monitor calibration. If you\'re unsatisfied with the colour accuracy, the item is fully returnable.' },
+  { cat: 'products', q: 'What does "Bestseller" or "NEW" mean on a product?', a: '<strong>Bestseller</strong> tags are applied to products with consistently high sales volume. <strong>NEW</strong> tags indicate items added to our catalogue within the last 30 days.' },
+];
+
+let activeTab = 'all';
+let searchVal = '';
+
+function render() {
+  const list = document.getElementById('faq-list');
+  const query = searchVal.toLowerCase();
+
+  const filtered = FAQS.filter(f => {
+    const catMatch = activeTab === 'all' || f.cat === activeTab;
+    const textMatch = !query || f.q.toLowerCase().includes(query) || f.a.toLowerCase().includes(query);
+    return catMatch && textMatch;
+  });
+
+  if (!filtered.length) {
+    list.innerHTML = `<div class="faq-no-results"><div class="icon">🔍</div><p>No results for "<strong>${searchVal || activeTab}</strong>"</p><p style="margin-top:8px;font-size:12.5px;">Try a different search or <a href="contact.html" style="color:var(--brand-orange);font-weight:700;">ask us directly</a>.</p></div>`;
+    return;
+  }
+
+  // Group by category
+  const cats = activeTab === 'all'
+    ? [...new Set(filtered.map(f => f.cat))]
+    : [activeTab];
+
+  const catLabels = { orders:'Orders', delivery:'Delivery', returns:'Returns & Refunds', payment:'Payment', account:'Account', products:'Products' };
+
+  list.innerHTML = cats.map(cat => {
+    const items = filtered.filter(f => f.cat === cat);
+    if (!items.length) return '';
+    return `
+      <div class="faq-section" data-cat="${cat}">
+        ${activeTab === 'all' ? `<p class="faq-section-title">${catLabels[cat] || cat}</p>` : ''}
+        ${items.map((f, i) => `
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggle(this)" aria-expanded="false">
+              <span>${f.q}</span>
+              <span class="faq-chevron">+</span>
+            </button>
+            <div class="faq-a">${f.a}</div>
+          </div>`).join('')}
+      </div>`;
+  }).join('');
+}
+
+function toggle(btn) {
+  const isOpen = btn.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.faq-q.open').forEach(b => {
+    b.classList.remove('open');
+    b.nextElementSibling.classList.remove('open');
+    b.setAttribute('aria-expanded', 'false');
+  });
+  if (!isOpen) {
+    btn.classList.add('open');
+    btn.nextElementSibling.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+  }
+}
+
+document.getElementById('faq-tabs').addEventListener('click', e => {
+  const tab = e.target.closest('.faq-tab');
+  if (!tab) return;
+  document.querySelectorAll('.faq-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  activeTab = tab.dataset.cat;
+  render();
+});
+
+document.getElementById('faq-search').addEventListener('input', e => {
+  searchVal = e.target.value.trim();
+  render();
+});
+
+render();
+</script>
 </body>
 </html>

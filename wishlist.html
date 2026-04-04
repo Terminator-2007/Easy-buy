@@ -7,92 +7,237 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="stylebg.css">
   <style>
-    .placeholder-wrap {
-      max-width: 660px;
-      margin: 80px auto 120px;
-      padding: 0 24px;
-      text-align: center;
+    .wishlist-page { max-width: 1000px; margin: 40px auto 100px; padding: 0 24px; }
+    .wl-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 10px; }
+    .wl-header h2 { font-family: var(--font-logo); font-size: 2rem; font-weight: 400; }
+    .wl-header .wl-count { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .wl-actions-top { display: flex; gap: 10px; flex-wrap: wrap; }
+    .wl-btn {
+      padding: 10px 20px; font-size: 12.5px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; border-radius: 4px;
+      border: 1.5px solid var(--text-primary); background: var(--white);
+      cursor: pointer; font-family: var(--font-body); transition: all 0.2s;
     }
-    .placeholder-icon {
-      font-size: 64px;
-      margin-bottom: 24px;
-      display: block;
+    .wl-btn:hover { background: var(--text-primary); color: var(--white); }
+    .wl-btn.primary { background: var(--text-primary); color: var(--white); }
+    .wl-btn.primary:hover { background: #333; }
+
+    .wl-sort { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .wl-sort label { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+    .wl-sort select {
+      border: 1.5px solid var(--border-dark); border-radius: 4px;
+      padding: 7px 12px; font-size: 13px; font-family: var(--font-body);
+      outline: none; background: var(--off-white); cursor: pointer;
     }
-    .placeholder-wrap h2 {
-      font-family: var(--font-logo);
-      font-size: 2.2rem;
-      font-weight: 400;
-      margin-bottom: 16px;
+
+    .wl-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .wl-card {
+      border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+      transition: box-shadow 0.2s; position: relative;
     }
-    .placeholder-wrap p {
-      font-size: 15px;
-      color: var(--text-secondary);
-      line-height: 1.7;
-      max-width: 500px;
-      margin: 0 auto 32px;
+    .wl-card:hover { box-shadow: var(--shadow-hover); }
+    .wl-remove {
+      position: absolute; top: 8px; right: 8px; z-index: 2;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(255,255,255,0.9); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 12px; transition: all 0.2s;
     }
-    .wip-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #fff8e1;
-      border: 1px solid #ffe082;
-      border-radius: 4px;
-      padding: 8px 18px;
-      font-size: 12.5px;
-      font-weight: 700;
-      color: #795548;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 36px;
+    .wl-remove:hover { background: var(--red); color: var(--white); border-color: var(--red); }
+    .wl-img { height: 200px; overflow: hidden; background: var(--off-white); }
+    .wl-img img { width: 100%; height: 100%; object-fit: cover; }
+    .wl-img-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 52px; }
+    .wl-body { padding: 14px 14px 16px; }
+    .wl-name { font-size: 13.5px; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .wl-color { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+    .wl-price { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; }
+    .wl-card-btns { display: flex; gap: 8px; }
+    .wl-add-btn {
+      flex: 1; padding: 9px 8px; font-size: 11.5px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase; border-radius: 4px;
+      background: var(--text-primary); color: var(--white); border: none;
+      cursor: pointer; font-family: var(--font-body); transition: background 0.2s;
     }
-    .back-links {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      flex-wrap: wrap;
+    .wl-add-btn:hover { background: #333; }
+    .wl-try-btn {
+      padding: 9px 10px; font-size: 12px; border-radius: 4px;
+      background: var(--white); border: 1.5px solid var(--border-dark);
+      cursor: pointer; transition: all 0.2s; text-decoration: none;
+      display: flex; align-items: center;
     }
-    .back-links a {
-      padding: 12px 28px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border-radius: 3px;
-      border: 1.5px solid var(--text-primary);
-      transition: all var(--transition);
+    .wl-try-btn:hover { border-color: var(--text-primary); }
+
+    .wl-empty {
+      grid-column: 1 / -1; text-align: center; padding: 80px 20px;
     }
-    .back-links a.primary {
-      background: var(--text-primary);
-      color: var(--white);
+    .wl-empty-icon { font-size: 56px; margin-bottom: 18px; }
+    .wl-empty h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .wl-empty p { font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; }
+    .wl-empty a {
+      display: inline-block; padding: 12px 32px; background: var(--text-primary); color: var(--white);
+      font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      border-radius: 4px; transition: background 0.2s;
     }
-    .back-links a.primary:hover { background: #333; }
-    .back-links a.secondary { color: var(--text-primary); }
-    .back-links a.secondary:hover { background: var(--text-primary); color: var(--white); }
+    .wl-empty a:hover { background: #333; }
+
+    @media (max-width: 760px) { .wl-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 440px) { .wl-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-
-<header>
-  <h1>Easy Buy</h1>
-</header>
+<header><h1>Easy Buy</h1></header>
 <nav>
   <a href="index.html">Home</a>
   <a href="latest.html">Latest</a>
   <a href="contact.html">Contact Us</a>
 </nav>
 
-<div class="placeholder-wrap">
-  <span class="placeholder-icon">♡</span>
-  <h2>My Wishlist</h2>
-  <div class="wip-badge">🚧 Coming Soon — Page Under Development</div>
-  <p>Save your favourite items here and come back when you're ready to buy. Never lose track of what you love.</p>
-  <div class="back-links">
-    <a href="index.html" class="primary">← Shop Now</a>
-    <a href="contact.html" class="secondary">Contact Us</a>
+<div class="wishlist-page">
+  <div class="wl-header">
+    <div>
+      <h2>♡ My Wishlist</h2>
+      <p class="wl-count" id="wl-count">0 items saved</p>
+    </div>
+    <div class="wl-actions-top">
+      <button class="wl-btn" onclick="addAllToCart()">🛒 Add All to Bag</button>
+      <button class="wl-btn" onclick="clearAll()">✕ Clear All</button>
+    </div>
   </div>
+
+  <div class="wl-sort" id="wl-sort-wrap" style="display:none;">
+    <label>Sort by</label>
+    <select id="wl-sort" onchange="renderWishlist()">
+      <option value="date">Date Added</option>
+      <option value="price-asc">Price: Low to High</option>
+      <option value="price-desc">Price: High to Low</option>
+      <option value="name">Name A–Z</option>
+    </select>
+  </div>
+
+  <div class="wl-grid" id="wl-grid"></div>
 </div>
 
 <script src="shop.js"></script>
+<script>
+function getWishlist() { return JSON.parse(localStorage.getItem('myshop_wishlist') || '[]'); }
+function saveWishlist(wl) { localStorage.setItem('myshop_wishlist', JSON.stringify(wl)); }
+
+function renderWishlist() {
+  const wl = getWishlist();
+  const sort = document.getElementById('wl-sort')?.value || 'date';
+  const grid = document.getElementById('wl-grid');
+  const count = document.getElementById('wl-count');
+  const sortWrap = document.getElementById('wl-sort-wrap');
+
+  count.textContent = wl.length + ' item' + (wl.length !== 1 ? 's' : '') + ' saved';
+  sortWrap.style.display = wl.length ? 'flex' : 'none';
+
+  if (!wl.length) {
+    grid.innerHTML = `
+      <div class="wl-empty">
+        <div class="wl-empty-icon">♡</div>
+        <h3>Your wishlist is empty</h3>
+        <p>Save items you love here and come back when you're ready to buy. We'll keep them safe.</p>
+        <a href="index.html">← Browse Products</a>
+      </div>`;
+    return;
+  }
+
+  const sorted = [...wl].sort((a, b) => {
+    if (sort === 'price-asc')  return a.price - b.price;
+    if (sort === 'price-desc') return b.price - a.price;
+    if (sort === 'name')       return a.name.localeCompare(b.name);
+    return new Date(b.addedAt) - new Date(a.addedAt);
+  });
+
+  grid.innerHTML = sorted.map(item => `
+    <div class="wl-card" data-id="${item.id}">
+      <button class="wl-remove" onclick="removeItem(${item.id})" title="Remove">✕</button>
+      <div class="wl-img">
+        ${item.img
+          ? `<img src="${item.img}" alt="${item.name}" onerror="this.parentElement.innerHTML='<div class=\\'wl-img-placeholder\\'>👕</div>'">`
+          : '<div class="wl-img-placeholder">👕</div>'}
+      </div>
+      <div class="wl-body">
+        <div class="wl-name" title="${item.name}">${item.name}</div>
+        <div class="wl-color">${item.color || ''}</div>
+        <div class="wl-price">₹${item.price ? item.price.toLocaleString('en-IN') : '—'}</div>
+        <div class="wl-card-btns">
+          <button class="wl-add-btn" onclick="addToCart(${item.id})">🛒 Add to Bag</button>
+          <a class="wl-try-btn" href="trialroom.html" onclick="setTrialProduct(${item.id})" title="Try On">🤖</a>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function removeItem(id) {
+  const wl = getWishlist().filter(i => i.id !== id);
+  saveWishlist(wl);
+  renderWishlist();
+  showToastMsg('Removed from Wishlist.');
+}
+
+function addToCart(id) {
+  const item = getWishlist().find(i => i.id === id);
+  if (!item) return;
+  const cart = JSON.parse(localStorage.getItem('myshop_cart') || '[]');
+  const existing = cart.find(c => c.id === id);
+  if (existing) existing.qty++;
+  else cart.push({ ...item, qty: 1 });
+  localStorage.setItem('myshop_cart', JSON.stringify(cart));
+  showToastMsg(`"${item.name}" added to Bag!`);
+}
+
+function addAllToCart() {
+  const wl = getWishlist();
+  if (!wl.length) { showToastMsg('Your wishlist is empty.'); return; }
+  const cart = JSON.parse(localStorage.getItem('myshop_cart') || '[]');
+  wl.forEach(item => {
+    const existing = cart.find(c => c.id === item.id);
+    if (existing) existing.qty++;
+    else cart.push({ ...item, qty: 1 });
+  });
+  localStorage.setItem('myshop_cart', JSON.stringify(cart));
+  showToastMsg(`${wl.length} item${wl.length !== 1 ? 's' : ''} added to Bag!`);
+}
+
+function clearAll() {
+  if (!getWishlist().length) return;
+  if (!confirm('Remove all items from your Wishlist?')) return;
+  saveWishlist([]);
+  renderWishlist();
+  showToastMsg('Wishlist cleared.');
+}
+
+function setTrialProduct(id) {
+  const item = getWishlist().find(i => i.id === id);
+  if (item) localStorage.setItem('trial_product', JSON.stringify(item));
+}
+
+function showToastMsg(msg) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Add demo items if wishlist is empty (to show the UI is working)
+function seedDemoIfEmpty() {
+  if (getWishlist().length > 0) return;
+  const demo = [
+    { id: 1001, name: 'Linen Casual Shirt', color: 'Rust Orange', price: 1199, img: 'cshirt3.jpg', addedAt: new Date().toISOString() },
+    { id: 1002, name: 'Cargo Pants', color: 'Olive Green', price: 1399, img: 'pant3.jpg', addedAt: new Date().toISOString() },
+    { id: 1003, name: 'Classic Smartwatch', color: 'Black', price: 2999, img: 'watch2.jpg', addedAt: new Date().toISOString() },
+    { id: 1004, name: 'Graphic Tee', color: 'Navy Blue', price: 599, img: 'tshirt1.jpg', addedAt: new Date().toISOString() },
+  ];
+  saveWishlist(demo);
+}
+
+seedDemoIfEmpty();
+renderWishlist();
+
+// Wire up ♡ buttons — if "Add to Wishlist" buttons exist on this page
+document.addEventListener('wishlist-update', renderWishlist);
+</script>
 </body>
 </html>
