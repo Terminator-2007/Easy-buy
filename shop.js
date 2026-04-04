@@ -236,6 +236,15 @@
         if (slider)   slider.value = 5000;
         if (priceVal) priceVal.textContent = '₹5,000';
         sb.querySelectorAll('.swatch').forEach(sw => sw.classList.remove('selected'));
+        // Reset filter state
+        filterState.maxPrice = 5000;
+        filterState.categories.clear();
+        filterState.colors.clear();
+        filterState.sizes.clear();
+        filterState.discounts.clear();
+        filterState.brands.clear();
+        filterState.ratings.clear();
+        applyFilters();
         showToast('Filters cleared');
       });
     }
@@ -245,8 +254,55 @@
     if (sl && pv) {
       sl.addEventListener('input', () => {
         pv.textContent = `₹${Number(sl.value).toLocaleString('en-IN')}`;
+        filterState.maxPrice = Number(sl.value);
+        applyFilters();
       });
     }
+
+    // Wire up all checkboxes to filterState
+    sb.querySelectorAll('.sidebar-section').forEach(section => {
+      const title = section.querySelector('.sidebar-toggle')?.textContent.trim().toLowerCase() || '';
+      section.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', () => {
+          const label = cb.closest('label')?.textContent.trim();
+          const val = label?.replace(/\s*\([\d,]+\)\s*$/, '').trim(); // strip count like "(432)"
+          if (!val) return;
+
+          let set;
+          if (title.startsWith('category'))        set = filterState.categories;
+          else if (title.startsWith('brand'))       set = filterState.brands;
+          else if (title.startsWith('discount'))    set = filterState.discounts;
+          else if (title.startsWith('size'))        set = filterState.sizes;
+          else if (title.startsWith('rating'))      set = filterState.ratings;
+          else if (title.startsWith('shop for'))    set = filterState.categories;
+          else return;
+
+          if (cb.checked) {
+            // For discounts, extract numeric part
+            if (title.startsWith('discount')) {
+              const pct = val.match(/\d+/)?.[0];
+              if (pct) set.add(pct);
+            } else if (title.startsWith('rating')) {
+              const r = val.match(/[\d.]+/)?.[0];
+              if (r) set.add(r);
+            } else {
+              set.add(val);
+            }
+          } else {
+            if (title.startsWith('discount')) {
+              const pct = val.match(/\d+/)?.[0];
+              if (pct) set.delete(pct);
+            } else if (title.startsWith('rating')) {
+              const r = val.match(/[\d.]+/)?.[0];
+              if (r) set.delete(r);
+            } else {
+              set.delete(val);
+            }
+          }
+          applyFilters();
+        });
+      });
+    });
 
     sb.querySelectorAll('.sidebar-toggle').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -258,7 +314,13 @@
     });
 
     sb.querySelectorAll('.swatch').forEach(sw => {
-      sw.addEventListener('click', () => sw.classList.toggle('selected'));
+      sw.addEventListener('click', () => {
+        sw.classList.toggle('selected');
+        const color = sw.title;
+        if (sw.classList.contains('selected')) filterState.colors.add(color);
+        else filterState.colors.delete(color);
+        applyFilters();
+      });
     });
   }
 
@@ -319,6 +381,14 @@
     const heading = document.getElementById('cat-heading');
     if (heading) heading.after(toolbar);
     else mc.prepend(toolbar);
+
+    const sortSel = toolbar.querySelector('#sort-select');
+    if (sortSel) {
+      sortSel.addEventListener('change', () => {
+        filterState.sort = sortSel.value;
+        applyFilters();
+      });
+    }
 
     toolbar.querySelectorAll('.grid-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -606,11 +676,140 @@
     });
   }
 
+  /* ── Filter / Sort State ── */
+  const filterState = {
+    search: '',
+    maxPrice: 5000,
+    categories: new Set(),
+    colors: new Set(),
+    sizes: new Set(),
+    discounts: new Set(),
+    brands: new Set(),
+    ratings: new Set(),
+    sort: 'popular'
+  };
+
   function applySearch (query) {
-    document.querySelectorAll('.card').forEach(card => {
+    filterState.search = query;
+    applyFilters();
+  }
+
+  function parseCardPrice (card) {
+    const priceEl = card.querySelector('.card-price-row .price') || card.querySelector('.price');
+    if (!priceEl) return 0;
+    return parseInt(priceEl.textContent.replace(/[₹,]/g, ''), 10) || 0;
+  }
+
+  function parseCardDiscount (card) {
+    const discEl = card.querySelector('.discount-pct');
+    if (!discEl) return 0;
+    return parseInt(discEl.textContent) || 0;
+  }
+
+  function parseCardRating (card) {
+    const ratingEl = card.querySelector('.rating-badge');
+    if (!ratingEl) return 0;
+    return parseFloat(ratingEl.textContent) || 0;
+  }
+
+  function applyFilters () {
+    const allCards = [...document.querySelectorAll('.card')];
+    const { search, maxPrice, categories, colors, sizes, discounts, brands, ratings, sort } = filterState;
+
+    let visible = allCards.filter(card => {
       const text = card.textContent.toLowerCase();
-      card.style.display = (!query || text.includes(query)) ? '' : 'none';
+
+      // Search
+      if (search && !text.includes(search)) return false;
+
+      // Price
+      const price = parseCardPrice(card);
+      if (price > maxPrice) return false;
+
+      // Category — match against card h3 / section headings
+      if (categories.size) {
+        const catMap = {
+          't-shirts':        ['t-shirt', 'tee', 'graphic tee', 'printed t', 'oversized'],
+          'casual shirts':   ['casual shirt', 'cuban', 'mandarin', 'linen', 'denim shirt', 'slim fit shirt', 'washed denim'],
+          'pants & trousers':['pant', 'trouser', 'denim', 'jeans', 'chino', 'cargo', 'track pant'],
+          'watches':         ['watch'],
+          'denim':           ['jeans', 'denim'],
+          'shoes':           ['shoe', 'sneaker', 'derby', 'canvas', 'running']
+        };
+        const matched = [...categories].some(cat => {
+          const keywords = catMap[cat.toLowerCase()] || [cat.toLowerCase()];
+          return keywords.some(kw => text.includes(kw));
+        });
+        if (!matched) return false;
+      }
+
+      // Color swatches — match color text in card
+      if (colors.size) {
+        const colorText = card.querySelector('.color')?.textContent.toLowerCase() || text;
+        const matched = [...colors].some(c => colorText.includes(c.toLowerCase()));
+        if (!matched) return false;
+      }
+
+      // Brand
+      if (brands.size) {
+        const cardBrand = (card.querySelector('.card-brand')?.textContent || '').toLowerCase();
+        const matched = [...brands].some(b => cardBrand.includes(b.toLowerCase()));
+        if (!matched) return false;
+      }
+
+      // Discount ranges
+      if (discounts.size) {
+        const disc = parseCardDiscount(card);
+        const matched = [...discounts].some(d => {
+          const pct = parseInt(d);
+          return disc >= pct;
+        });
+        if (!matched) return false;
+      }
+
+      // Size — can't filter meaningfully without real data, skip silently
+      // Rating
+      if (ratings.size) {
+        const r = parseCardRating(card);
+        const matched = [...ratings].some(rv => r >= parseFloat(rv));
+        if (!matched) return false;
+      }
+
+      return true;
     });
+
+    // Sort
+    visible.sort((a, b) => {
+      if (sort === 'price-asc')  return parseCardPrice(a) - parseCardPrice(b);
+      if (sort === 'price-desc') return parseCardPrice(b) - parseCardPrice(a);
+      if (sort === 'discount')   return parseCardDiscount(b) - parseCardDiscount(a);
+      if (sort === 'newest')     return visible.indexOf(a) - visible.indexOf(b); // preserve DOM order as proxy
+      return 0; // popularity = original order
+    });
+
+    // Show/hide
+    allCards.forEach(c => { c.style.display = 'none'; });
+    visible.forEach(c => { c.style.display = ''; });
+
+    // Re-order in DOM (sort)
+    if (sort !== 'popular' && sort !== 'newest') {
+      const grids = [...document.querySelectorAll('.productgrid')];
+      if (grids.length === 1) {
+        // single grid (latest page)
+        visible.forEach(c => grids[0].appendChild(c));
+      } else {
+        // multi-section (index page) — put all visible into first grid, hide empty grids
+        const firstGrid = grids[0];
+        visible.forEach(c => firstGrid.appendChild(c));
+        grids.slice(1).forEach(g => {
+          g.style.display = g.querySelectorAll('.card:not([style*="display: none"])').length ? '' : 'none';
+        });
+      }
+    }
+
+    // Update count
+    const countEl = document.getElementById('item-count');
+    if (countEl) countEl.textContent = `${visible.length} Items`;
   }
 
   
