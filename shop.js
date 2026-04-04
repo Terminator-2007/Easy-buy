@@ -58,10 +58,14 @@
 
   function injectUtilBar () {
     if (document.getElementById('topbar-util')) return;
+    const session = JSON.parse(localStorage.getItem('eb_session') || 'null');
+    const signInLink = session
+      ? `<span style="font-weight:700;color:var(--green)">👤 ${session.name}</span>`
+      : `<a href="signin.html">Sign In / Join EB</a>`;
     const bar = document.createElement('div');
     bar.id = 'topbar-util';
     bar.innerHTML = `
-      <a href="signin.html">Sign In / Join EB</a>
+      ${signInLink}
       <a href="customer-care.html">Customer Care</a>
       <a href="delivery.html" style="color:var(--green);font-weight:700;">🚚 Track Order</a>
       <a href="index.html" class="visit-btn">Visit Easy Buy</a>
@@ -421,8 +425,34 @@
         wrap.appendChild(wl);
         wl.addEventListener('click', e => {
           e.stopPropagation();
-          wl.classList.toggle('liked');
-          wl.innerHTML = wl.classList.contains('liked') ? '&#9829;' : '&#9825;';
+          const isLiked = wl.classList.toggle('liked');
+          wl.innerHTML = isLiked ? '&#9829;' : '&#9825;';
+
+          // Build product data from card
+          const rawPriceText = card.querySelector('.card-price-row .price')?.textContent || '₹0';
+          const priceNumber  = parseInt(rawPriceText.replace(/[₹,]/g, ''), 10) || 0;
+          const productData  = {
+            id:    i + Date.now(),
+            name:  card.querySelector('h3')?.textContent || 'Item',
+            color: card.querySelector('.color')?.textContent || '',
+            price: priceNumber,
+            img:   card.querySelector('img')?.getAttribute('src') || '',
+            addedAt: new Date().toISOString()
+          };
+
+          let wishlist = JSON.parse(localStorage.getItem('myshop_wishlist') || '[]');
+          if (isLiked) {
+            // Add if not already present
+            if (!wishlist.find(p => p.name === productData.name)) {
+              wishlist.push(productData);
+            }
+            showToast('♡ Added to Wishlist');
+          } else {
+            wishlist = wishlist.filter(p => p.name !== productData.name);
+            showToast('Removed from Wishlist');
+          }
+          localStorage.setItem('myshop_wishlist', JSON.stringify(wishlist));
+          document.dispatchEvent(new Event('wishlist-update'));
         });
 
         const tag = tags[i % tags.length];
@@ -948,18 +978,25 @@
     const selectedOpt = document.querySelector('input[name="delivery_opt"]:checked')?.value || 'standard';
     const opt = DELIVERY_OPTIONS.find(o => o.id === selectedOpt);
 
+    // Calculate estimated delivery date
+    const daysMap = { standard: 7, express: 3, same_day: 0 };
+    const estDate = new Date();
+    estDate.setDate(estDate.getDate() + (daysMap[selectedOpt] || 7));
+    const estDateStr = estDate.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
+
     const order = {
       id: 'EB' + Math.floor(Math.random() * 9000000 + 1000000),
       date: new Date().toISOString(),
+      estimatedDelivery: estDateStr,
       address: { name, phone, addr1, city, state },
       delivery: opt,
       status: 'confirmed',
       steps: [
-        { label: 'Order Confirmed', done: true, time: new Date().toLocaleString('en-IN') },
-        { label: 'Processing at Warehouse', done: false, time: '' },
-        { label: 'Shipped', done: false, time: '' },
-        { label: 'Out for Delivery', done: false, time: '' },
-        { label: 'Delivered', done: false, time: '' }
+        { label: 'Order Confirmed',          done: true,  time: new Date().toLocaleString('en-IN') },
+        { label: 'Processing at Warehouse',  done: false, time: '' },
+        { label: 'Shipped',                  done: false, time: '' },
+        { label: 'Out for Delivery',         done: false, time: '' },
+        { label: 'Delivered',               done: false, time: '' }
       ]
     };
 
@@ -967,9 +1004,19 @@
     orders.unshift(order);
     localStorage.setItem('myshop_orders', JSON.stringify(orders));
 
-    closeDeliveryModal();
-    showToast(`🎉 Order ${order.id} placed! Delivering via ${opt.label}.`);
-    setTimeout(() => { window.location.href = 'delivery.html'; }, 1800);
+    // Show confirmation in modal before closing
+    const confirmBtn = document.getElementById('dm-confirm-btn');
+    if (confirmBtn) {
+      confirmBtn.textContent = '🎉 Order Placed!';
+      confirmBtn.style.background = 'var(--green)';
+    }
+
+    setTimeout(() => {
+      closeDeliveryModal();
+      showToast(`🎉 Order ${order.id} placed! Est. delivery: ${estDateStr}`);
+      // Proper redirect — no empty # links
+      setTimeout(() => { window.location.href = 'delivery.html'; }, 1500);
+    }, 900);
   }
 
   function injectDeliveryTrackerBar () {
