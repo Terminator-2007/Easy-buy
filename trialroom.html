@@ -138,36 +138,113 @@
     }
     .btn-generate:hover { background: #333; }
     .btn-generate:disabled { background: var(--border-dark); cursor: not-allowed; }
+
+    /* ── Enhanced Loading State ─────────────────────────── */
     .trial-loading {
       display: none; margin: 32px 0; padding: 52px 20px;
       text-align: center; border: 1.5px solid var(--border);
       border-radius: 8px; background: var(--off-white);
     }
     .trial-loading.show { display: block; }
+
+    /* Animated spinner stages */
+    .loading-stages { margin-bottom: 20px; }
+    .stage-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 8px 20px; border-radius: 6px;
+      font-size: 13px; font-weight: 600;
+      color: var(--text-muted); margin: 4px auto;
+      max-width: 340px; text-align: left;
+      transition: all 0.3s ease;
+    }
+    .stage-row.active {
+      color: var(--text-primary);
+      background: var(--white);
+      border: 1px solid var(--border);
+    }
+    .stage-row.done { color: var(--green); }
+    .stage-row.failed { color: var(--red); }
+    .stage-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+    .stage-label { flex: 1; }
+
     .spinner {
       width: 44px; height: 44px; border: 3px solid var(--border);
       border-top-color: var(--text-primary); border-radius: 50%;
       animation: spin 0.9s linear infinite; margin: 0 auto 16px;
     }
+    .spinner.warning { border-top-color: var(--brand-orange); }
+    .spinner.error   { border-top-color: var(--red); animation: none; border-color: var(--red); }
     @keyframes spin { to { transform: rotate(360deg); } }
+
     .trial-loading p { font-size: 13.5px; color: var(--text-muted); line-height: 1.8; margin: 0; }
     .trial-loading strong { color: var(--text-primary); }
+
+    /* Timeout warning bar */
+    .timeout-bar-wrap {
+      margin: 16px auto 0; max-width: 320px;
+      display: none;
+    }
+    .timeout-bar-wrap.show { display: block; }
+    .timeout-bar-label {
+      display: flex; justify-content: space-between;
+      font-size: 11.5px; color: var(--text-muted); margin-bottom: 5px; font-weight: 600;
+    }
+    .timeout-bar-track {
+      height: 5px; background: var(--border);
+      border-radius: 3px; overflow: hidden;
+    }
+    .timeout-bar-fill {
+      height: 100%; width: 100%;
+      background: var(--green);
+      border-radius: 3px;
+      transition: width 1s linear, background 0.5s;
+    }
+    .timeout-bar-fill.warning { background: var(--brand-orange); }
+    .timeout-bar-fill.critical { background: var(--red); }
+
     .queue-badge {
       display: inline-block;
       background: #e8f5e9; color: var(--green);
       font-size: 12px; font-weight: 700;
       padding: 4px 14px; border-radius: 20px; margin-top: 12px;
     }
+    .queue-badge.warning {
+      background: #fff3e0; color: var(--brand-orange);
+    }
+
+    /* ── Fallback Notice ────────────────────────────────── */
+    .fallback-notice {
+      display: none;
+      margin: 0 0 16px;
+      padding: 12px 18px;
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #6d4c00;
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .fallback-notice.show { display: flex; }
+    .fallback-notice-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .fallback-notice-text strong { display: block; font-weight: 700; margin-bottom: 2px; }
+    .fallback-notice-text p { margin: 0; font-size: 12.5px; opacity: 0.85; }
+
+    /* ── Error Panel ─────────────────────────────────────── */
     .trial-error {
       display: none; margin: 20px 0; padding: 18px 20px;
       background: #fff5f5; border: 1px solid #ffcdd2;
       border-radius: 6px; font-size: 13px; color: var(--red); text-align: center;
     }
     .trial-error.show { display: block; }
+
+    /* ── Result Section ──────────────────────────────────── */
     .ai-result-section { display: none; margin: 32px 0; }
     .ai-result-section.show { display: block; }
     .result-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
     .result-dot { width: 10px; height: 10px; background: var(--green); border-radius: 50%; flex-shrink: 0; }
+    .result-dot.fallback { background: var(--brand-orange); }
     .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
     .result-box { border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; }
     .result-box-label {
@@ -188,6 +265,7 @@
     .btn-primary:hover { background: #333; }
     .btn-primary.green { background: var(--green); }
     .btn-primary.green:hover { background: #2e7d32; }
+
     @media (max-width: 860px) {
       .trial-layout { grid-template-columns: 1fr; }
       .trial-arrow { padding-top: 0; flex-direction: row; justify-content: center; height: auto; padding: 14px 0; }
@@ -311,20 +389,52 @@
     </button>
   </div>
 
+  <!-- ── Loading Panel ── -->
   <div class="trial-loading" id="trial-loading">
-    <div class="spinner"></div>
-    <p id="loading-msg"><strong>Connecting to IDM-VTON…</strong><br>Uploading images and joining the queue.<br>Please don't close this tab.</p>
+    <div class="spinner" id="main-spinner"></div>
+
+    <!-- Stage-by-stage progress -->
+    <div class="loading-stages" id="loading-stages">
+      <div class="stage-row" id="stage-upload"  ><span class="stage-icon">📤</span><span class="stage-label">Uploading images…</span></div>
+      <div class="stage-row" id="stage-queue"   ><span class="stage-icon">🔄</span><span class="stage-label">Joining AI queue…</span></div>
+      <div class="stage-row" id="stage-generate"><span class="stage-icon">🧠</span><span class="stage-label">AI generating try-on…</span></div>
+      <div class="stage-row" id="stage-render"  ><span class="stage-icon">🖼️</span><span class="stage-label">Rendering result…</span></div>
+    </div>
+
+    <p id="loading-msg"><strong>Connecting to IDM-VTON…</strong><br>Please don't close this tab.</p>
     <div class="queue-badge" id="queue-badge" style="display:none;"></div>
+
+    <!-- Timeout progress bar -->
+    <div class="timeout-bar-wrap" id="timeout-bar-wrap">
+      <div class="timeout-bar-label">
+        <span>⏱ Time remaining</span>
+        <span id="timeout-label">60s</span>
+      </div>
+      <div class="timeout-bar-track">
+        <div class="timeout-bar-fill" id="timeout-bar-fill"></div>
+      </div>
+    </div>
   </div>
 
   <div class="trial-error" id="trial-error">
     ⚠️ <span id="error-msg">Something went wrong. Please try again.</span>
   </div>
 
+  <!-- ── Result Section ── -->
   <div class="ai-result-section" id="ai-result">
+
+    <!-- Fallback notice (shown only when fallback image is used) -->
+    <div class="fallback-notice" id="fallback-notice">
+      <span class="fallback-notice-icon">⚠️</span>
+      <div class="fallback-notice-text">
+        <strong>AI model unavailable — showing demo result</strong>
+        <p>The IDM-VTON service didn't respond in time. This is a sample try-on. Try again later for a real result.</p>
+      </div>
+    </div>
+
     <div class="result-header">
-      <div class="result-dot"></div>
-      <strong style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;">Try-On Result</strong>
+      <div class="result-dot" id="result-dot"></div>
+      <strong id="result-label" style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;">Try-On Result</strong>
     </div>
     <div class="result-grid">
       <div class="result-box">
@@ -332,13 +442,13 @@
         <img id="result-person-img" src="" alt="Your photo">
       </div>
       <div class="result-box">
-        <div class="result-box-label">✨ AI Try-On</div>
+        <div class="result-box-label" id="result-output-label">✨ AI Try-On</div>
         <img id="result-output-img" src="" alt="Try-on result">
       </div>
     </div>
     <div class="result-actions">
       <button class="btn-primary green" onclick="addCurrentToCart()">🛒 Add to Bag</button>
-      <button class="btn-primary" onclick="downloadResult()">⬇ Download</button>
+      <button class="btn-primary" id="download-btn" onclick="downloadResult()">⬇ Download</button>
       <button class="btn-outline" onclick="resetAll()">↺ Try Another</button>
     </div>
   </div>
@@ -346,6 +456,9 @@
 </div>
 <script src="shop.js"></script>
 <script>
+/* ═══════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════ */
 const t1 = 'hf_WORrprIUg';
 const t2 = 'ihxIshTZdMFxO';
 const t3 = 'GTyMuxpduuSQ';
@@ -353,11 +466,37 @@ const HF_TOKEN = t1 + t2 + t3;
 
 const SPACE_DOMAIN = 'yisol-idm-vton.hf.space';
 
+/* ── Fallback / timeout settings ── */
+const TIMEOUT_SECONDS   = 60;   // total allowed seconds before fallback kicks in
+const WARN_AT_SECONDS   = 20;   // show orange warning on bar after this many elapsed seconds
+const CRITICAL_SECONDS  = 45;   // show red bar after this many elapsed seconds
+
+/*
+ * DEFAULT FALLBACK IMAGE
+ * Replace this URL with any hosted demo try-on image from your own assets.
+ * It is shown when the AI fails or times out.
+ * Using a reliable placeholder here so the UI always looks complete.
+ */
+const FALLBACK_IMAGE_URL = 'morphed.png';
+
+/* ═══════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════ */
 let personBase64   = null;
 let garmentBase64  = null;
 let currentProduct = null;
 let resultImgUrl   = null;
+let isFallback     = false;
 
+/* Timeout / timer handles */
+let _timeoutHandle    = null;   // setTimeout → hard timeout
+let _timerInterval    = null;   // setInterval → countdown UI
+let _elapsedSeconds   = 0;
+let _abortController  = null;   // AbortController for fetch cancellation
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded', () => {
   const p = localStorage.getItem('trial_product');
   if (p) {
@@ -368,6 +507,9 @@ window.addEventListener('DOMContentLoaded', () => {
   setupUploadZone('garment-upload-zone', 'garment-input', 'garment-preview', b64 => { garmentBase64 = b64; });
 });
 
+/* ═══════════════════════════════════════════════
+   UPLOAD HELPERS
+═══════════════════════════════════════════════ */
 function loadGarmentFromProduct(product) {
   document.getElementById('garment-placeholder').style.display = 'none';
   const box = document.getElementById('garment-info-box');
@@ -447,26 +589,308 @@ function clearGarment() {
   currentProduct = null;
 }
 
-/* ═══════════════════════════════════════════════════════
-   GRADIO 4 API  — POST /gradio_api/call/tryon → event_id
-                   GET  /gradio_api/call/tryon/<id> → SSE
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   TIMEOUT / COUNTDOWN HELPERS
+═══════════════════════════════════════════════ */
+function startTimeoutCountdown(onTimeout) {
+  _elapsedSeconds = 0;
+  stopTimeoutCountdown(); // clear any previous
 
+  /* Show the bar */
+  const wrap = document.getElementById('timeout-bar-wrap');
+  const fill = document.getElementById('timeout-bar-fill');
+  const label = document.getElementById('timeout-label');
+  wrap.classList.add('show');
+  fill.style.width = '100%';
+  fill.classList.remove('warning', 'critical');
+  label.textContent = TIMEOUT_SECONDS + 's';
+
+  /* Tick every second */
+  _timerInterval = setInterval(() => {
+    _elapsedSeconds++;
+    const remaining = TIMEOUT_SECONDS - _elapsedSeconds;
+    const pct = Math.max(0, (remaining / TIMEOUT_SECONDS) * 100);
+
+    fill.style.width = pct + '%';
+    label.textContent = remaining + 's';
+
+    if (_elapsedSeconds >= CRITICAL_SECONDS) {
+      fill.classList.add('critical');
+      fill.classList.remove('warning');
+      setLoadingMsg('<strong>Almost out of time…</strong><br>Preparing fallback result.');
+      const badge = document.getElementById('queue-badge');
+      if (badge) { badge.style.display = 'inline-block'; badge.className = 'queue-badge warning'; badge.textContent = '⚠ Taking longer than usual'; }
+    } else if (_elapsedSeconds >= WARN_AT_SECONDS) {
+      fill.classList.add('warning');
+      document.getElementById('main-spinner').classList.add('warning');
+    }
+  }, 1000);
+
+  /* Hard timeout */
+  _timeoutHandle = setTimeout(() => {
+    stopTimeoutCountdown();
+    onTimeout();
+  }, TIMEOUT_SECONDS * 1000);
+}
+
+function stopTimeoutCountdown() {
+  if (_timerInterval)  { clearInterval(_timerInterval);  _timerInterval  = null; }
+  if (_timeoutHandle)  { clearTimeout(_timeoutHandle);   _timeoutHandle  = null; }
+}
+
+function abortCurrentFetch() {
+  if (_abortController) {
+    try { _abortController.abort(); } catch(e) {}
+    _abortController = null;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   STAGE INDICATORS
+═══════════════════════════════════════════════ */
+const STAGES = ['stage-upload', 'stage-queue', 'stage-generate', 'stage-render'];
+
+function setStage(stageId, state /* 'active' | 'done' | 'failed' | '' */) {
+  const el = document.getElementById(stageId);
+  if (!el) return;
+  el.classList.remove('active', 'done', 'failed');
+  if (state) el.classList.add(state);
+  const icon = el.querySelector('.stage-icon');
+  if (state === 'done')   icon.textContent = '✅';
+  if (state === 'failed') icon.textContent = '❌';
+}
+
+function resetStages() {
+  STAGES.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('active', 'done', 'failed');
+    // restore original icons
+    const icons = { 'stage-upload': '📤', 'stage-queue': '🔄', 'stage-generate': '🧠', 'stage-render': '🖼️' };
+    el.querySelector('.stage-icon').textContent = icons[id] || '•';
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   FALLBACK TRIGGER
+═══════════════════════════════════════════════ */
+function triggerFallback(reason) {
+  console.warn('[TryOn] Fallback triggered:', reason);
+  stopTimeoutCountdown();
+  abortCurrentFetch();
+  isFallback = true;
+
+  /* Update spinner to indicate fallback */
+  const spinner = document.getElementById('main-spinner');
+  spinner.classList.remove('warning');
+  spinner.classList.add('error');
+  STAGES.forEach(id => setStage(id, 'failed'));
+  setLoadingMsg('<strong>AI model unavailable.</strong><br>Loading demo result for you…');
+
+  /* Brief pause so user sees the "loading demo" message, then show fallback */
+  setTimeout(() => {
+    document.getElementById('trial-loading').classList.remove('show');
+    showResult(FALLBACK_IMAGE_URL, true);
+  }, 1800);
+}
+
+/* ═══════════════════════════════════════════════
+   SHOW RESULT (real or fallback)
+═══════════════════════════════════════════════ */
+function showResult(outputUrl, fallback) {
+  isFallback = !!fallback;
+  resultImgUrl = outputUrl;
+
+  /* Person photo in result panel */
+  document.getElementById('result-person-img').src = document.getElementById('person-preview').src;
+  document.getElementById('result-output-img').src = outputUrl;
+
+  /* Dot & label */
+  const dot   = document.getElementById('result-dot');
+  const label = document.getElementById('result-label');
+  const outputLabel = document.getElementById('result-output-label');
+  const notice = document.getElementById('fallback-notice');
+  const dlBtn  = document.getElementById('download-btn');
+
+  if (fallback) {
+    dot.classList.add('fallback');
+    label.textContent = 'Demo Result (AI Unavailable)';
+    outputLabel.textContent = '🖼 Sample Try-On';
+    notice.classList.add('show');
+    dlBtn.style.display = 'none'; // don't let them download a placeholder
+  } else {
+    dot.classList.remove('fallback');
+    label.textContent = 'Try-On Result';
+    outputLabel.textContent = '✨ AI Try-On';
+    notice.classList.remove('show');
+    dlBtn.style.display = '';
+  }
+
+  document.getElementById('ai-result').classList.add('show');
+  document.getElementById('ai-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('generate-btn').disabled = false;
+}
+
+/* ═══════════════════════════════════════════════
+   MAIN GENERATE FUNCTION
+═══════════════════════════════════════════════ */
+async function generateTryOn() {
+  if (!personBase64)  { showToast('Please upload your photo first (Step 1).');          return; }
+  if (!garmentBase64) { showToast('Please select or upload a garment image (Step 2).'); return; }
+
+  /* Reset UI */
+  hideError();
+  isFallback = false;
+  document.getElementById('ai-result').classList.remove('show');
+  document.getElementById('fallback-notice').classList.remove('show');
+  document.getElementById('queue-badge').style.display = 'none';
+  document.getElementById('queue-badge').className = 'queue-badge';
+  document.getElementById('main-spinner').className = 'spinner';
+  document.getElementById('timeout-bar-wrap').classList.remove('show');
+  document.getElementById('trial-loading').classList.add('show');
+  document.getElementById('generate-btn').disabled = true;
+  resetStages();
+
+  /* Start countdown — if it fires, trigger fallback */
+  startTimeoutCountdown(() => {
+    triggerFallback('timeout after ' + TIMEOUT_SECONDS + 's');
+  });
+
+  try {
+    /* ── Stage 1: Upload person image ── */
+    setStage('stage-upload', 'active');
+    setLoadingMsg('<strong>Uploading your photo…</strong><br>Please don\'t close this tab.');
+    let personPath;
+    try {
+      personPath = await uploadImage(personBase64);
+    } catch(e) {
+      stopTimeoutCountdown();
+      triggerFallback('person upload failed: ' + e.message);
+      return;
+    }
+    setStage('stage-upload', 'done');
+
+    /* ── Stage 2: Upload garment image ── */
+    setLoadingMsg('<strong>Uploading garment image…</strong><br>Please don\'t close this tab.');
+    let garmentPath;
+    try {
+      garmentPath = await uploadImage(garmentBase64);
+    } catch(e) {
+      stopTimeoutCountdown();
+      triggerFallback('garment upload failed: ' + e.message);
+      return;
+    }
+
+    /* ── Stage 3: Call AI API ── */
+    setStage('stage-queue', 'active');
+    setLoadingMsg('<strong>Sending to IDM-VTON…</strong><br>Please don\'t close this tab.');
+
+    _abortController = new AbortController();
+    let callRes;
+    try {
+      callRes = await fetch(`https://${SPACE_DOMAIN}/gradio_api/call/tryon`, {
+        method: 'POST',
+        signal: _abortController.signal,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${HF_TOKEN}`
+        },
+        body: JSON.stringify({
+          data: [
+            { path: personPath,  orig_name: 'person.jpg'  },
+            { path: garmentPath, orig_name: 'garment.jpg' },
+            'A shirt', true, true, 30, 42
+          ]
+        })
+      });
+    } catch(e) {
+      if (e.name === 'AbortError') return; // already handled by timeout fallback
+      stopTimeoutCountdown();
+      triggerFallback('API call failed: ' + e.message);
+      return;
+    }
+
+    if (!callRes.ok) {
+      const errText = await callRes.text().catch(() => '');
+      stopTimeoutCountdown();
+      triggerFallback(`API returned ${callRes.status}: ${errText.slice(0, 120)}`);
+      return;
+    }
+
+    let eventData;
+    try {
+      eventData = await callRes.json();
+    } catch(e) {
+      stopTimeoutCountdown();
+      triggerFallback('Invalid JSON from API');
+      return;
+    }
+
+    const { event_id } = eventData;
+    if (!event_id) {
+      stopTimeoutCountdown();
+      triggerFallback('No event_id returned — Space may be down');
+      return;
+    }
+
+    setStage('stage-queue', 'done');
+    setStage('stage-generate', 'active');
+    setLoadingMsg('<strong>Waiting in queue…</strong><br>IDM-VTON is processing your try-on.<br>Please don\'t close this tab.');
+
+    /* ── Stage 4: Stream result ── */
+    let outputUrl;
+    try {
+      outputUrl = await streamResult(event_id);
+    } catch(e) {
+      if (e.name === 'AbortError') return; // timeout already handled
+      stopTimeoutCountdown();
+      triggerFallback('Stream error: ' + e.message);
+      return;
+    }
+
+    setStage('stage-generate', 'done');
+    setStage('stage-render', 'active');
+    setLoadingMsg('<strong>Rendering result…</strong>');
+
+    /* Small render delay so the stage feels real */
+    await sleep(400);
+    setStage('stage-render', 'done');
+
+    /* Success! */
+    stopTimeoutCountdown();
+    document.getElementById('trial-loading').classList.remove('show');
+    showResult(outputUrl, false);
+
+  } catch(outerErr) {
+    /* Last-resort catch — should not normally reach here */
+    stopTimeoutCountdown();
+    if (outerErr.name !== 'AbortError') {
+      triggerFallback('Unexpected error: ' + (outerErr.message || outerErr));
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   GRADIO API HELPERS
+═══════════════════════════════════════════════ */
 async function uploadImage(base64, attempt) {
   attempt = attempt || 1;
   const blob = base64ToBlob(base64);
   const fd   = new FormData();
   fd.append('files', blob, 'image.jpg');
 
+  const signal = _abortController ? _abortController.signal : undefined;
+
   const res = await fetch(`https://${SPACE_DOMAIN}/gradio_api/upload`, {
     method: 'POST',
+    signal,
     headers: { 'Authorization': `Bearer ${HF_TOKEN}` },
     body: fd
   });
 
   if (res.status === 503 && attempt < 4) {
-    setLoadingMsg(`<strong>Space is waking up (attempt ${attempt}/3)…</strong><br>Retrying in 20 seconds.`);
-    await sleep(20000);
+    setLoadingMsg(`<strong>Space is waking up (attempt ${attempt}/3)…</strong><br>Retrying in 12 seconds.`);
+    await sleep(12000);
     return uploadImage(base64, attempt + 1);
   }
   if (!res.ok) {
@@ -477,91 +901,15 @@ async function uploadImage(base64, attempt) {
   return paths[0];
 }
 
-async function generateTryOn() {
-  if (!personBase64)  { showError('Please upload your photo first (Step 1).');          return; }
-  if (!garmentBase64) { showError('Please select or upload a garment image (Step 2).'); return; }
-
-  hideError();
-  document.getElementById('ai-result').classList.remove('show');
-  document.getElementById('queue-badge').style.display = 'none';
-  document.getElementById('trial-loading').classList.add('show');
-  document.getElementById('generate-btn').disabled = true;
-
-  try {
-    setLoadingMsg('<strong>Uploading your photo…</strong><br>Please don\'t close this tab.');
-    const personPath  = await uploadImage(personBase64);
-
-    setLoadingMsg('<strong>Uploading garment image…</strong><br>Please don\'t close this tab.');
-    const garmentPath = await uploadImage(garmentBase64);
-
-    setLoadingMsg('<strong>Sending to IDM-VTON…</strong><br>Please don\'t close this tab.');
-
-    const callRes = await fetch(`https://${SPACE_DOMAIN}/gradio_api/call/tryon`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${HF_TOKEN}`
-      },
-      body: JSON.stringify({
-        data: [
-          { path: personPath,  orig_name: 'person.jpg'  },
-          { path: garmentPath, orig_name: 'garment.jpg' },
-          'A shirt',
-          true,
-          true,
-          30,
-          42
-        ]
-      })
-    });
-
-    if (!callRes.ok) {
-      const e = await callRes.text().catch(() => '');
-      throw new Error(`Call failed (${callRes.status}): ${e.slice(0, 200)}`);
-    }
-
-    const { event_id } = await callRes.json();
-    if (!event_id) throw new Error('No event_id returned. The Space may be down.');
-
-    setLoadingMsg('<strong>Waiting in queue…</strong><br>IDM-VTON is processing your try-on.<br>Please don\'t close this tab.');
-
-    resultImgUrl = await streamResult(event_id);
-
-    document.getElementById('result-person-img').src = document.getElementById('person-preview').src;
-    document.getElementById('result-output-img').src = resultImgUrl;
-    document.getElementById('trial-loading').classList.remove('show');
-    document.getElementById('ai-result').classList.add('show');
-    document.getElementById('ai-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-  } catch(err) {
-    document.getElementById('trial-loading').classList.remove('show');
-    let msg = err.message || 'Unknown error';
-    if (msg.includes('401') || msg.includes('403')) {
-      msg = 'Token rejected. Make sure your HF token has "Read" and "Make calls to Inference Providers" permissions.';
-    } else if (msg.includes('503') || msg.toLowerCase().includes('sleep')) {
-      msg = 'The IDM-VTON Space is starting up. Wait 30 seconds and try again.';
-    } else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
-      msg = 'Network error. Check your internet connection and try again.';
-    }
-    showError(msg);
-  } finally {
-    document.getElementById('generate-btn').disabled = false;
-  }
-}
-
 function streamResult(event_id) {
   return new Promise(async (resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error('Timed out after 3 minutes. Please try again.')), 180000);
+    const signal = _abortController ? _abortController.signal : undefined;
     try {
       const res = await fetch(
         `https://${SPACE_DOMAIN}/gradio_api/call/tryon/${event_id}`,
-        { headers: { 'Authorization': `Bearer ${HF_TOKEN}` } }
+        { headers: { 'Authorization': `Bearer ${HF_TOKEN}` }, signal }
       );
-      if (!res.ok) {
-        clearTimeout(timer);
-        reject(new Error(`Stream error ${res.status}`));
-        return;
-      }
+      if (!res.ok) { reject(new Error(`Stream error ${res.status}`)); return; }
 
       const reader  = res.body.getReader();
       const decoder = new TextDecoder();
@@ -578,36 +926,24 @@ function streamResult(event_id) {
         for (const line of lines) {
           const t = line.trim();
           if (!t) continue;
-
-          if (t.startsWith('event:')) {
-            lastEvent = t.slice(6).trim();
-            continue;
-          }
-
+          if (t.startsWith('event:')) { lastEvent = t.slice(6).trim(); continue; }
           if (t.startsWith('data:')) {
             const raw = t.slice(5).trim();
             try {
               const payload = JSON.parse(raw);
-              console.log('SSE [' + lastEvent + ']:', JSON.stringify(payload).slice(0, 300));
-
               if (lastEvent === 'error') {
-                clearTimeout(timer); reader.cancel();
+                reader.cancel();
                 reject(new Error('IDM-VTON error: ' + (payload.message || JSON.stringify(payload))));
                 return;
               }
-
               if (lastEvent === 'complete') {
-                clearTimeout(timer); reader.cancel();
+                reader.cancel();
                 const imgUrl = extractImgUrl(Array.isArray(payload) ? payload : [payload]);
-                if (!imgUrl) {
-                  reject(new Error('No image in result: ' + JSON.stringify(payload).slice(0, 300)));
-                } else {
-                  resolve(imgUrl);
-                }
+                if (!imgUrl) { reject(new Error('No image in result')); }
+                else         { resolve(imgUrl); }
                 return;
               }
-
-              // queue/progress updates
+              /* Queue/progress updates */
               const badge = document.getElementById('queue-badge');
               if (payload && payload.rank != null) {
                 const info = `Queue: #${payload.rank + 1}` + (payload.rank_eta ? ` · ~${Math.ceil(payload.rank_eta)}s` : '');
@@ -615,17 +951,16 @@ function streamResult(event_id) {
                 setLoadingMsg(`<strong>Waiting in queue…</strong><br>${info}<br>Please don't close this tab.`);
               } else if (lastEvent === 'process_starts' || (payload && payload.msg === 'process_starts')) {
                 if (badge) { badge.style.display = 'inline-block'; badge.textContent = 'Generating…'; }
-                setLoadingMsg('<strong>IDM-VTON is generating your try-on…</strong><br>Usually 20–50 seconds.<br>Please don\'t close this tab.');
+                setLoadingMsg('<strong>IDM-VTON is generating your try-on…</strong><br>Usually 20–50 seconds.');
+                setStage('stage-generate', 'active');
               }
             } catch(_) {}
           }
         }
       }
-      clearTimeout(timer);
-      reject(new Error('Stream ended without a result. Please try again.'));
+      reject(new Error('Stream ended without result.'));
     } catch(err) {
-      clearTimeout(timer);
-      reject(new Error('Connection error: ' + err.message));
+      reject(err);
     }
   });
 }
@@ -660,6 +995,9 @@ function base64ToBlob(b64) {
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
+/* ═══════════════════════════════════════════════
+   UI HELPERS
+═══════════════════════════════════════════════ */
 function setLoadingMsg(html) {
   const el = document.getElementById('loading-msg');
   if (el) el.innerHTML = html;
@@ -675,7 +1013,7 @@ function hideError() {
 }
 
 function downloadResult() {
-  if (!resultImgUrl) return;
+  if (!resultImgUrl || isFallback) return;
   const a = document.createElement('a');
   a.href = resultImgUrl;
   a.download = 'easybuy-tryon.jpg';
@@ -697,8 +1035,15 @@ function addCurrentToCart() {
 function resetAll() {
   clearPerson();
   resultImgUrl = null;
+  isFallback   = false;
+  stopTimeoutCountdown();
+  abortCurrentFetch();
   document.getElementById('ai-result').classList.remove('show');
+  document.getElementById('fallback-notice').classList.remove('show');
+  document.getElementById('trial-loading').classList.remove('show');
+  document.getElementById('timeout-bar-wrap').classList.remove('show');
   hideError();
+  resetStages();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
