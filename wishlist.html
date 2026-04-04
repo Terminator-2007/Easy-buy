@@ -221,23 +221,10 @@ function showToastMsg(msg) {
   clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// Add demo items if wishlist is empty (to show the UI is working)
-function seedDemoIfEmpty() {
-  if (getWishlist().length > 0) return;
-  const demo = [
-    { id: 1001, name: 'Linen Casual Shirt', color: 'Rust Orange', price: 1199, img: 'cshirt3.jpg', addedAt: new Date().toISOString() },
-    { id: 1002, name: 'Cargo Pants', color: 'Olive Green', price: 1399, img: 'pant3.jpg', addedAt: new Date().toISOString() },
-    { id: 1003, name: 'Classic Smartwatch', color: 'Black', price: 2999, img: 'watch2.jpg', addedAt: new Date().toISOString() },
-    { id: 1004, name: 'Graphic Tee', color: 'Navy Blue', price: 599, img: 'tshirt1.jpg', addedAt: new Date().toISOString() },
-  ];
-  saveWishlist(demo);
-}
-
-seedDemoIfEmpty();
-renderWishlist();
-
 // Wire up ♡ buttons — if "Add to Wishlist" buttons exist on this page
 document.addEventListener('wishlist-update', renderWishlist);
+
+renderWishlist();
 </script>
 </body>
 </html>

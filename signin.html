@@ -226,6 +226,12 @@ function handleSignIn() {
   if (!email || !/\S+@\S+\.\S+/.test(email)) { showError('si-email-err'); ok = false; }
   if (!pass) { showError('si-pass-err'); ok = false; }
   if (!ok) return;
+
+  // Load existing user or create session entry
+  const users = JSON.parse(localStorage.getItem('eb_users') || '[]');
+  const user = users.find(u => u.email === email) || { email, name: email.split('@')[0], orderHistory: [], wishlist: [], savedAddresses: [] };
+  localStorage.setItem('eb_session', JSON.stringify({ ...user, loggedInAt: new Date().toISOString() }));
+
   showSuccess('🎉', 'Welcome back!', 'Signing you in… redirecting to the shop.');
 }
 
@@ -233,16 +239,30 @@ function handleSignUp() {
   clearErrors();
   const name  = document.getElementById('su-name').value.trim();
   const email = document.getElementById('su-email').value.trim();
+  const phone = document.getElementById('su-phone').value.trim();
   const pass  = document.getElementById('su-pass').value;
   let ok = true;
   if (!name) { showError('su-name-err'); ok = false; }
   if (!email || !/\S+@\S+\.\S+/.test(email)) { showError('su-email-err'); ok = false; }
   if (!pass || pass.length < 8) { showError('su-pass-err'); ok = false; }
   if (!ok) return;
+
+  // Store user in localStorage
+  const users = JSON.parse(localStorage.getItem('eb_users') || '[]');
+  if (!users.find(u => u.email === email)) {
+    users.push({ name, email, phone, orderHistory: [], wishlist: [], savedAddresses: [], createdAt: new Date().toISOString() });
+    localStorage.setItem('eb_users', JSON.stringify(users));
+  }
+  // Set session
+  localStorage.setItem('eb_session', JSON.stringify({ name, email, phone, loggedInAt: new Date().toISOString() }));
+
   showSuccess('🎊', 'Account Created!', `Welcome to Easy Buy, ${name}! Redirecting you to the shop.`);
 }
 
 function handleOAuth(provider) {
+  // Store minimal OAuth session
+  const name = provider === 'Google' ? 'Google User' : 'Phone User';
+  localStorage.setItem('eb_session', JSON.stringify({ name, provider, loggedInAt: new Date().toISOString() }));
   showSuccess('✅', 'Signed in with ' + provider, 'You\'re all set. Redirecting to the shop…');
 }
 

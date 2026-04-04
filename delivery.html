@@ -126,7 +126,7 @@
 
   <!-- Pincode Checker -->
   <div class="pin-check-card">
-    <h3>📍 Check Delivery to Your Pincode</h3>
+    <h3>Check Delivery to Your Pincode</h3>
     <div class="pin-row">
       <input type="text" id="page-pincode" placeholder="Enter 6-digit pincode (e.g. 600001)" maxlength="6">
       <button onclick="checkPagePin()">Check Availability</button>
@@ -173,6 +173,7 @@
     const pin = document.getElementById('page-pincode').value.trim();
     const result = document.getElementById('page-pin-result');
     const opts = document.getElementById('page-delivery-opts');
+    const pinRow = document.querySelector('.pin-row');
 
     if (!/^\d{6}$/.test(pin)) {
       result.textContent = '⚠️ Please enter a valid 6-digit pincode.';
@@ -180,7 +181,14 @@
       opts.style.display = 'none';
       return;
     }
-    result.textContent = `✅ Great news! We deliver to ${pin}. Choose your preferred option:`;
+
+    // Store confirmed pincode for session — no need to re-confirm
+    sessionStorage.setItem('confirmedPincode', pin);
+
+    // Hide the input row — address already confirmed, no repeated indicator needed
+    if (pinRow) pinRow.style.display = 'none';
+
+    result.textContent = `✅ Delivering to ${pin}. Choose your preferred option below:`;
     result.className = 'pin-result ok';
     opts.style.display = 'grid';
   }
@@ -229,6 +237,7 @@
             <div>
               <div class="order-id">Order #${order.id}</div>
               <div class="order-date">Placed on ${d}</div>
+              ${order.estimatedDelivery ? `<div class="order-date" style="color:var(--green);font-weight:700;margin-top:2px;">📅 Est. delivery: ${order.estimatedDelivery}</div>` : ''}
             </div>
             <div class="order-delivery-badge">
               ${order.delivery?.icon || '📦'} ${order.delivery?.label || 'Standard'} · ${order.delivery?.days || ''}
@@ -246,7 +255,19 @@
     }).join('');
   }
 
-  document.addEventListener('DOMContentLoaded', renderOrders);
+  document.addEventListener('DOMContentLoaded', () => {
+    renderOrders();
+    // Restore confirmed pincode from session — skip asking again
+    const saved = sessionStorage.getItem('confirmedPincode');
+    if (saved) {
+      const pinRow = document.querySelector('.pin-row');
+      const result = document.getElementById('page-pin-result');
+      const opts   = document.getElementById('page-delivery-opts');
+      if (pinRow)  pinRow.style.display  = 'none';
+      if (result)  { result.textContent  = `✅ Delivering to ${saved}. Choose your preferred option below:`; result.className = 'pin-result ok'; }
+      if (opts)    opts.style.display    = 'grid';
+    }
+  });
 </script>
 </body>
 </html>
