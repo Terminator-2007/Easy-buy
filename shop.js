@@ -169,7 +169,7 @@
     sb.innerHTML = `
       <div id="sidebar-title">
         <h3>Refine By</h3>
-        <a href="#">Clear All</a>
+        <a href="javascript:void(0)" id="clear-all-filters">Clear All</a>
       </div>
       ${filterSection('Shop For', `
         <label class="check-item"><input type="checkbox"> Men (1,243)</label>
@@ -233,6 +233,21 @@
         </div>
       `)}
     `;
+
+    /* ── Clear All: uncheck everything, reset price slider, deselect swatches ── */
+    const clearAllBtn = sb.querySelector('#clear-all-filters');
+    if (clearAllBtn) {
+      clearAllBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        sb.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = false; });
+        const slider = sb.querySelector('#price-slider');
+        const priceVal = sb.querySelector('#price-val');
+        if (slider)   slider.value = 5000;
+        if (priceVal) priceVal.textContent = '₹5,000';
+        sb.querySelectorAll('.swatch').forEach(sw => sw.classList.remove('selected'));
+        showToast('Filters cleared');
+      });
+    }
 
     const sl = sb.querySelector('#price-slider');
     const pv = sb.querySelector('#price-val');
@@ -490,7 +505,6 @@
     const nav = document.querySelector('nav');
     if (!nav) return;
 
-    // Upgrade existing nav links to be consistent
     nav.querySelectorAll('a').forEach(a => {
       const href = a.getAttribute('href') || '';
       const hPage = href.replace(/\.html.*$/, '').replace(/^.*\//, '');
@@ -499,7 +513,6 @@
       }
     });
 
-    // Add Trial Room link if not present
     if (!nav.querySelector('a[href="trialroom.html"]')) {
       const trialLink = document.createElement('a');
       trialLink.href = 'trialroom.html';
@@ -511,7 +524,6 @@
       nav.appendChild(trialLink);
     }
 
-    // Add delivery tracking link to nav
     if (!nav.querySelector('a[href="delivery.html"]')) {
       const deliveryLink = document.createElement('a');
       deliveryLink.href = 'delivery.html';

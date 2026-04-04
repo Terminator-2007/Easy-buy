@@ -399,6 +399,39 @@
     }
     .slip-barcode-id { text-align: center; font-size: 10px; letter-spacing: 2px; color: var(--text-muted); margin-top: 5px; }
 
+    /* ── Redirect countdown banner ───────────────── */
+    .slip-redirect-banner {
+      background: #e8f5e9;
+      border-top: 1px solid #c8e6c9;
+      padding: 12px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 13px;
+      color: #1b5e20;
+      font-weight: 600;
+    }
+    .slip-redirect-banner a {
+      color: var(--green);
+      font-weight: 700;
+      text-decoration: underline;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .slip-redirect-countdown {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px; height: 28px;
+      background: var(--green);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
     /* Modal controls */
     .slip-controls {
       padding: 16px 32px 24px;
@@ -441,6 +474,7 @@
       .slip-overlay { position: absolute; top: 0; left: 0; background: none; backdrop-filter: none; }
       .slip-modal { box-shadow: none; max-height: none; overflow: visible; }
       .slip-controls { display: none; }
+      .slip-redirect-banner { display: none; }
     }
   </style>
 </head>
@@ -521,6 +555,7 @@
     <div id="order-slip">
       <!-- Dynamically generated -->
     </div>
+    <!-- Redirect countdown banner injected here by JS -->
     <div class="slip-controls">
       <button class="ctrl-btn ctrl-print" onclick="window.print()">🖨️ Print Slip</button>
       <button class="ctrl-btn ctrl-png" id="dl-btn" onclick="downloadSlip()">⬇️ Download PNG</button>
@@ -544,12 +579,13 @@ const DEMO_PRODUCTS = [
 
 const COUPONS = {
   'SAVE10': 0.10,
-  'FLAT200': null, // flat ₹200 off
+  'FLAT200': null,
   'AJIO20': 0.20,
 };
 
 let cart = JSON.parse(localStorage.getItem('myshop_cart') || '[]');
 let appliedCoupon = null;
+let redirectTimer  = null;   // holds the setInterval for countdown
 
 function saveCart() {
   localStorage.setItem('myshop_cart', JSON.stringify(cart));
@@ -743,12 +779,12 @@ function applyCoupon() {
 ──────────────────────────────────────────────── */
 function checkout() {
   if (!cart.length) { showToast('Your bag is empty!'); return; }
-  showToast('🎉 Order placed successfully! Redirecting…');
+  showToast('🎉 Order placed successfully! Generating slip…');
   setTimeout(() => openSlip(), 1200);
 }
 
 /* ───────────────────────────────────────────────
-   ORDER SLIP
+   ORDER SLIP + AUTO-REDIRECT
 ──────────────────────────────────────────────── */
 function generateOrderId() {
   return 'MYS-' + Date.now().toString(36).toUpperCase().slice(-7);
@@ -756,6 +792,44 @@ function generateOrderId() {
 function formatDate(d) {
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
     + ' · ' + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+}
+
+function startRedirectCountdown() {
+  /* Remove any existing banner first */
+  const existing = document.getElementById('slip-redirect-banner');
+  if (existing) existing.remove();
+  if (redirectTimer) clearInterval(redirectTimer);
+
+  let secs = 6;   /* 6-second countdown */
+
+  const modal = document.getElementById('slip-modal');
+  const slipControls = modal.querySelector('.slip-controls');
+
+  const banner = document.createElement('div');
+  banner.id = 'slip-redirect-banner';
+  banner.className = 'slip-redirect-banner';
+  banner.innerHTML = `
+    <span>🚚 Redirecting to Track Order in <span class="slip-redirect-countdown" id="redirect-count">${secs}</span> seconds…</span>
+    <a onclick="goToTrackNow()">Track Now →</a>
+  `;
+  /* Insert banner just above the controls */
+  modal.insertBefore(banner, slipControls);
+
+  redirectTimer = setInterval(() => {
+    secs--;
+    const countEl = document.getElementById('redirect-count');
+    if (countEl) countEl.textContent = secs;
+    if (secs <= 0) {
+      clearInterval(redirectTimer);
+      redirectTimer = null;
+      window.location.href = 'delivery.html';
+    }
+  }, 1000);
+}
+
+function goToTrackNow() {
+  if (redirectTimer) clearInterval(redirectTimer);
+  window.location.href = 'delivery.html';
 }
 
 function openSlip() {
@@ -779,7 +853,7 @@ function openSlip() {
 
   document.getElementById('order-slip').innerHTML = `
     <div class="slip-head">
-      <div class="slip-store-name">My Shop</div>
+      <div class="slip-store-name">Easy Buy</div>
       <div class="slip-tagline">INDIA'S FINEST FASHION DESTINATION</div>
       <div class="slip-order-badge">
         <span style="font-size:10px;opacity:.7;letter-spacing:.06em;">ORDER ID</span>
@@ -834,7 +908,7 @@ function openSlip() {
     </div>
 
     <div class="slip-footer-note">
-      <strong>Thank you for shopping at My Shop!</strong><br>
+      <strong>Thank you for shopping at Easy Buy!</strong><br>
       Your order will be dispatched within 2–4 business days.<br>
       For support, visit our <a href="contact.html" style="color:var(--brand-orange)">Contact Us</a> page.
       <div class="slip-barcode"></div>
@@ -844,9 +918,15 @@ function openSlip() {
 
   document.getElementById('slip-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+
+  /* Start the auto-redirect countdown */
+  startRedirectCountdown();
 }
 
 function closeSlip() {
+  if (redirectTimer) { clearInterval(redirectTimer); redirectTimer = null; }
+  const banner = document.getElementById('slip-redirect-banner');
+  if (banner) banner.remove();
   document.getElementById('slip-overlay').classList.remove('open');
   document.body.style.overflow = '';
 }
@@ -865,7 +945,7 @@ async function downloadSlip() {
       backgroundColor: '#ffffff', scale: 2, useCORS: true, logging: false
     });
     const link = document.createElement('a');
-    link.download = `myshop-order-slip-${Date.now()}.png`;
+    link.download = `easybuy-order-slip-${Date.now()}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
     showToast('Slip downloaded!');
@@ -892,7 +972,6 @@ function showToast(msg) {
 
 /* ── Init ── */
 document.addEventListener('DOMContentLoaded', renderCart);
-
 </script>
 
 </body>
