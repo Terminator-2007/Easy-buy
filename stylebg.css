@@ -1,16 +1,5 @@
-/* ================================================================
-   AJIO PLATFORM — stylebg.css
-   Faithful recreation of AJIO's exact visual design language:
-   • Serif logo, dual topbar, mega-nav
-   • Left filter sidebar with collapsible sections
-   • Product cards: brand in orange, rating badges, strikethrough price
-   • BESTSELLER / NEW tags
-   Font: Libre Caslon (serif logo) + Source Sans 3 (body)
-   ================================================================ */
-
 @import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Source+Sans+3:wght@300;400;600;700&family=Playfair+Display:wght@400;700&display=swap');
 
-/* ── Variables ─────────────────────────────────────────── */
 :root {
   --white:        #ffffff;
   --off-white:    #f5f5f1;
@@ -36,7 +25,6 @@
   --sidebar-w:   240px;
 }
 
-/* ── Reset ──────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
@@ -51,7 +39,6 @@ img { display: block; max-width: 100%; }
 a { text-decoration: none; color: inherit; }
 button { cursor: pointer; font-family: var(--font-body); }
 
-/* ── Top Utility Bar ────────────────────────────────────── */
 #topbar-util {
   background: var(--white);
   border-bottom: 1px solid var(--border);
@@ -83,7 +70,6 @@ button { cursor: pointer; font-family: var(--font-body); }
 }
 #topbar-util .visit-btn:hover { background: #333; }
 
-/* ── Main Header ────────────────────────────────────────── */
 header {
   background: var(--white);
   border-bottom: 1px solid var(--border);
@@ -108,7 +94,6 @@ header h1 {
   user-select: none;
 }
 
-/* Main nav (MEN / WOMEN …) */
 #main-nav {
   display: flex;
   align-items: stretch;
@@ -137,7 +122,6 @@ header h1 {
   border-bottom-color: var(--text-primary);
 }
 
-/* Search */
 #header-search {
   display: flex;
   align-items: center;
@@ -163,7 +147,6 @@ header h1 {
 }
 #header-search button:hover { color: var(--text-primary); }
 
-/* Icons */
 #header-icons { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .hdr-icon {
   display: flex; align-items: center; justify-content: center;
@@ -182,7 +165,6 @@ header h1 {
   display: flex; align-items: center; justify-content: center;
 }
 
-/* Hide original nav — replaced by #main-nav */
 nav{
   display:flex;
   gap:25px;
@@ -200,7 +182,6 @@ nav a{
 nav a:hover{
   color:#c05200;
 }
-/* ── Breadcrumb ─────────────────────────────────────────── */
 #breadcrumb {
   padding: 10px 32px;
   font-size: 12px;
@@ -212,14 +193,12 @@ nav a:hover{
 #breadcrumb a:hover { color: var(--text-primary); text-decoration: underline; }
 #breadcrumb .sep { margin: 0 6px; }
 
-/* ── Page Layout ────────────────────────────────────────── */
 #page-layout {
   display: flex;
   align-items: flex-start;
   min-height: 80vh;
 }
 
-/* ── Sidebar ────────────────────────────────────────────── */
 #sidebar {
   width: var(--sidebar-w);
   flex-shrink: 0;
@@ -296,7 +275,6 @@ nav a:hover{
 .rating-row { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 3px 0; }
 .stars-display { color: #f5a623; font-size: 12px; }
 
-/* ── Main Content ───────────────────────────────────────── */
 #main-content { flex: 1; min-width: 0; padding: 20px 28px; }
 
 #cat-heading { text-align: center; margin-bottom: 20px; }
@@ -310,7 +288,6 @@ nav a:hover{
   color: var(--text-primary); letter-spacing: -0.01em;
 }
 
-/* Toolbar */
 #toolbar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 0;
@@ -342,7 +319,6 @@ nav a:hover{
 }
 .sort-wrap select:focus { border-color: var(--text-primary); }
 
-/* ── Product Grid ───────────────────────────────────────── */
 .productgrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -352,7 +328,6 @@ nav a:hover{
 .productgrid.cols-4 { grid-template-columns: repeat(4, 1fr); }
 .productgrid.cols-2 { grid-template-columns: repeat(2, 1fr); }
 
-/* ── Product Card ───────────────────────────────────────── */
 .card {
   position: relative; background: var(--white);
   cursor: pointer; display: flex; flex-direction: column;
@@ -422,7 +397,6 @@ nav a:hover{
 .card .discount-pct { font-size: 12.5px; font-weight: 700; color: var(--red); }
 .card .offer-price { font-size: 12px; color: var(--green); font-weight: 600; }
 
-/* Add to Cart — slides up on hover */
 .card-atc {
   display: none;
   width: 100%; background: var(--text-primary); color: var(--white);
@@ -435,7 +409,6 @@ nav a:hover{
 .card-atc:hover { background: #333; }
 .card-atc.added { background: var(--green); }
 
-/* ── Try It On button — slides up on hover below ATC ── */
 .card-tryon {
   display: none;
   width: 100%;
@@ -461,10 +434,8 @@ nav a:hover{
   color: var(--white);
 }
 
-/* hide original button */
 .card > button:not(.card-atc):not(.wishlist-btn) { display: none; }
 
-/* ── Section headings inside container ──────────────────── */
 .container > h2 {
   font-family: var(--font-logo);
   font-size: 1.7rem; font-weight: 400;
@@ -475,7 +446,6 @@ nav a:hover{
   display: inline-block;
 }
 
-/* ── Contact Page ───────────────────────────────────────── */
 h2[style*="text-align: center"] {
   font-family: var(--font-logo);
   font-size: 2rem; font-weight: 400;
@@ -512,7 +482,6 @@ form > button, form button[type="submit"] {
 }
 form > button:hover, form button[type="submit"]:hover { background: #333; }
 
-/* ── Toast ──────────────────────────────────────────────── */
 #toast {
   position: fixed; bottom: 28px; right: 28px;
   background: var(--text-primary); color: var(--white);
@@ -524,7 +493,6 @@ form > button:hover, form button[type="submit"]:hover { background: #333; }
 }
 #toast.show { transform: translateY(0); opacity: 1; }
 
-/* ── Footer ─────────────────────────────────────────────── */
 footer {
   background: #1a1a1a; color: rgba(255,255,255,0.55);
   padding: 48px 60px 28px; margin-top: 60px;
@@ -543,11 +511,9 @@ footer {
 .footer-col a:hover { color: var(--white); }
 .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; display: flex; justify-content: space-between; font-size: 11.5px; }
 
-/* ── Utilities ──────────────────────────────────────────── */
 hr { display: none; }
 .container { max-width: 100%; }
 
-/* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 1100px) {
   :root { --sidebar-w: 200px; }
   .productgrid { grid-template-columns: repeat(3, 1fr); }
@@ -571,11 +537,7 @@ hr { display: none; }
   .footer-grid { grid-template-columns: 1fr; gap: 24px; }
   form { padding: 28px 20px; margin: 24px 16px 60px; }
 }
-/* ══════════════════════════════════════════════════════════
-   ── DELIVERY SYSTEM STYLES (NEW) ─────────────────────────
-   ══════════════════════════════════════════════════════════ */
 
-/* ── Tracker bar (top banner) ───────────────────────────── */
 #delivery-tracker-bar {
   background: #e8f5e9;
   border-bottom: 1px solid #c8e6c9;
@@ -595,7 +557,6 @@ hr { display: none; }
   white-space: nowrap;
 }
 
-/* ── Delivery Modal Overlay ─────────────────────────────── */
 #delivery-modal-overlay {
   position: fixed;
   inset: 0;
@@ -630,7 +591,6 @@ hr { display: none; }
   transform: translateY(0);
 }
 
-/* Modal header */
 .dm-header {
   display: flex;
   align-items: center;
@@ -652,7 +612,6 @@ hr { display: none; }
 }
 .dm-close:hover { background: var(--light-grey); color: var(--text-primary); }
 
-/* Product info row */
 .dm-product {
   display: flex;
   align-items: center;
@@ -669,7 +628,6 @@ hr { display: none; }
 .dm-prod-name { font-size: 13.5px; font-weight: 600; }
 .dm-prod-price { font-size: 13px; color: var(--brand-orange); font-weight: 700; margin-top: 3px; }
 
-/* Pincode row */
 .dm-pincode-row {
   display: flex; gap: 10px;
   padding: 16px 22px 0;
@@ -698,7 +656,6 @@ hr { display: none; }
   min-height: 20px;
 }
 
-/* Delivery option cards */
 .dm-options {
   display: flex;
   flex-direction: column;
@@ -736,7 +693,6 @@ hr { display: none; }
 .dm-opt-days { font-size: 12px; color: var(--text-muted); }
 .dm-opt-price { font-size: 15px; font-weight: 700; flex-shrink: 0; }
 
-/* Address section */
 .dm-address-section { padding: 16px 22px; border-bottom: 1px solid var(--border); }
 .dm-section-title { font-size: 13.5px; font-weight: 700; margin-bottom: 12px; }
 .dm-addr-grid {
@@ -755,7 +711,6 @@ hr { display: none; }
 .dm-addr-grid input::placeholder { color: var(--text-muted); }
 .dm-addr-grid .dm-full { grid-column: 1 / -1; }
 
-/* Modal footer */
 .dm-footer {
   padding: 16px 22px;
   position: sticky;
@@ -774,7 +729,6 @@ hr { display: none; }
 }
 .dm-confirm-btn:hover { background: #333; }
 
-/* ── Responsive delivery modal ──────────────────────────── */
 @media (max-width: 540px) {
   #delivery-modal { max-height: 95vh; border-radius: 12px 12px 0 0; }
   #delivery-modal-overlay { align-items: flex-end; padding: 0; }

@@ -1,7 +1,6 @@
 (function () {
   'use strict';
 
-  /* ── Page detection ──────────────────────────────────── */
   function getPage() {
     return location.pathname.split('/').pop().replace(/\.html.*$/, '') || 'index';
   }
@@ -13,7 +12,6 @@
   const IS_CART     = PAGE === 'cart';
   const IS_TRIAL    = PAGE === 'trialroom';
 
-  /* ── Data ──────────────────────────────────────────────── */
   function getCartCount () {
     const cart = JSON.parse(localStorage.getItem('myshop_cart')) || [];
     return cart.reduce((sum, item) => sum + (item.qty || 1), 0);
@@ -39,7 +37,6 @@
   function fakeCount  () { return Math.floor(Math.random() * 800 + 20); }
   function fakeDiscount () { return Math.floor(Math.random() * 61 + 20); }
 
-  /* ── Init ──────────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', init);
 
   function init () {
@@ -59,7 +56,6 @@
     injectDeliveryTrackerBar();
   }
 
-  /* ── 1. Utility top bar ─────────────────────────────────── */
   function injectUtilBar () {
     if (document.getElementById('topbar-util')) return;
     const bar = document.createElement('div');
@@ -73,7 +69,6 @@
     document.body.prepend(bar);
   }
 
-  /* ── 2. Header ──────────────────────────────────────────── */
   function upgradeHeader () {
     const hdr = document.querySelector('header');
     if (!hdr) return;
@@ -101,7 +96,6 @@
     }
   }
 
-  /* ── 3. Breadcrumb ─────────────────────────────────────── */
   const PAGE_LABELS = {
     'index':         'Home',
     'latest':        'Latest',
@@ -135,7 +129,6 @@
     if (hdr) hdr.after(bc);
   }
 
-  /* ── 4. Wrap main content ───────────────────────────────── */
   function wrapPageLayout () {
     const container = document.querySelector('.container');
     if (!container) return;
@@ -161,7 +154,6 @@
     }
   }
 
-  /* ── 5. Sidebar filters ─────────────────────────────────── */
   function buildSidebar () {
     const sb = document.getElementById('sidebar');
     if (!sb || sb.innerHTML.trim()) return;
@@ -234,7 +226,6 @@
       `)}
     `;
 
-    /* ── Clear All: uncheck everything, reset price slider, deselect swatches ── */
     const clearAllBtn = sb.querySelector('#clear-all-filters');
     if (clearAllBtn) {
       clearAllBtn.addEventListener('click', function (e) {
@@ -281,7 +272,6 @@
       </div>`;
   }
 
-  /* ── 6. Category heading ────────────────────────────────── */
   function buildCatHeading () {
     const mc = document.getElementById('main-content');
     if (!mc || document.getElementById('cat-heading')) return;
@@ -294,7 +284,6 @@
     mc.prepend(div);
   }
 
-  /* ── 7. Toolbar ─────────────────────────────────────────── */
   function buildToolbar () {
     const mc = document.getElementById('main-content');
     if (!mc || document.getElementById('toolbar')) return;
@@ -344,7 +333,6 @@
     });
   }
 
-  /* ── 8. Upgrade cards ───────────────────────────────────── */
   function upgradeCards () {
     document.querySelectorAll('.card').forEach((card, i) => {
       if (card.dataset.upgraded) return;
@@ -500,7 +488,6 @@
     showDeliveryModal(product);
   }
 
-  /* ── 9. Nav active state ────────────────────────────────── */
   function setActiveNav () {
     const nav = document.querySelector('nav');
     if (!nav) return;
@@ -534,7 +521,6 @@
     }
   }
 
-  /* ── 10. Footer ─────────────────────────────────────────── */
   function injectFooter () {
     if (document.querySelector('footer')) return;
     const footer = document.createElement('footer');
@@ -576,7 +562,6 @@
     document.body.appendChild(footer);
   }
 
-  /* ── 11. Toast ──────────────────────────────────────────── */
   function injectToast () {
     if (document.getElementById('toast')) return;
     const t = document.createElement('div');
@@ -593,7 +578,6 @@
     t._t = setTimeout(() => t.classList.remove('show'), 3000);
   }
 
-  /* ── 12. Contact form ───────────────────────────────────── */
   function initContactForm () {
     const form = document.querySelector('form');
     if (!form) return;
@@ -622,7 +606,6 @@
     });
   }
 
-  /* ── 13. Search ─────────────────────────────────────────── */
   function applySearch (query) {
     document.querySelectorAll('.card').forEach(card => {
       const text = card.textContent.toLowerCase();
@@ -630,9 +613,7 @@
     });
   }
 
-  /* ══════════════════════════════════════════════════════════
-     ── 14. DELIVERY SYSTEM ──────────────────────────────────
-     ══════════════════════════════════════════════════════════ */
+  
 
   const DELIVERY_OPTIONS = [
     { id: 'standard', label: 'Standard Delivery', icon: '📦', days: '5–7 business days', price: 0, priceLabel: 'FREE', badge: '', color: '#388e3c' },
@@ -792,7 +773,6 @@
     setTimeout(() => { window.location.href = 'delivery.html'; }, 1800);
   }
 
-  /* ── Delivery Tracker Bar ────────────────────────────────── */
   function injectDeliveryTrackerBar () {
     const orders = JSON.parse(localStorage.getItem('myshop_orders')) || [];
     if (!orders.length) return;
