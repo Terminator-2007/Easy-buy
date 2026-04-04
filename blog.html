@@ -28,7 +28,6 @@
     }
     .blog-featured:hover { box-shadow: var(--shadow-hover); }
     .blog-featured-img {
-      background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%);
       display: flex; align-items: center; justify-content: center;
       font-size: 80px; min-height: 280px;
     }
@@ -141,7 +140,8 @@
 const ARTICLES = [
   {
     id: 1, cat: 'style', featured: true,
-    icon: '👔', bg: 'linear-gradient(135deg,#1a1a1a,#2d2d2d)',
+    icon: '👔',
+    bg: 'linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%)',
     title: '10 Ways to Style a White Shirt (That Aren\'t Boring)',
     excerpt: 'The white shirt is the foundation of every wardrobe — but most people wear it the same way every day. Here\'s how to make it interesting again.',
     date: '12 Mar 2025', readTime: '5 min read', author: 'Priya Nair',
@@ -155,6 +155,7 @@ const ARTICLES = [
   {
     id: 2, cat: 'trends',
     icon: '🎨',
+    bg: 'linear-gradient(135deg, #5c3d1e 0%, #8b5e2a 100%)',
     title: 'Earth Tones Are Taking Over Indian Street Style',
     excerpt: 'From rust to terracotta to deep olive — here\'s why the 2025 colour palette looks like a spice market.',
     date: '28 Feb 2025', readTime: '4 min read', author: 'Vikram Rao',
@@ -166,6 +167,7 @@ const ARTICLES = [
   {
     id: 3, cat: 'guides',
     icon: '📦',
+    bg: 'linear-gradient(135deg, #1e3a5c 0%, #2a5e8b 100%)',
     title: 'How to Build a Capsule Wardrobe for Under ₹8,000',
     excerpt: 'A complete, versatile wardrobe doesn\'t require a massive budget. Here\'s the exact 12-piece formula.',
     date: '15 Feb 2025', readTime: '7 min read', author: 'Priya Nair',
@@ -189,6 +191,7 @@ const ARTICLES = [
   {
     id: 4, cat: 'tech',
     icon: '🤖',
+    bg: 'linear-gradient(135deg, #1a3a1a 0%, #2d5e2d 100%)',
     title: 'We Built an AI Trial Room — Here\'s How It Actually Works',
     excerpt: 'The Easy Buy Virtual Trial Room uses IDM-VTON to generate realistic try-ons. Here\'s what happens between upload and result.',
     date: '5 Feb 2025', readTime: '6 min read', author: 'Arjun Mehta',
@@ -209,6 +212,7 @@ const ARTICLES = [
   {
     id: 5, cat: 'style',
     icon: '👟',
+    bg: 'linear-gradient(135deg, #3a1a1a 0%, #5e2d2d 100%)',
     title: 'The Complete Guide to White Sneakers in 2025',
     excerpt: 'Why white sneakers remain the most versatile item in your wardrobe — and how to keep them that way.',
     date: '20 Jan 2025', readTime: '4 min read', author: 'Vikram Rao',
@@ -223,6 +227,7 @@ const ARTICLES = [
   {
     id: 6, cat: 'trends',
     icon: '📐',
+    bg: 'linear-gradient(135deg, #2a1a3a 0%, #4a2d5e 100%)',
     title: 'Wide-Leg & Baggy: The Return of Relaxed Silhouettes',
     excerpt: 'Slim-fit everything dominated the 2010s. Now the pendulum has swung — and it suits India perfectly.',
     date: '10 Jan 2025', readTime: '3 min read', author: 'Priya Nair',
@@ -243,12 +248,14 @@ function renderBlog() {
   const featured = filtered.find(a => a.featured) || filtered[0];
   const rest = filtered.filter(a => a !== featured);
 
-  // Featured
+  // Featured — FIX: use article's own bg, with a dark gradient fallback (not off-white)
   const fw = document.getElementById('blog-featured-wrap');
   if (featured) {
     fw.innerHTML = `
       <div class="blog-featured" onclick="openArticle(${featured.id})">
-        <div class="blog-featured-img" style="background:${featured.bg || 'var(--off-white)'}">${featured.icon}</div>
+        <div class="blog-featured-img" style="background:${featured.bg || 'linear-gradient(135deg,#2d2d2d,#4a4a4a)'}">
+          ${featured.icon}
+        </div>
         <div class="blog-featured-body">
           <p class="blog-featured-cat">${catLabel(featured.cat)}</p>
           <h3 class="blog-featured-title">${featured.title}</h3>
@@ -284,7 +291,7 @@ function openArticle(id) {
   const a = ARTICLES.find(x => x.id === id);
   if (!a) return;
   document.getElementById('article-content-wrap').innerHTML = `
-    <div class="article-hero-img">${a.icon}</div>
+    <div class="article-hero-img" style="background:${a.bg || 'var(--off-white)'}">${a.icon}</div>
     <div class="article-body">
       <p class="article-cat">${catLabel(a.cat)}</p>
       <h2 class="article-title">${a.title}</h2>
@@ -294,10 +301,12 @@ function openArticle(id) {
   document.getElementById('article-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
+
 function closeArticle() {
   document.getElementById('article-overlay').classList.remove('open');
   document.body.style.overflow = '';
 }
+
 document.getElementById('article-overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('article-overlay')) closeArticle();
 });
