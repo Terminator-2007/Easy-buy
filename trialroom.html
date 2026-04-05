@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,11 +8,13 @@
   <link rel="stylesheet" href="stylebg.css">
   <link rel="icon" type="image/png" href="favicon.png">
   <style>
+    /* ── Trial Room Page Layout ── */
     .trial-page {
       max-width: 1100px;
       margin: 36px auto 80px;
       padding: 0 24px;
     }
+
     .trial-page-title {
       font-family: var(--font-logo);
       font-size: 2rem;
@@ -19,11 +22,13 @@
       margin-bottom: 6px;
       color: var(--text-primary);
     }
+
     .trial-page-sub {
       font-size: 13px;
       color: var(--text-muted);
       margin-bottom: 32px;
     }
+
     .trial-page-sub span {
       display: inline-block;
       background: #fff3e0;
@@ -36,917 +41,1407 @@
       margin-left: 8px;
       vertical-align: middle;
     }
+
+    /* ── Tips Bar ── */
     .trial-tips {
-      display: flex; gap: 20px;
+      display: flex;
+      gap: 20px;
       margin: 0 0 28px;
       padding: 18px 24px;
       background: #f9f9f7;
       border: 1px solid var(--border);
       border-radius: 8px;
     }
-    .tip-item { display: flex; align-items: flex-start; gap: 10px; flex: 1; }
-    .tip-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
-    .tip-text strong { display: block; font-size: 12.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; }
-    .tip-text p { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin: 0; }
+
+    .tip-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .tip-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .tip-text strong {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+    }
+
+    .tip-text p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* ── Upload Panels ── */
     .trial-layout {
       display: grid;
       grid-template-columns: 1fr 60px 1fr;
       gap: 0;
       align-items: start;
     }
+
     .trial-panel {
       background: var(--white);
       border: 1.5px solid var(--border);
       border-radius: 8px;
       overflow: hidden;
     }
+
     .trial-panel-header {
       padding: 16px 20px;
       border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
+
     .trial-panel-header .panel-num {
-      width: 24px; height: 24px;
-      background: var(--text-primary); color: var(--white);
-      border-radius: 50%; font-size: 12px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      background: var(--text-primary);
+      color: var(--white);
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
+
     .trial-panel-header h3 {
-      font-size: 14px; font-weight: 700;
-      letter-spacing: 0.06em; text-transform: uppercase;
-      color: var(--text-primary); margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      margin: 0;
     }
+
+    /* ── Upload Zones ── */
     .upload-zone {
       margin: 20px;
       border: 2px dashed var(--border-dark);
       border-radius: 8px;
       min-height: 300px;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       transition: border-color 0.2s, background 0.2s;
-      position: relative; overflow: hidden;
+      position: relative;
+      overflow: hidden;
     }
-    .upload-zone:hover { border-color: var(--text-primary); background: var(--off-white); }
-    .upload-zone.drag-over { border-color: var(--brand-orange); background: #fff8f3; }
-    .upload-zone.has-image { border-style: solid; border-color: var(--border); cursor: default; }
+
+    .upload-zone:hover {
+      border-color: var(--text-primary);
+      background: var(--off-white);
+    }
+
+    .upload-zone.drag-over {
+      border-color: var(--brand-orange);
+      background: #fff8f3;
+    }
+
+    .upload-zone.has-image {
+      border-style: solid;
+      border-color: var(--border);
+      cursor: default;
+    }
+
     .upload-zone input[type="file"] {
-      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
     }
+
+    .upload-zone.has-image input[type="file"] {
+      display: none;
+    }
+
     .upload-placeholder {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 10px;
-      pointer-events: none; padding: 20px; text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      pointer-events: none;
+      padding: 20px;
+      text-align: center;
     }
-    .upload-placeholder .up-icon { font-size: 48px; opacity: 0.25; }
-    .upload-placeholder p { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin: 0; }
-    .upload-placeholder strong { font-weight: 700; color: var(--text-primary); }
-    .preview-img { display: none; width: 100%; height: 300px; object-fit: contain; background: var(--off-white); }
-    .upload-zone.has-image .upload-placeholder { display: none; }
-    .upload-zone.has-image .preview-img { display: block; }
-    .upload-actions { padding: 0 20px 20px; display: flex; gap: 10px; }
+
+    .upload-placeholder .up-icon {
+      font-size: 48px;
+      opacity: 0.25;
+    }
+
+    .upload-placeholder p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .upload-placeholder strong {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .preview-img {
+      display: none;
+      width: 100%;
+      height: 300px;
+      object-fit: contain;
+      background: var(--off-white);
+    }
+
+    .upload-zone.has-image .upload-placeholder {
+      display: none;
+    }
+
+    .upload-zone.has-image .preview-img {
+      display: block;
+    }
+
+    .upload-actions {
+      padding: 0 20px 20px;
+      display: flex;
+      gap: 10px;
+    }
+
     .btn-outline {
-      flex: 1; border: 1.5px solid var(--border-dark); background: var(--white);
-      color: var(--text-primary); padding: 10px;
-      font-family: var(--font-body); font-size: 12.5px; font-weight: 700;
-      letter-spacing: 0.08em; text-transform: uppercase; border-radius: 4px;
-      transition: all 0.2s; cursor: pointer;
+      flex: 1;
+      border: 1.5px solid var(--border-dark);
+      background: var(--white);
+      color: var(--text-primary);
+      padding: 10px;
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 4px;
+      transition: all 0.2s;
+      cursor: pointer;
     }
-    .btn-outline:hover { border-color: var(--text-primary); background: var(--off-white); }
+
+    .btn-outline:hover {
+      border-color: var(--text-primary);
+      background: var(--off-white);
+    }
+
+    /* ── Arrow Between Panels ── */
     .trial-arrow {
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       padding-top: 160px;
-      color: var(--text-muted); font-size: 28px; gap: 6px;
+      color: var(--text-muted);
+      font-size: 28px;
+      gap: 6px;
     }
-    .trial-arrow span { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--text-muted); text-transform: uppercase; }
+
+    .trial-arrow span {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* ── Garment Info Card ── */
     .garment-info {
-      padding: 14px 20px; display: flex; gap: 14px; align-items: flex-start;
-      background: var(--off-white); margin: 0 20px 16px;
-      border-radius: 6px; border: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: var(--off-white);
+      margin: 0 20px 16px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
     }
-    .garment-info img { width: 64px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border); background: var(--white); }
-    .garment-info .garment-details h4 { font-size: 13px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px; }
-    .garment-info .garment-details p { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin: 0; }
-    .garment-placeholder { margin: 20px; padding: 32px; text-align: center; border: 2px dashed var(--border); border-radius: 8px; color: var(--text-muted); font-size: 13px; line-height: 1.7; }
-    .trial-generate-wrap { max-width: 420px; margin: 28px auto 0; }
+
+    .garment-info img {
+      width: 64px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--white);
+    }
+
+    .garment-info .garment-details h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 4px;
+    }
+
+    .garment-info .garment-details p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .garment-placeholder {
+      margin: 20px;
+      padding: 32px;
+      text-align: center;
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    /* ── Garment Description Input ── */
+    .garment-desc-wrap {
+      padding: 0 20px 16px;
+    }
+
+    .garment-desc-wrap label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .garment-desc-wrap input {
+      width: 100%;
+      border: 1.5px solid var(--border-dark);
+      border-radius: 4px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-family: var(--font-body);
+      color: var(--text-primary);
+      background: var(--off-white);
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .garment-desc-wrap input:focus {
+      border-color: var(--text-primary);
+      background: var(--white);
+    }
+
+    .garment-desc-wrap input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* ── Generate Button ── */
+    .trial-generate-wrap {
+      max-width: 420px;
+      margin: 28px auto 0;
+    }
+
     .btn-generate {
-      width: 100%; background: var(--text-primary); color: var(--white);
-      border: none; padding: 15px; font-family: var(--font-body);
-      font-size: 13.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-      border-radius: 4px; transition: background 0.2s;
-      display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+      width: 100%;
+      background: var(--text-primary);
+      color: var(--white);
+      border: none;
+      padding: 15px;
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: 4px;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
     }
-    .btn-generate:hover { background: #333; }
-    .btn-generate:disabled { background: var(--border-dark); cursor: not-allowed; }
 
+    .btn-generate:hover:not(:disabled) {
+      background: #333;
+    }
+
+    .btn-generate:disabled {
+      background: var(--border-dark);
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    /* ── Loading Panel ── */
     .trial-loading {
-      display: none; margin: 32px 0; padding: 52px 20px;
-      text-align: center; border: 1.5px solid var(--border);
-      border-radius: 8px; background: var(--off-white);
+      display: none;
+      margin: 32px 0;
+      padding: 52px 20px;
+      text-align: center;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: var(--off-white);
     }
-    .trial-loading.show { display: block; }
 
-    .loading-stages { margin-bottom: 20px; }
+    .trial-loading.show {
+      display: block;
+    }
+
+    .loading-stages {
+      margin-bottom: 20px;
+    }
+
     .stage-row {
-      display: flex; align-items: center; gap: 12px;
-      padding: 8px 20px; border-radius: 6px;
-      font-size: 13px; font-weight: 600;
-      color: var(--text-muted); margin: 4px auto;
-      max-width: 340px; text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin: 4px auto;
+      max-width: 360px;
+      text-align: left;
       transition: all 0.3s ease;
     }
+
     .stage-row.active {
       color: var(--text-primary);
       background: var(--white);
       border: 1px solid var(--border);
     }
-    .stage-row.done { color: var(--green); }
-    .stage-row.failed { color: var(--red); }
-    .stage-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
-    .stage-label { flex: 1; }
+
+    .stage-row.done {
+      color: var(--green);
+    }
+
+    .stage-row.failed {
+      color: var(--red);
+    }
+
+    .stage-icon {
+      font-size: 16px;
+      width: 22px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .stage-label {
+      flex: 1;
+    }
 
     .spinner {
-      width: 44px; height: 44px; border: 3px solid var(--border);
-      border-top-color: var(--text-primary); border-radius: 50%;
-      animation: spin 0.9s linear infinite; margin: 0 auto 16px;
+      width: 44px;
+      height: 44px;
+      border: 3px solid var(--border);
+      border-top-color: var(--text-primary);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      margin: 0 auto 16px;
     }
-    .spinner.warning { border-top-color: var(--brand-orange); }
-    .spinner.error   { border-top-color: var(--red); animation: none; border-color: var(--red); }
-    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .trial-loading p { font-size: 13.5px; color: var(--text-muted); line-height: 1.8; margin: 0; }
-    .trial-loading strong { color: var(--text-primary); }
+    .spinner.warning {
+      border-top-color: var(--brand-orange);
+    }
 
+    .spinner.error {
+      border-top-color: var(--red);
+      animation: none;
+      border-color: var(--red);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .trial-loading p {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin: 0;
+    }
+
+    .trial-loading strong {
+      color: var(--text-primary);
+    }
+
+    /* ── Timeout Progress Bar ── */
     .timeout-bar-wrap {
-      margin: 16px auto 0; max-width: 320px;
+      margin: 16px auto 0;
+      max-width: 320px;
       display: none;
     }
-    .timeout-bar-wrap.show { display: block; }
+
+    .timeout-bar-wrap.show {
+      display: block;
+    }
+
     .timeout-bar-label {
-      display: flex; justify-content: space-between;
-      font-size: 11.5px; color: var(--text-muted); margin-bottom: 5px; font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      font-weight: 600;
     }
+
     .timeout-bar-track {
-      height: 5px; background: var(--border);
-      border-radius: 3px; overflow: hidden;
+      height: 5px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
     }
+
     .timeout-bar-fill {
-      height: 100%; width: 100%;
+      height: 100%;
+      width: 100%;
       background: var(--green);
       border-radius: 3px;
       transition: width 1s linear, background 0.5s;
     }
-    .timeout-bar-fill.warning { background: var(--brand-orange); }
-    .timeout-bar-fill.critical { background: var(--red); }
+
+    .timeout-bar-fill.warning {
+      background: var(--brand-orange);
+    }
+
+    .timeout-bar-fill.critical {
+      background: var(--red);
+    }
 
     .queue-badge {
       display: inline-block;
-      background: #e8f5e9; color: var(--green);
-      font-size: 12px; font-weight: 700;
-      padding: 4px 14px; border-radius: 20px; margin-top: 12px;
+      background: #e8f5e9;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-top: 12px;
     }
+
     .queue-badge.warning {
-      background: #fff3e0; color: var(--brand-orange);
+      background: #fff3e0;
+      color: var(--brand-orange);
     }
 
+    /* ── Error Block ── */
     .trial-error {
-      display: none; margin: 20px 0; padding: 18px 20px;
-      background: #fff5f5; border: 1px solid #ffcdd2;
-      border-radius: 6px; font-size: 13px; color: var(--red); text-align: center;
+      display: none;
+      margin: 20px 0;
+      padding: 18px 20px;
+      background: #fff5f5;
+      border: 1px solid #ffcdd2;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--red);
+      text-align: center;
+      line-height: 1.6;
     }
-    .trial-error.show { display: block; }
 
-    .ai-result-section { display: none; margin: 32px 0; }
-    .ai-result-section.show { display: block; }
-    .result-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
-    .result-dot { width: 10px; height: 10px; background: var(--green); border-radius: 50%; flex-shrink: 0; }
-    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-    .result-box { border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .trial-error.show {
+      display: block;
+    }
+
+    /* ── Result Section ── */
+    .ai-result-section {
+      display: none;
+      margin: 32px 0;
+    }
+
+    .ai-result-section.show {
+      display: block;
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .result-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--green);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .result-box {
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
     .result-box-label {
-      padding: 8px 14px; font-size: 11px; font-weight: 700;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--text-muted); border-bottom: 1px solid var(--border);
+      padding: 8px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
       background: var(--off-white);
     }
-    .result-box img { width: 100%; height: 420px; object-fit: contain; background: var(--off-white); display: block; }
-    .result-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    .btn-primary {
-      flex: 1; background: var(--text-primary); color: var(--white);
-      border: none; padding: 12px; font-family: var(--font-body);
-      font-size: 12.5px; font-weight: 700; letter-spacing: 0.08em;
-      text-transform: uppercase; border-radius: 4px;
-      transition: background 0.2s; cursor: pointer; min-width: 120px;
-    }
-    .btn-primary:hover { background: #333; }
-    .btn-primary.green { background: var(--green); }
-    .btn-primary.green:hover { background: #2e7d32; }
 
-    @media (max-width: 860px) {
-      .trial-layout { grid-template-columns: 1fr; }
-      .trial-arrow { padding-top: 0; flex-direction: row; justify-content: center; height: auto; padding: 14px 0; }
-      .result-grid { grid-template-columns: 1fr; }
+    .result-box img {
+      width: 100%;
+      height: 420px;
+      object-fit: contain;
+      background: var(--off-white);
+      display: block;
     }
+
+    .result-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      flex: 1;
+      background: var(--text-primary);
+      color: var(--white);
+      border: none;
+      padding: 12px;
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 4px;
+      transition: background 0.2s;
+      cursor: pointer;
+      min-width: 120px;
+    }
+
+    .btn-primary:hover {
+      background: #333;
+    }
+
+    .btn-primary.green {
+      background: var(--green);
+    }
+
+    .btn-primary.green:hover {
+      background: #2e7d32;
+    }
+
+    /* ── Masked Preview ── */
+    .masked-preview {
+      display: none;
+      margin-top: 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .masked-preview.show {
+      display: block;
+    }
+
+    .masked-preview-label {
+      padding: 8px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--off-white);
+    }
+
+    .masked-preview img {
+      width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      background: var(--off-white);
+      display: block;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 860px) {
+      .trial-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .trial-arrow {
+        padding-top: 0;
+        flex-direction: row;
+        justify-content: center;
+        height: auto;
+        padding: 14px 0;
+      }
+
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media (max-width: 540px) {
-      .trial-page { padding: 0 12px; }
-      .trial-tips { flex-direction: column; gap: 12px; }
-      .result-actions { flex-direction: column; }
+      .trial-page {
+        padding: 0 12px;
+      }
+
+      .trial-tips {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .result-actions {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<header><h1>Easy Buy</h1></header>
-<nav>
-  <a href="index.html">Home</a>
-  <a href="latest.html">Latest</a>
-  <a href="trialroom.html" style="color:var(--brand-orange);font-weight:700;">👕 Trial Room</a>
-  <a href="contact.html">Contact Us</a>
-</nav>
+  <header>
+    <h1>Easy Buy</h1>
+  </header>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="latest.html">Latest</a>
+    <a href="trialroom.html" style="color:var(--brand-orange);font-weight:700;">👕 Trial Room</a>
+    <a href="contact.html">Contact Us</a>
+  </nav>
 
-<div class="trial-page">
+  <div class="trial-page">
 
-  <h2 class="trial-page-title">AI Virtual Trial Room</h2>
-  <p class="trial-page-sub">
-    Upload your photo and instantly see how any outfit looks on you.
-    <span>✦ Powered by IDM-VTON</span>
-  </p>
+    <h2 class="trial-page-title">AI Virtual Trial Room</h2>
+    <p class="trial-page-sub">
+      Upload your photo and instantly see how any outfit looks on you.
+      <span>✦ Powered by Gemini 2.0 Flash</span>
+    </p>
 
-  <div class="trial-tips">
-    <div class="tip-item">
-      <div class="tip-icon">📸</div>
-      <div class="tip-text">
-        <strong>Best Photo Tips</strong>
-        <p>Full-body photo, plain background, standing straight facing the camera.</p>
-      </div>
-    </div>
-    <div class="tip-item">
-      <div class="tip-icon">👕</div>
-      <div class="tip-text">
-        <strong>Garment Image</strong>
-        <p>Click "Try It On" on any product page — or upload a garment photo manually.</p>
-      </div>
-    </div>
-    <div class="tip-item">
-      <div class="tip-icon">⏱️</div>
-      <div class="tip-text">
-        <strong>Processing Time</strong>
-        <p>IDM-VTON usually takes 20–60 seconds. Stay on the page while it generates.</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="trial-layout">
-
-    <div class="trial-panel">
-      <div class="trial-panel-header">
-        <div class="panel-num">1</div>
-        <h3>Your Photo</h3>
-      </div>
-      <div class="upload-zone" id="person-upload-zone">
-        <input type="file" id="person-input" accept="image/*">
-        <div class="upload-placeholder">
-          <div class="up-icon">🧍</div>
-          <p><strong>Upload your full-body photo</strong><br>Drag & drop or click to browse<br><span style="font-size:11px;">JPG, PNG, WEBP · Max 5 MB</span></p>
-        </div>
-        <img id="person-preview" class="preview-img" alt="Your photo">
-      </div>
-      <div class="upload-actions">
-        <button class="btn-outline" onclick="clearPerson()">✕ Clear</button>
-        <button class="btn-outline" onclick="document.getElementById('person-input').click()">↑ Change</button>
-      </div>
-    </div>
-
-    <div class="trial-arrow">
-      <div>➕</div>
-      <span>with</span>
-    </div>
-
-    <div class="trial-panel">
-      <div class="trial-panel-header">
-        <div class="panel-num">2</div>
-        <h3>Selected Garment</h3>
-      </div>
-      <div id="garment-info-box" class="garment-info" style="display:none;">
-        <img id="garment-img-thumb" src="" alt="Garment">
-        <div class="garment-details">
-          <h4 id="garment-name"></h4>
-          <p id="garment-color"></p>
-          <p id="garment-price" style="font-weight:700;color:var(--text-primary);margin-top:4px;"></p>
+    <!-- Tips -->
+    <div class="trial-tips">
+      <div class="tip-item">
+        <div class="tip-icon">📸</div>
+        <div class="tip-text">
+          <strong>Best Photo Tips</strong>
+          <p>Full-body photo, plain background, standing straight facing the camera.</p>
         </div>
       </div>
-      <div id="garment-placeholder" class="garment-placeholder">
-        <div style="font-size:40px;margin-bottom:10px;">👕</div>
-        <strong>No garment selected</strong><br>
-        Go to any product page and click<br>
-        <strong>"Try It On"</strong> to load a garment here.
-        <br><br>
-        <a href="index.html" style="color:var(--brand-orange);font-weight:700;font-size:13px;">← Browse Products</a>
-      </div>
-      <div class="upload-zone" id="garment-upload-zone" style="margin:0 20px;min-height:200px;">
-        <input type="file" id="garment-input" accept="image/*">
-        <div class="upload-placeholder">
-          <div class="up-icon">📷</div>
-          <p><strong>Or upload a garment image manually</strong><br>White / plain background works best</p>
+      <div class="tip-item">
+        <div class="tip-icon">👕</div>
+        <div class="tip-text">
+          <strong>Garment Image</strong>
+          <p>Click "Try It On" on any product page — or upload a garment photo manually.</p>
         </div>
-        <img id="garment-preview" class="preview-img" alt="Garment preview">
       </div>
-      <div class="upload-actions" style="margin-top:12px;">
-        <button class="btn-outline" onclick="clearGarment()">✕ Clear</button>
-        <button class="btn-outline" onclick="document.getElementById('garment-input').click()">↑ Change</button>
+      <div class="tip-item">
+        <div class="tip-icon">⏱️</div>
+        <div class="tip-text">
+          <strong>Processing Time</strong>
+          <p>Gemini usually takes 5–15 seconds. Stay on the page while it generates.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload Layout -->
+    <div class="trial-layout">
+
+      <!-- Panel 1: Person Photo -->
+      <div class="trial-panel">
+        <div class="trial-panel-header">
+          <div class="panel-num">1</div>
+          <h3>Your Photo</h3>
+        </div>
+        <div class="upload-zone" id="person-upload-zone">
+          <input type="file" id="person-input" accept="image/*">
+          <div class="upload-placeholder">
+            <div class="up-icon">🧍</div>
+            <p><strong>Upload your full-body photo</strong><br>Drag & drop or click to browse<br><span
+                style="font-size:11px;">JPG, PNG, WEBP · Max 10 MB</span></p>
+          </div>
+          <img id="person-preview" class="preview-img" alt="Your photo">
+        </div>
+        <div class="upload-actions">
+          <button class="btn-outline" onclick="clearPerson()">✕ Clear</button>
+          <button class="btn-outline" onclick="document.getElementById('person-input').click()">↑ Change</button>
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="trial-arrow">
+        <div>➕</div>
+        <span>with</span>
+      </div>
+
+      <!-- Panel 2: Garment -->
+      <div class="trial-panel">
+        <div class="trial-panel-header">
+          <div class="panel-num">2</div>
+          <h3>Selected Garment</h3>
+        </div>
+
+        <!-- Product info box (auto-filled from "Try It On") -->
+        <div id="garment-info-box" class="garment-info" style="display:none;">
+          <img id="garment-img-thumb" src="" alt="Garment">
+          <div class="garment-details">
+            <h4 id="garment-name"></h4>
+            <p id="garment-color"></p>
+            <p id="garment-price" style="font-weight:700;color:var(--text-primary);margin-top:4px;"></p>
+          </div>
+        </div>
+
+        <!-- Placeholder when no garment loaded -->
+        <div id="garment-placeholder" class="garment-placeholder">
+          <div style="font-size:40px;margin-bottom:10px;">👕</div>
+          <strong>No garment selected</strong><br>
+          Go to any product page and click<br>
+          <strong>"Try It On"</strong> to load a garment here.
+          <br><br>
+          <a href="index.html" style="color:var(--brand-orange);font-weight:700;font-size:13px;">← Browse Products</a>
+        </div>
+
+        <!-- Manual garment upload -->
+        <div class="upload-zone" id="garment-upload-zone" style="margin:0 20px;min-height:200px;">
+          <input type="file" id="garment-input" accept="image/*">
+          <div class="upload-placeholder">
+            <div class="up-icon">📷</div>
+            <p><strong>Or upload a garment image manually</strong><br>White / plain background works best</p>
+          </div>
+          <img id="garment-preview" class="preview-img" alt="Garment preview">
+        </div>
+
+        <!-- Garment description input -->
+        <div class="garment-desc-wrap" style="margin-top:12px;">
+          <label for="garment-desc-input">Garment Description (for better AI results)</label>
+          <input type="text" id="garment-desc-input" placeholder="e.g. casual blue denim jacket, formal black shirt…"
+            maxlength="120">
+        </div>
+
+        <div class="upload-actions">
+          <button class="btn-outline" onclick="clearGarment()">✕ Clear</button>
+          <button class="btn-outline" onclick="document.getElementById('garment-input').click()">↑ Change</button>
+        </div>
+      </div>
+
+    </div><!-- /.trial-layout -->
+
+    <!-- Generate Button -->
+    <div class="trial-generate-wrap">
+      <button class="btn-generate" id="generate-btn" onclick="generateTryOn()">
+        ✨ Generate Try-On
+      </button>
+    </div>
+
+    <!-- ── Loading Panel ── -->
+    <div class="trial-loading" id="trial-loading">
+      <div class="spinner" id="main-spinner"></div>
+
+      <div class="loading-stages" id="loading-stages">
+        <div class="stage-row" id="stage-upload">
+          <span class="stage-icon">📤</span>
+          <span class="stage-label">Preparing images…</span>
+        </div>
+        <div class="stage-row" id="stage-queue">
+          <span class="stage-icon">🔄</span>
+          <span class="stage-label">Sending to Gemini AI…</span>
+        </div>
+        <div class="stage-row" id="stage-generate">
+          <span class="stage-icon">🧠</span>
+          <span class="stage-label">Gemini generating try-on…</span>
+        </div>
+        <div class="stage-row" id="stage-render">
+          <span class="stage-icon">🖼️</span>
+          <span class="stage-label">Rendering result…</span>
+        </div>
+      </div>
+
+      <p id="loading-msg"><strong>Connecting to Gemini…</strong><br>Please don't close this tab.</p>
+      <div class="queue-badge" id="queue-badge" style="display:none;"></div>
+
+      <div class="timeout-bar-wrap" id="timeout-bar-wrap">
+        <div class="timeout-bar-label">
+          <span>⏱ Time remaining</span>
+          <span id="timeout-label">90s</span>
+        </div>
+        <div class="timeout-bar-track">
+          <div class="timeout-bar-fill" id="timeout-bar-fill"></div>
+        </div>
       </div>
     </div>
 
-  </div>
-
-  <div class="trial-generate-wrap">
-    <button class="btn-generate" id="generate-btn" onclick="generateTryOn()">
-      ✨ Generate Try-On
-    </button>
-  </div>
-
-  <!-- ── Loading Panel ── -->
-  <div class="trial-loading" id="trial-loading">
-    <div class="spinner" id="main-spinner"></div>
-
-    <!-- Stage-by-stage progress -->
-    <div class="loading-stages" id="loading-stages">
-      <div class="stage-row" id="stage-upload"  ><span class="stage-icon">📤</span><span class="stage-label">Uploading images…</span></div>
-      <div class="stage-row" id="stage-queue"   ><span class="stage-icon">🔄</span><span class="stage-label">Joining AI queue…</span></div>
-      <div class="stage-row" id="stage-generate"><span class="stage-icon">🧠</span><span class="stage-label">AI generating try-on…</span></div>
-      <div class="stage-row" id="stage-render"  ><span class="stage-icon">🖼️</span><span class="stage-label">Rendering result…</span></div>
+    <!-- Error -->
+    <div class="trial-error" id="trial-error">
+      ⚠️ <span id="error-msg">Something went wrong. Please try again.</span>
     </div>
 
-    <p id="loading-msg"><strong>Connecting to IDM-VTON…</strong><br>Please don't close this tab.</p>
-    <div class="queue-badge" id="queue-badge" style="display:none;"></div>
+    <!-- ── Result Section ── -->
+    <div class="ai-result-section" id="ai-result">
 
-    <!-- Timeout progress bar -->
-    <div class="timeout-bar-wrap" id="timeout-bar-wrap">
-      <div class="timeout-bar-label">
-        <span>⏱ Time remaining</span>
-        <span id="timeout-label">60s</span>
+      <div class="result-header">
+        <div class="result-dot" id="result-dot"></div>
+        <strong id="result-label" style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;">Try-On
+          Result</strong>
       </div>
-      <div class="timeout-bar-track">
-        <div class="timeout-bar-fill" id="timeout-bar-fill"></div>
+
+      <div class="result-grid">
+        <div class="result-box">
+          <div class="result-box-label">Your Original Photo</div>
+          <img id="result-person-img" src="" alt="Your photo">
+        </div>
+        <div class="result-box">
+          <div class="result-box-label" id="result-output-label">✨ AI Try-On Result</div>
+          <img id="result-output-img" src="" alt="Try-on result">
+        </div>
       </div>
-    </div>
-  </div>
 
-  <div class="trial-error" id="trial-error">
-    ⚠️ <span id="error-msg">Something went wrong. Please try again.</span>
-  </div>
-
-  <!-- ── Result Section ── -->
-  <div class="ai-result-section" id="ai-result">
-
-    <div class="result-header">
-      <div class="result-dot" id="result-dot"></div>
-      <strong id="result-label" style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;">Try-On Result</strong>
-    </div>
-    <div class="result-grid">
-      <div class="result-box">
-        <div class="result-box-label">Your Photo</div>
-        <img id="result-person-img" src="" alt="Your photo">
+      <!-- Optional masked garment preview -->
+      <div class="masked-preview" id="masked-preview">
+        <div class="masked-preview-label">🎭 Garment Mask Preview</div>
+        <img id="masked-preview-img" src="" alt="Masked garment">
       </div>
-      <div class="result-box">
-        <div class="result-box-label" id="result-output-label">✨ AI Try-On</div>
-        <img id="result-output-img" src="" alt="Try-on result">
+
+      <div class="result-actions" style="margin-top:16px;">
+        <button class="btn-primary green" onclick="addCurrentToCart()">🛒 Add to Bag</button>
+        <button class="btn-primary" id="download-btn" onclick="downloadResult()">⬇ Download Result</button>
+        <button class="btn-outline" onclick="resetAll()">↺ Try Another</button>
       </div>
     </div>
-    <div class="result-actions">
-      <button class="btn-primary green" onclick="addCurrentToCart()">🛒 Add to Bag</button>
-      <button class="btn-primary" id="download-btn" onclick="downloadResult()">⬇ Download</button>
-      <button class="btn-outline" onclick="resetAll()">↺ Try Another</button>
-    </div>
-  </div>
 
-</div>
-<script src="shop.js"></script>
-<script>
-const t1 = 'hf_WORrprIUg';
-const t2 = 'ihxIshTZdMFxO';
-const t3 = 'GTyMuxpduuSQ';
-const HF_TOKEN = t1 + t2 + t3;
+  </div><!-- /.trial-page -->
 
-const SPACE_DOMAIN = 'yisol-idm-vton.hf.space';
+  <script src="shop.js"></script>
+  <script>
+    // ══════════════════════════════════════════════════
+    //  Easy Buy — AI Virtual Try-On
+    //  Gemini image generation with clean key/model logic
+    // ══════════════════════════════════════════════════
 
-const TIMEOUT_SECONDS   = 60;  
-const WARN_AT_SECONDS   = 20;
-const CRITICAL_SECONDS  = 45;   
+    // ── API Keys (2 separate Google accounts = 2 independent quotas) ──
+    const GEMINI_KEYS = [
+      'AIzaSyCgIkD6TZ5ImOjjk3q1ji_jLnXrzGOYSaM',  // Key 1
+      'AIzaSyAqW7exF8ePxEh4d5ST4D5lMIKbAlRLV_c',  // Key 2
+    ];
 
-let personBase64   = null;
-let garmentBase64  = null;
-let currentProduct = null;
-let resultImgUrl   = null;
+    // ── Verified working models (April 2026) ──
+    // ALL use identical REST format: POST /v1beta/models/{model}:generateContent
+    // with contents[] + generationConfig.responseModalities: ['TEXT','IMAGE']
+    // DO NOT add models without verifying at https://ai.google.dev/gemini-api/docs/models
+    const GEMINI_MODELS = [
+      'gemini-2.0-flash-exp-image-generation',  // Primary  — free, confirmed working
+      'gemini-2.5-flash-image',                 // Fallback — free GA, confirmed working
+    ];
+    const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/';
 
+    // ── Timeouts ──
+    const TIMEOUT_SECONDS = 300;
+    const WARN_AT_SECONDS = 200;
+    const CRITICAL_SECONDS = 260;
+    const RATE_LIMIT_WAIT = 65;   // seconds to wait when ALL keys are 429 (free tier resets in 60s)
 
-let _timeoutHandle    = null;   // setTimeout → hard timeout
-let _timerInterval    = null;   // setInterval → countdown UI
-let _elapsedSeconds   = 0;
-let _abortController  = null;   // AbortController for fetch cancellation
+    // ── State ──
+    let personBase64 = null;
+    let garmentBase64 = null;
+    let currentProduct = null;
+    let resultImgUrl = null;
+    let _currentKeyIdx = 0;
+    let _timeoutHandle = null;
+    let _timerInterval = null;
+    let _elapsedSeconds = 0;
+    let _abortController = null;
 
-window.addEventListener('DOMContentLoaded', () => {
-  const p = localStorage.getItem('trial_product');
-  if (p) {
-    currentProduct = JSON.parse(p);
-    loadGarmentFromProduct(currentProduct);
-  }
-  setupUploadZone('person-upload-zone',  'person-input',  'person-preview',  b64 => { personBase64  = b64; });
-  setupUploadZone('garment-upload-zone', 'garment-input', 'garment-preview', b64 => { garmentBase64 = b64; });
-});
+    // ══════════════════════════════════════════════════
+    //  Key helpers
+    // ══════════════════════════════════════════════════
+    function getCurrentKey() { return GEMINI_KEYS[_currentKeyIdx]; }
+    function getKeyNum() { return _currentKeyIdx + 1; }
+    function rotateKey() { _currentKeyIdx = (_currentKeyIdx + 1) % GEMINI_KEYS.length; return _currentKeyIdx; }
+    function resetKeys() { _currentKeyIdx = 0; }
 
-function loadGarmentFromProduct(product) {
-  document.getElementById('garment-placeholder').style.display = 'none';
-  const box = document.getElementById('garment-info-box');
-  box.style.display = 'flex';
-  document.getElementById('garment-name').textContent  = product.name;
-  document.getElementById('garment-color').textContent = product.color;
-  document.getElementById('garment-price').textContent = '₹' + product.price.toLocaleString('en-IN');
-  document.getElementById('garment-img-thumb').src     = product.img;
-  const preview = document.getElementById('garment-preview');
-  const zone    = document.getElementById('garment-upload-zone');
-  preview.src   = product.img;
-  zone.classList.add('has-image');
-  imageUrlToBase64(product.img, b64 => {
-    if (b64) { garmentBase64 = b64; }
-    else { showToast('Could not auto-load garment — please upload it manually.'); }
-  });
-}
-
-function setupUploadZone(zoneId, inputId, previewId, onLoad) {
-  const zone    = document.getElementById(zoneId);
-  const input   = document.getElementById(inputId);
-  const preview = document.getElementById(previewId);
-  input.addEventListener('change', () => {
-    if (input.files[0]) readFile(input.files[0], preview, zone, onLoad);
-  });
-  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag-over'); });
-  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-  zone.addEventListener('drop', e => {
-    e.preventDefault();
-    zone.classList.remove('drag-over');
-    const f = e.dataTransfer.files[0];
-    if (f && f.type.startsWith('image/')) readFile(f, preview, zone, onLoad);
-  });
-}
-
-function readFile(file, preview, zone, onLoad) {
-  const reader = new FileReader();
-  reader.onload = e => {
-    preview.src = e.target.result;
-    zone.classList.add('has-image');
-    onLoad(e.target.result.split(',')[1]);
-  };
-  reader.readAsDataURL(file);
-}
-
-function imageUrlToBase64(url, cb) {
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.onload = () => {
-    try {
-      const c = document.createElement('canvas');
-      c.width = img.naturalWidth || img.width;
-      c.height = img.naturalHeight || img.height;
-      c.getContext('2d').drawImage(img, 0, 0);
-      cb(c.toDataURL('image/jpeg', 0.92).split(',')[1]);
-    } catch(e) { cb(null); }
-  };
-  img.onerror = () => cb(null);
-  img.src = url;
-}
-
-function clearPerson() {
-  personBase64 = null;
-  document.getElementById('person-upload-zone').classList.remove('has-image');
-  document.getElementById('person-preview').src = '';
-  document.getElementById('person-input').value = '';
-}
-
-function clearGarment() {
-  garmentBase64 = null;
-  document.getElementById('garment-upload-zone').classList.remove('has-image');
-  document.getElementById('garment-preview').src = '';
-  document.getElementById('garment-input').value = '';
-  document.getElementById('garment-info-box').style.display    = 'none';
-  document.getElementById('garment-placeholder').style.display = 'block';
-  localStorage.removeItem('trial_product');
-  currentProduct = null;
-}
-
-function startTimeoutCountdown(onTimeout) {
-  _elapsedSeconds = 0;
-  stopTimeoutCountdown(); // clear any previous
-
-  const wrap = document.getElementById('timeout-bar-wrap');
-  const fill = document.getElementById('timeout-bar-fill');
-  const label = document.getElementById('timeout-label');
-  wrap.classList.add('show');
-  fill.style.width = '100%';
-  fill.classList.remove('warning', 'critical');
-  label.textContent = TIMEOUT_SECONDS + 's';
-
-  _timerInterval = setInterval(() => {
-    _elapsedSeconds++;
-    const remaining = TIMEOUT_SECONDS - _elapsedSeconds;
-    const pct = Math.max(0, (remaining / TIMEOUT_SECONDS) * 100);
-
-    fill.style.width = pct + '%';
-    label.textContent = remaining + 's';
-
-    if (_elapsedSeconds >= CRITICAL_SECONDS) {
-      fill.classList.add('critical');
-      fill.classList.remove('warning');
-      setLoadingMsg('<strong>Almost out of time…</strong><br>The AI model is taking too long.');
-      const badge = document.getElementById('queue-badge');
-      if (badge) { badge.style.display = 'inline-block'; badge.className = 'queue-badge warning'; badge.textContent = '⚠ Taking longer than usual'; }
-    } else if (_elapsedSeconds >= WARN_AT_SECONDS) {
-      fill.classList.add('warning');
-      document.getElementById('main-spinner').classList.add('warning');
-    }
-  }, 1000);
-
-  _timeoutHandle = setTimeout(() => {
-    stopTimeoutCountdown();
-    onTimeout();
-  }, TIMEOUT_SECONDS * 1000);
-}
-
-function stopTimeoutCountdown() {
-  if (_timerInterval)  { clearInterval(_timerInterval);  _timerInterval  = null; }
-  if (_timeoutHandle)  { clearTimeout(_timeoutHandle);   _timeoutHandle  = null; }
-}
-
-function abortCurrentFetch() {
-  if (_abortController) {
-    try { _abortController.abort(); } catch(e) {}
-    _abortController = null;
-  }
-}
-
-
-const STAGES = ['stage-upload', 'stage-queue', 'stage-generate', 'stage-render'];
-
-function setStage(stageId, state /* 'active' | 'done' | 'failed' | '' */) {
-  const el = document.getElementById(stageId);
-  if (!el) return;
-  el.classList.remove('active', 'done', 'failed');
-  if (state) el.classList.add(state);
-  const icon = el.querySelector('.stage-icon');
-  if (state === 'done')   icon.textContent = '✅';
-  if (state === 'failed') icon.textContent = '❌';
-}
-
-function resetStages() {
-  STAGES.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.remove('active', 'done', 'failed');
-    // restore original icons
-    const icons = { 'stage-upload': '📤', 'stage-queue': '🔄', 'stage-generate': '🧠', 'stage-render': '🖼️' };
-    el.querySelector('.stage-icon').textContent = icons[id] || '•';
-  });
-}
-
-
-function triggerError(reason) {
-  console.warn('[TryOn] Error:', reason);
-  stopTimeoutCountdown();
-  abortCurrentFetch();
-
-  const spinner = document.getElementById('main-spinner');
-  spinner.classList.remove('warning');
-  spinner.classList.add('error');
-  STAGES.forEach(id => setStage(id, 'failed'));
-  setLoadingMsg('<strong>Try-On failed.</strong><br>Please check your connection and try again.');
-
-  setTimeout(() => {
-    document.getElementById('trial-loading').classList.remove('show');
-    document.getElementById('generate-btn').disabled = false;
-    showError('⚠️ ' + reason + ' — Please try again or refresh the page.');
-  }, 1200);
-}
-
-function showResult(outputUrl) {
-  resultImgUrl = outputUrl;
-
-  document.getElementById('result-person-img').src = document.getElementById('person-preview').src;
-  document.getElementById('result-output-img').src = outputUrl;
-
-  document.getElementById('result-dot').classList.remove('fallback');
-  document.getElementById('result-label').textContent = 'Try-On Result';
-  document.getElementById('result-output-label').textContent = '✨ AI Try-On';
-  document.getElementById('download-btn').style.display = '';
-
-  document.getElementById('ai-result').classList.add('show');
-  document.getElementById('ai-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  document.getElementById('generate-btn').disabled = false;
-}
-
-
-async function generateTryOn() {
-  if (!personBase64)  { showToast('Please upload your photo first (Step 1).');          return; }
-  if (!garmentBase64) { showToast('Please select or upload a garment image (Step 2).'); return; }
-
-  hideError();
-  document.getElementById('ai-result').classList.remove('show');
-  document.getElementById('queue-badge').style.display = 'none';
-  document.getElementById('queue-badge').className = 'queue-badge';
-  document.getElementById('main-spinner').className = 'spinner';
-  document.getElementById('timeout-bar-wrap').classList.remove('show');
-  document.getElementById('trial-loading').classList.add('show');
-  document.getElementById('generate-btn').disabled = true;
-  resetStages();
-
-  startTimeoutCountdown(() => {
-    triggerError('timeout after ' + TIMEOUT_SECONDS + 's');
-  });
-
-  try {
-          setStage('stage-upload', 'active');
-    setLoadingMsg('<strong>Uploading your photo…</strong><br>Please don\'t close this tab.');
-    let personPath;
-    try {
-      personPath = await uploadImage(personBase64);
-    } catch(e) {
-      stopTimeoutCountdown();
-      triggerError('person upload failed: ' + e.message);
-      return;
-    }
-    setStage('stage-upload', 'done');
-
-    setLoadingMsg('<strong>Uploading garment image…</strong><br>Please don\'t close this tab.');
-    let garmentPath;
-    try {
-      garmentPath = await uploadImage(garmentBase64);
-    } catch(e) {
-      stopTimeoutCountdown();
-      triggerError('garment upload failed: ' + e.message);
-      return;
-    }
-
-    setStage('stage-queue', 'active');
-    setLoadingMsg('<strong>Sending to IDM-VTON…</strong><br>Please don\'t close this tab.');
-
-    _abortController = new AbortController();
-    let callRes;
-    try {
-      callRes = await fetch(`https://${SPACE_DOMAIN}/gradio_api/call/tryon`, {
-        method: 'POST',
-        signal: _abortController.signal,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${HF_TOKEN}`
-        },
-        body: JSON.stringify({
-          data: [
-            { path: personPath,  orig_name: 'person.jpg'  },
-            { path: garmentPath, orig_name: 'garment.jpg' },
-            'A shirt', true, true, 30, 42
-          ]
-        })
-      });
-    } catch(e) {
-      if (e.name === 'AbortError') return; // already handled by timeout fallback
-      stopTimeoutCountdown();
-      triggerError('API call failed: ' + e.message);
-      return;
-    }
-
-    if (!callRes.ok) {
-      const errText = await callRes.text().catch(() => '');
-      stopTimeoutCountdown();
-      triggerError(`API returned ${callRes.status}: ${errText.slice(0, 120)}`);
-      return;
-    }
-
-    let eventData;
-    try {
-      eventData = await callRes.json();
-    } catch(e) {
-      stopTimeoutCountdown();
-      triggerError('Invalid JSON from API');
-      return;
-    }
-
-    const { event_id } = eventData;
-    if (!event_id) {
-      stopTimeoutCountdown();
-      triggerError('No event_id returned — Space may be down');
-      return;
-    }
-
-    setStage('stage-queue', 'done');
-    setStage('stage-generate', 'active');
-    setLoadingMsg('<strong>Waiting in queue…</strong><br>IDM-VTON is processing your try-on.<br>Please don\'t close this tab.');
-
-    let outputUrl;
-    try {
-      outputUrl = await streamResult(event_id);
-    } catch(e) {
-      if (e.name === 'AbortError') return; // timeout already handled
-      stopTimeoutCountdown();
-      triggerError('Stream error: ' + e.message);
-      return;
-    }
-
-    setStage('stage-generate', 'done');
-    setStage('stage-render', 'active');
-    setLoadingMsg('<strong>Rendering result…</strong>');
-
-    await sleep(400);
-    setStage('stage-render', 'done');
-
-    stopTimeoutCountdown();
-    document.getElementById('trial-loading').classList.remove('show');
-    showResult(outputUrl);
-
-  } catch(outerErr) {
-    stopTimeoutCountdown();
-    if (outerErr.name !== 'AbortError') {
-      triggerError('Unexpected error: ' + (outerErr.message || outerErr));
-    }
-  }
-}
-
-
-async function uploadImage(base64, attempt) {
-  attempt = attempt || 1;
-  const blob = base64ToBlob(base64);
-  const fd   = new FormData();
-  fd.append('files', blob, 'image.jpg');
-
-  const signal = _abortController ? _abortController.signal : undefined;
-
-  const res = await fetch(`https://${SPACE_DOMAIN}/gradio_api/upload`, {
-    method: 'POST',
-    signal,
-    headers: { 'Authorization': `Bearer ${HF_TOKEN}` },
-    body: fd
-  });
-
-  if (res.status === 503 && attempt < 4) {
-    setLoadingMsg(`<strong>Space is waking up (attempt ${attempt}/3)…</strong><br>Retrying in 12 seconds.`);
-    await sleep(12000);
-    return uploadImage(base64, attempt + 1);
-  }
-  if (!res.ok) {
-    const t = await res.text().catch(() => '');
-    throw new Error(`Upload failed (${res.status}): ${t.slice(0, 180)}`);
-  }
-  const paths = await res.json();
-  return paths[0];
-}
-
-function streamResult(event_id) {
-  return new Promise(async (resolve, reject) => {
-    const signal = _abortController ? _abortController.signal : undefined;
-    try {
-      const res = await fetch(
-        `https://${SPACE_DOMAIN}/gradio_api/call/tryon/${event_id}`,
-        { headers: { 'Authorization': `Bearer ${HF_TOKEN}` }, signal }
-      );
-      if (!res.ok) { reject(new Error(`Stream error ${res.status}`)); return; }
-
-      const reader  = res.body.getReader();
-      const decoder = new TextDecoder();
-      let   buffer  = '';
-      let   lastEvent = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop();
-
-        for (const line of lines) {
-          const t = line.trim();
-          if (!t) continue;
-          if (t.startsWith('event:')) { lastEvent = t.slice(6).trim(); continue; }
-          if (t.startsWith('data:')) {
-            const raw = t.slice(5).trim();
-            try {
-              const payload = JSON.parse(raw);
-              if (lastEvent === 'error') {
-                reader.cancel();
-                reject(new Error('IDM-VTON error: ' + (payload.message || JSON.stringify(payload))));
-                return;
-              }
-              if (lastEvent === 'complete') {
-                reader.cancel();
-                const imgUrl = extractImgUrl(Array.isArray(payload) ? payload : [payload]);
-                if (!imgUrl) { reject(new Error('No image in result')); }
-                else         { resolve(imgUrl); }
-                return;
-              }
-              const badge = document.getElementById('queue-badge');
-              if (payload && payload.rank != null) {
-                const info = `Queue: #${payload.rank + 1}` + (payload.rank_eta ? ` · ~${Math.ceil(payload.rank_eta)}s` : '');
-                if (badge) { badge.style.display = 'inline-block'; badge.textContent = info; }
-                setLoadingMsg(`<strong>Waiting in queue…</strong><br>${info}<br>Please don't close this tab.`);
-              } else if (lastEvent === 'process_starts' || (payload && payload.msg === 'process_starts')) {
-                if (badge) { badge.style.display = 'inline-block'; badge.textContent = 'Generating…'; }
-                setLoadingMsg('<strong>IDM-VTON is generating your try-on…</strong><br>Usually 20–50 seconds.');
-                setStage('stage-generate', 'active');
-              }
-            } catch(_) {}
+    // ══════════════════════════════════════════════════
+    //  Image compression (reduces token cost ~4x)
+    // ══════════════════════════════════════════════════
+    async function compressImageBase64(b64, maxPx, quality) {
+      maxPx = maxPx || 768;
+      quality = quality || 0.82;
+      return new Promise(function (resolve) {
+        var img = new Image();
+        img.onload = function () {
+          var w = img.width, h = img.height;
+          if (w > maxPx || h > maxPx) {
+            var ratio = Math.min(maxPx / w, maxPx / h);
+            w = Math.round(w * ratio);
+            h = Math.round(h * ratio);
           }
+          var c = document.createElement('canvas');
+          c.width = w; c.height = h;
+          c.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(c.toDataURL('image/jpeg', quality).split(',')[1] || b64);
+        };
+        img.onerror = function () { resolve(b64); };
+        img.src = 'data:image/jpeg;base64,' + b64;
+      });
+    }
+
+    // ══════════════════════════════════════════════════
+    //  Initialisation
+    // ══════════════════════════════════════════════════
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedProduct = localStorage.getItem('trial_product');
+      if (savedProduct) {
+        try {
+          currentProduct = JSON.parse(savedProduct);
+          loadGarmentFromProduct(currentProduct);
+        } catch (e) { console.warn('[TrialRoom] Could not parse trial_product:', e); }
+      }
+      setupUploadZone('person-upload-zone', 'person-input', 'person-preview', b64 => { personBase64 = b64; });
+      setupUploadZone('garment-upload-zone', 'garment-input', 'garment-preview', b64 => {
+        garmentBase64 = b64;
+        currentProduct = null;
+        document.getElementById('garment-info-box').style.display = 'none';
+        document.getElementById('garment-placeholder').style.display = 'none';
+      });
+    });
+
+    // ══════════════════════════════════════════════════
+    //  Load garment from product ("Try It On")
+    // ══════════════════════════════════════════════════
+    function loadGarmentFromProduct(product) {
+      document.getElementById('garment-placeholder').style.display = 'none';
+      const box = document.getElementById('garment-info-box');
+      box.style.display = 'flex';
+      document.getElementById('garment-name').textContent = product.name || '';
+      document.getElementById('garment-color').textContent = product.color || '';
+      document.getElementById('garment-price').textContent = product.price
+        ? '₹' + Number(product.price).toLocaleString('en-IN') : '';
+      document.getElementById('garment-img-thumb').src = product.img || '';
+
+      const descInput = document.getElementById('garment-desc-input');
+      if (descInput && !descInput.value) {
+        descInput.value = [product.brand, product.name, product.color].filter(Boolean).join(', ');
+      }
+      if (!product.img) return;
+
+      const preview = document.getElementById('garment-preview');
+      const zone = document.getElementById('garment-upload-zone');
+      preview.src = product.img;
+      zone.classList.add('has-image');
+
+      const loader = new Image();
+      loader.onload = function () {
+        try {
+          const c = document.createElement('canvas');
+          c.width = loader.naturalWidth || 400; c.height = loader.naturalHeight || 500;
+          c.getContext('2d').drawImage(loader, 0, 0);
+          const b64 = c.toDataURL('image/jpeg', 0.92).split(',')[1];
+          if (b64) { garmentBase64 = b64; showToast('✅ Garment loaded — ready to generate!'); }
+          else fallbackManualUpload(zone, preview);
+        } catch (e) {
+          fetch(product.img).then(r => r.blob()).then(blob => {
+            const reader = new FileReader();
+            reader.onload = ev => {
+              const b64 = ev.target.result.split(',')[1];
+              if (b64) { garmentBase64 = b64; showToast('✅ Garment loaded!'); }
+              else fallbackManualUpload(zone, preview);
+            };
+            reader.readAsDataURL(blob);
+          }).catch(() => fallbackManualUpload(zone, preview));
+        }
+      };
+      loader.onerror = () => fallbackManualUpload(zone, preview);
+      loader.src = product.img;
+    }
+
+    function fallbackManualUpload(zone, preview) {
+      showToast('⚠️ Please upload the garment image manually using the upload box.');
+      zone.classList.remove('has-image');
+      if (preview) preview.src = '';
+    }
+
+    // ══════════════════════════════════════════════════
+    //  Upload Zone Setup
+    // ══════════════════════════════════════════════════
+    function setupUploadZone(zoneId, inputId, previewId, onLoad) {
+      const zone = document.getElementById(zoneId);
+      const input = document.getElementById(inputId);
+      const preview = document.getElementById(previewId);
+      if (!zone || !input || !preview) return;
+
+      input.addEventListener('change', () => { if (input.files[0]) readFile(input.files[0], preview, zone, onLoad); });
+      zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+      zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+      zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.classList.remove('drag-over');
+      const f = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f && f.type.startsWith('image/')) readFile(f, preview, zone, onLoad);
+    });
+    zone.addEventListener('click', () => { if (!zone.classList.contains('has-image')) input.click(); });
+    }
+
+    function readFile(file, preview, zone, onLoad) {
+      if (file.size > 10 * 1024 * 1024) { showToast('⚠️ Image too large. Please use a file under 10 MB.'); return; }
+      const reader = new FileReader();
+      reader.onload = e => {
+        preview.src = e.target.result;
+        zone.classList.add('has-image');
+        const b64 = e.target.result.split(',')[1];
+        if (b64) onLoad(b64);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function imageUrlToBase64(url, cb) {
+      fetch(url).then(r => {
+        if (r.ok) { r.blob().then(blob => { const reader = new FileReader(); reader.onload = e => cb(e.target.result.split(',')[1] || null); reader.onerror = () => tryCanvas(url, cb); reader.readAsDataURL(blob); }); return; }
+        tryCanvas(url, cb);
+      }).catch(() => tryCanvas(url, cb));
+    }
+
+    function tryCanvas(url, cb) {
+      const img = new Image(); img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try {
+          const c = document.createElement('canvas');
+          c.width = img.naturalWidth || img.width; c.height = img.naturalHeight || img.height;
+          c.getContext('2d').drawImage(img, 0, 0);
+          cb(c.toDataURL('image/jpeg', 0.92).split(',')[1] || null);
+        } catch (e) { cb(null); }
+      };
+      img.onerror = () => cb(null);
+      img.src = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
+    }
+
+    // ══════════════════════════════════════════════════
+    //  Clear / Reset helpers
+    // ══════════════════════════════════════════════════
+    function clearPerson() { personBase64 = null; resetZone('person-upload-zone', 'person-preview', 'person-input'); }
+    function clearGarment() {
+      garmentBase64 = null; currentProduct = null;
+      resetZone('garment-upload-zone', 'garment-preview', 'garment-input');
+      document.getElementById('garment-info-box').style.display = 'none';
+      document.getElementById('garment-placeholder').style.display = 'block';
+      const d = document.getElementById('garment-desc-input'); if (d) d.value = '';
+      localStorage.removeItem('trial_product');
+    }
+    function resetZone(zoneId, previewId, inputId) {
+      const z = document.getElementById(zoneId), p = document.getElementById(previewId), i = document.getElementById(inputId);
+      if (z) z.classList.remove('has-image'); if (p) p.src = ''; if (i) i.value = '';
+    }
+
+    // ══════════════════════════════════════════════════
+    //  Timeout Countdown (global 5-min safety timer)
+    // ══════════════════════════════════════════════════
+    function startTimeoutCountdown(onTimeout) {
+      _elapsedSeconds = 0; stopTimeoutCountdown();
+      const wrap = document.getElementById('timeout-bar-wrap');
+      const fill = document.getElementById('timeout-bar-fill');
+      const label = document.getElementById('timeout-label');
+      wrap.classList.add('show');
+      fill.style.width = '100%'; fill.classList.remove('warning', 'critical');
+      label.textContent = TIMEOUT_SECONDS + 's';
+
+      _timerInterval = setInterval(() => {
+        _elapsedSeconds++;
+        const remaining = TIMEOUT_SECONDS - _elapsedSeconds;
+        fill.style.width = Math.max(0, (remaining / TIMEOUT_SECONDS) * 100) + '%';
+        label.textContent = remaining + 's';
+        if (_elapsedSeconds >= CRITICAL_SECONDS) { fill.classList.add('critical'); fill.classList.remove('warning'); }
+        else if (_elapsedSeconds >= WARN_AT_SECONDS) { fill.classList.add('warning'); document.getElementById('main-spinner').classList.add('warning'); }
+      }, 1000);
+      _timeoutHandle = setTimeout(() => { stopTimeoutCountdown(); onTimeout(); }, TIMEOUT_SECONDS * 1000);
+    }
+
+    function stopTimeoutCountdown() {
+      if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
+      if (_timeoutHandle) { clearTimeout(_timeoutHandle); _timeoutHandle = null; }
+    }
+
+    function abortCurrentFetch() {
+      if (_abortController) { try { _abortController.abort(); } catch (e) { } _abortController = null; }
+    }
+
+    // ══════════════════════════════════════════════════
+    //  Rate-limit countdown bar (shown while waiting 65s)
+    // ══════════════════════════════════════════════════
+    function rateLimitCountdown(seconds) {
+      return new Promise(resolve => {
+        let remaining = seconds;
+        const fill = document.getElementById('timeout-bar-fill');
+        const label = document.getElementById('timeout-label');
+        const wrap = document.getElementById('timeout-bar-wrap');
+        const spinner = document.getElementById('main-spinner');
+
+        wrap.classList.add('show');
+        spinner.className = 'spinner warning';
+        if (fill) { fill.style.width = '100%'; fill.classList.remove('critical'); fill.classList.add('warning'); }
+        if (label) label.textContent = remaining + 's';
+        setLoadingMsg('<strong>⏳ Waiting ' + seconds + 's…</strong><br>Free tier resets every 60s. Auto-retrying. Do not close this tab.');
+
+        const interval = setInterval(() => {
+          remaining--;
+          if (fill) fill.style.width = (remaining / seconds * 100) + '%';
+          if (label) label.textContent = remaining + 's';
+          setLoadingMsg('<strong>⏳ Retrying in ' + remaining + 's…</strong><br>Free tier: 2 images/min per key. Please wait.');
+          if (remaining <= 0) {
+            clearInterval(interval);
+            wrap.classList.remove('show');
+            spinner.className = 'spinner';
+            setLoadingMsg('<strong>Retrying now…</strong><br>Please do not close this tab.');
+            resolve();
+          }
+        }, 1000);
+      });
+    }
+
+    // ══════════════════════════════════════════════════
+    //  Stage Progress Indicators
+    // ══════════════════════════════════════════════════
+    const STAGE_ICONS = { 'stage-upload': '📤', 'stage-queue': '🔄', 'stage-generate': '🧠', 'stage-render': '🖼️' };
+    function setStage(stageId, state) {
+      const el = document.getElementById(stageId); if (!el) return;
+      el.classList.remove('active', 'done', 'failed'); if (state) el.classList.add(state);
+      const icon = el.querySelector('.stage-icon'); if (!icon) return;
+      if (state === 'done') icon.textContent = '✅';
+      else if (state === 'failed') icon.textContent = '❌';
+      else icon.textContent = STAGE_ICONS[stageId] || '•';
+    }
+    function resetStages() { Object.keys(STAGE_ICONS).forEach(id => setStage(id, '')); }
+
+    function triggerError(reason) {
+      console.error('[Gemini TryOn] Error:', reason);
+      stopTimeoutCountdown(); abortCurrentFetch();
+      const spinner = document.getElementById('main-spinner');
+      spinner.classList.remove('warning'); spinner.classList.add('error');
+      Object.keys(STAGE_ICONS).forEach(id => setStage(id, 'failed'));
+      setLoadingMsg('<strong>Try-On failed.</strong><br>Check your connection and try again.');
+      setTimeout(() => {
+        document.getElementById('trial-loading').classList.remove('show');
+        document.getElementById('generate-btn').disabled = false;
+        showError(reason);
+      }, 1200);
+    }
+
+    // ══════════════════════════════════════════════════
+    //  MAIN — Generate Try-On
+    //
+    //  Strategy (clean, minimal, no spam):
+    //  1. Try Model 1 + Key 1
+    //     → 404  : model doesn't exist → try Model 2 + Key 1 immediately
+    //     → 429  : rate limited → switch to Key 2 instantly (no wait)
+    //              If Key 2 also 429 → wait RATE_LIMIT_WAIT seconds → retry Key 1
+    //              Do this up to 2 full rounds, then give up with clear message
+    //     → 200  : success ✅
+    //  2. Same logic repeated for Model 2 if Model 1 returns 404
+    // ══════════════════════════════════════════════════
+    async function generateTryOn() {
+      if (!personBase64) { showToast('Please upload your full-body photo first (Step 1).'); return; }
+      if (!garmentBase64) { showToast('Please select or upload a garment image (Step 2).'); return; }
+
+      hideError();
+      document.getElementById('ai-result').classList.remove('show');
+      document.getElementById('masked-preview').classList.remove('show');
+      document.getElementById('queue-badge').style.display = 'none';
+      document.getElementById('main-spinner').className = 'spinner';
+      document.getElementById('timeout-bar-wrap').classList.remove('show');
+      document.getElementById('trial-loading').classList.add('show');
+      document.getElementById('generate-btn').disabled = true;
+      resetStages();
+
+      _abortController = new AbortController();
+      startTimeoutCountdown(() => triggerError('Request timed out after 5 minutes. The free server might be highly congested.'));
+
+      try {
+        // ── Stage 1: Compress & Prepare ──
+        setStage('stage-upload', 'active');
+        setLoadingMsg('<strong>Preparing images…</strong>');
+        await sleep(80);
+        const compPerson = await compressImageBase64(personBase64, 768, 0.82);
+        const compGarment = await compressImageBase64(garmentBase64, 768, 0.82);
+
+        const personBlob = base64ToBlob(compPerson, 'image/jpeg');
+        const garmentBlob = base64ToBlob(compGarment, 'image/jpeg');
+        setStage('stage-upload', 'done');
+
+        // ── Stage 2: Connect to Free API ──
+        setStage('stage-queue', 'active');
+        const garmentDesc = (document.getElementById('garment-desc-input').value.trim())
+          || (currentProduct ? currentProduct.name : 'clothing item');
+
+        setLoadingMsg('<strong>Connecting to free Virtual Try-On space (IDM-VTON)…</strong><br>Loading Gradio client. This may take a moment.');
+        const { client } = await import("https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js");
+
+        setLoadingMsg('<strong>Queuing request…</strong><br>We are using a free public model, so there might be a queue.');
+        const app = await client("yisol/IDM-VTON");
+
+        setStage('stage-queue', 'done');
+        setStage('stage-generate', 'active');
+
+        // ── Stage 3: Generate ──
+        setLoadingMsg('<strong>Generating Try-On…</strong><br>AI is processing your images. Please do not close this tab.');
+
+        const result = await app.predict("/tryon", [
+          { background: personBlob, layers: [], composite: null }, // Human image
+          garmentBlob, // Garment image
+          garmentDesc, // Garment description
+          true, // is_checked (Auto-crop & resizing)
+          true, // is_checked_crop (Auto-masking)
+          30, // Denoising Steps
+          42, // Seed
+        ]);
+
+        // ── Stage 4: Render ──
+        setStage('stage-generate', 'done');
+        setStage('stage-render', 'active');
+        setLoadingMsg('<strong>Rendering result…</strong>');
+
+        let outputUrl = null;
+        let maskedUrl = null;
+
+        if (result && result.data && result.data[0]) {
+          outputUrl = result.data[0].url || null;
+        }
+        if (result && result.data && result.data[1]) {
+          maskedUrl = result.data[1].url || null;
+        }
+
+        if (!outputUrl) {
+          triggerError('No image returned from IDM-VTON API. The service might be temporarily glitching.');
+          return;
+        }
+
+        await sleep(300);
+        setStage('stage-render', 'done');
+        stopTimeoutCountdown();
+        document.getElementById('trial-loading').classList.remove('show');
+        showResult(outputUrl, maskedUrl);
+
+      } catch (outerErr) {
+        if (outerErr.name === 'AbortError') return;
+        triggerError('Generation failed. The free server might be busy or offline: ' + (outerErr.message || String(outerErr)));
+      }
+    }
+
+    // ══════════════════════════════════════════════════
+    //  Extract image from Gemini response
+    // ══════════════════════════════════════════════════
+    function extractGeminiImage(data) {
+      const parts = data?.candidates?.[0]?.content?.parts;
+      if (!parts) return null;
+      for (const part of parts) {
+        if (part.inlineData?.data) {
+          const mime = part.inlineData.mimeType || 'image/png';
+          return 'data:' + mime + ';base64,' + part.inlineData.data;
         }
       }
-      reject(new Error('Stream ended without result.'));
-    } catch(err) {
-      reject(err);
+      return null;
     }
-  });
-}
 
-function extractImgUrl(val) {
-  if (!val) return null;
-  if (typeof val === 'string') {
-    if (val.startsWith('http') || val.startsWith('data:')) return val;
-    if (val.startsWith('/')) return `https://${SPACE_DOMAIN}/gradio_api/file=` + val;
-  }
-  if (Array.isArray(val)) {
-    for (const item of val) { const f = extractImgUrl(item); if (f) return f; }
-  }
-  if (val && typeof val === 'object') {
-    if (val.url) return val.url;
-    if (val.path) {
-      const p = val.path;
-      return p.startsWith('http') ? p : `https://${SPACE_DOMAIN}/gradio_api/file=` + p;
+    // ══════════════════════════════════════════════════
+    //  Show Result
+    // ══════════════════════════════════════════════════
+    function showResult(tryOnUrl, maskedUrl) {
+      resultImgUrl = tryOnUrl;
+      document.getElementById('result-person-img').src = document.getElementById('person-preview').src;
+      document.getElementById('result-output-img').src = tryOnUrl;
+      document.getElementById('result-output-label').textContent = '✨ AI Try-On Result';
+      document.getElementById('result-label').textContent = 'Try-On Complete ✓';
+      if (maskedUrl) {
+        document.getElementById('masked-preview-img').src = maskedUrl;
+        document.getElementById('masked-preview').classList.add('show');
+      }
+      document.getElementById('ai-result').classList.add('show');
+      document.getElementById('ai-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById('generate-btn').disabled = false;
     }
-    if (val.image) return extractImgUrl(val.image);
-    for (const k of Object.keys(val)) { const f = extractImgUrl(val[k]); if (f) return f; }
-  }
-  return null;
-}
 
-function base64ToBlob(b64) {
-  const bytes = atob(b64);
-  const arr   = new Uint8Array(bytes.length);
-  for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
-  return new Blob([arr], { type: 'image/jpeg' });
-}
+    // ══════════════════════════════════════════════════
+    //  Helpers
+    // ══════════════════════════════════════════════════
+    function base64ToBlob(b64, mimeType) {
+      mimeType = mimeType || 'image/jpeg';
+      const bytes = atob(b64); const arr = new Uint8Array(bytes.length);
+      for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+      return new Blob([arr], { type: mimeType });
+    }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
+    function setLoadingMsg(html) { const el = document.getElementById('loading-msg'); if (el) el.innerHTML = html; }
 
-function setLoadingMsg(html) {
-  const el = document.getElementById('loading-msg');
-  if (el) el.innerHTML = html;
-}
+    function showError(msg) {
+      const el = document.getElementById('error-msg'); if (el) el.textContent = msg;
+      document.getElementById('trial-error').classList.add('show');
+    }
 
-function showError(msg) {
-  document.getElementById('error-msg').textContent = msg;
-  document.getElementById('trial-error').classList.add('show');
-}
+    function hideError() { document.getElementById('trial-error').classList.remove('show'); }
 
-function hideError() {
-  document.getElementById('trial-error').classList.remove('show');
-}
+    // ══════════════════════════════════════════════════
+    //  Result Actions
+    // ══════════════════════════════════════════════════
+    function downloadResult() {
+      if (!resultImgUrl) return;
+      if (resultImgUrl.startsWith('data:')) { triggerDownload(resultImgUrl); return; }
+      fetch(resultImgUrl).then(r => r.blob()).then(blob => {
+        const url = URL.createObjectURL(blob); triggerDownload(url);
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+      }).catch(() => window.open(resultImgUrl, '_blank'));
+    }
 
-function downloadResult() {
-  if (!resultImgUrl) return;
-  const a = document.createElement('a');
-  a.href = resultImgUrl;
-  a.download = 'easybuy-tryon.jpg';
-  a.click();
-}
+    function triggerDownload(url) {
+      const a = document.createElement('a'); a.href = url;
+      a.download = 'easybuy-tryon-' + Date.now() + '.jpg';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
 
-function addCurrentToCart() {
-  if (!currentProduct) { showToast('No product selected. Use "Try It On" from the shop first.'); return; }
-  let cart = JSON.parse(localStorage.getItem('myshop_cart') || '[]');
-  const existing = cart.find(c => c.id === currentProduct.id);
-  if (existing) { existing.qty++; }
-  else { cart.push({ ...currentProduct, id: Date.now(), qty: 1 }); }
-  localStorage.setItem('myshop_cart', JSON.stringify(cart));
-  showToast(`"${currentProduct.name}" added to Bag!`);
-  const btn = document.querySelector('.result-actions .btn-primary.green');
-  if (btn) { btn.textContent = '✓ Added!'; setTimeout(() => btn.textContent = '🛒 Add to Bag', 2000); }
-}
+    function addCurrentToCart() {
+      if (!currentProduct) { showToast('No product selected. Use "Try It On" from the shop.'); return; }
+      let cart = JSON.parse(localStorage.getItem('myshop_cart') || '[]');
+      const existing = cart.find(c => c.name === currentProduct.name);
+      if (existing) { existing.qty = (existing.qty || 1) + 1; }
+      else { cart.push({ ...currentProduct, id: Date.now(), qty: 1 }); }
+      localStorage.setItem('myshop_cart', JSON.stringify(cart));
+      showToast('"' + currentProduct.name + '" added to Bag! 🛒');
+      const btn = document.querySelector('.result-actions .btn-primary.green');
+      if (btn) { btn.textContent = '✓ Added to Bag!'; setTimeout(() => { btn.textContent = '🛒 Add to Bag'; }, 2000); }
+    }
 
-function resetAll() {
-  clearPerson();
-  resultImgUrl = null;
-  stopTimeoutCountdown();
-  abortCurrentFetch();
-  document.getElementById('ai-result').classList.remove('show');
-  document.getElementById('trial-loading').classList.remove('show');
-  document.getElementById('timeout-bar-wrap').classList.remove('show');
-  hideError();
-  resetStages();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+    function resetAll() {
+      clearPerson(); resultImgUrl = null;
+      stopTimeoutCountdown(); abortCurrentFetch();
+      document.getElementById('ai-result').classList.remove('show');
+      document.getElementById('masked-preview').classList.remove('show');
+      document.getElementById('trial-loading').classList.remove('show');
+      document.getElementById('timeout-bar-wrap').classList.remove('show');
+      document.getElementById('main-spinner').className = 'spinner';
+      hideError(); resetStages();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-function showToast(msg) {
-  let t = document.getElementById('toast');
-  if (!t) { t = document.createElement('div'); t.id = 'toast'; document.body.appendChild(t); }
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.classList.remove('show'), 3000);
-}
-</script>
+    // ══════════════════════════════════════════════════
+    //  Toast
+    // ══════════════════════════════════════════════════
+    function showToast(msg) {
+      let t = document.getElementById('toast');
+      if (!t) { t = document.createElement('div'); t.id = 'toast'; document.body.appendChild(t); }
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(t._tid); t._tid = setTimeout(() => t.classList.remove('show'), 3500);
+    }
+  </script>
 </body>
+
 </html>
