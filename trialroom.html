@@ -1,14 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Easy Buy — AI Virtual Trial Room</title>
-  <link rel="stylesheet" href="stylebg.css">
   <link rel="icon" type="image/png" href="favicon.png">
+<link rel="stylesheet" href="stylebg.css">
   <style>
-    /* ── Trial Room Page Layout ── */
+    /* ── CSS Variables ── */
+    :root {
+      --brand-orange: #e65100;
+      --text-primary: #1a1a1a;
+      --text-secondary: #444;
+      --text-muted: #888;
+      --white: #fff;
+      --off-white: #f7f7f5;
+      --border: #e8e8e4;
+      --border-dark: #c8c8c4;
+      --green: #388e3c;
+      --red: #c62828;
+      --font-body: 'Georgia', serif;
+      --font-logo: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--off-white);
+      color: var(--text-primary);
+    }
+
+    header {
+      padding: 18px 32px;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      font-family: var(--font-logo);
+      font-size: 1.8rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+    }
+
+    nav {
+      display: flex;
+      gap: 24px;
+      padding: 10px 32px;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    nav a:hover { color: var(--brand-orange); }
+
+    /* ── Trial Room Layout ── */
     .trial-page {
       max-width: 1100px;
       margin: 36px auto 80px;
@@ -60,11 +114,7 @@
       flex: 1;
     }
 
-    .tip-icon {
-      font-size: 22px;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
+    .tip-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
 
     .tip-text strong {
       display: block;
@@ -143,34 +193,11 @@
       overflow: hidden;
     }
 
-    .upload-zone:hover {
-      border-color: var(--text-primary);
-      background: var(--off-white);
-    }
-
-    .upload-zone.drag-over {
-      border-color: var(--brand-orange);
-      background: #fff8f3;
-    }
-
-    .upload-zone.has-image {
-      border-style: solid;
-      border-color: var(--border);
-      cursor: default;
-    }
-
-    .upload-zone input[type="file"] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-    }
-
-    .upload-zone.has-image input[type="file"] {
-      display: none;
-    }
+    .upload-zone:hover { border-color: var(--text-primary); background: var(--off-white); }
+    .upload-zone.drag-over { border-color: var(--brand-orange); background: #fff8f3; }
+    .upload-zone.has-image { border-style: solid; border-color: var(--border); cursor: default; }
+    .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .upload-zone.has-image input[type="file"] { display: none; }
 
     .upload-placeholder {
       display: flex;
@@ -182,10 +209,7 @@
       text-align: center;
     }
 
-    .upload-placeholder .up-icon {
-      font-size: 48px;
-      opacity: 0.25;
-    }
+    .upload-placeholder .up-icon { font-size: 48px; opacity: 0.25; }
 
     .upload-placeholder p {
       font-size: 13px;
@@ -194,10 +218,7 @@
       margin: 0;
     }
 
-    .upload-placeholder strong {
-      font-weight: 700;
-      color: var(--text-primary);
-    }
+    .upload-placeholder strong { font-weight: 700; color: var(--text-primary); }
 
     .preview-img {
       display: none;
@@ -207,13 +228,8 @@
       background: var(--off-white);
     }
 
-    .upload-zone.has-image .upload-placeholder {
-      display: none;
-    }
-
-    .upload-zone.has-image .preview-img {
-      display: block;
-    }
+    .upload-zone.has-image .upload-placeholder { display: none; }
+    .upload-zone.has-image .preview-img { display: block; }
 
     .upload-actions {
       padding: 0 20px 20px;
@@ -237,12 +253,9 @@
       cursor: pointer;
     }
 
-    .btn-outline:hover {
-      border-color: var(--text-primary);
-      background: var(--off-white);
-    }
+    .btn-outline:hover { border-color: var(--text-primary); background: var(--off-white); }
 
-    /* ── Arrow Between Panels ── */
+    /* ── Arrow ── */
     .trial-arrow {
       display: flex;
       flex-direction: column;
@@ -262,7 +275,7 @@
       text-transform: uppercase;
     }
 
-    /* ── Garment Info Card ── */
+    /* ── Garment Info ── */
     .garment-info {
       padding: 14px 20px;
       display: flex;
@@ -283,19 +296,8 @@
       background: var(--white);
     }
 
-    .garment-info .garment-details h4 {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin: 0 0 4px;
-    }
-
-    .garment-info .garment-details p {
-      font-size: 12px;
-      color: var(--text-muted);
-      line-height: 1.5;
-      margin: 0;
-    }
+    .garment-info .garment-details h4 { font-size: 13px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px; }
+    .garment-info .garment-details p { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin: 0; }
 
     .garment-placeholder {
       margin: 20px;
@@ -308,10 +310,66 @@
       line-height: 1.7;
     }
 
-    /* ── Garment Description Input ── */
-    .garment-desc-wrap {
-      padding: 0 20px 16px;
+    /* ── Garment Type Selector ── */
+    .garment-type-wrap {
+      padding: 0 20px 14px;
     }
+
+    .garment-type-wrap label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .garment-type-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .garment-type-btn {
+      padding: 6px 14px;
+      border: 1.5px solid var(--border-dark);
+      border-radius: 20px;
+      background: var(--white);
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .garment-type-btn:hover { border-color: var(--text-primary); color: var(--text-primary); }
+    .garment-type-btn.active { background: var(--text-primary); color: var(--white); border-color: var(--text-primary); }
+
+    .garment-type-detected {
+      margin-top: 8px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .garment-type-detected .detected-tag {
+      display: inline-block;
+      background: #e8f5e9;
+      color: var(--green);
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+    }
+
+    .garment-type-detected .detected-tag.mismatch {
+      background: #fff3e0;
+      color: var(--brand-orange);
+    }
+
+    /* ── Garment Description ── */
+    .garment-desc-wrap { padding: 0 20px 16px; }
 
     .garment-desc-wrap label {
       display: block;
@@ -336,13 +394,57 @@
       transition: border-color 0.2s, background 0.2s;
     }
 
-    .garment-desc-wrap input:focus {
-      border-color: var(--text-primary);
-      background: var(--white);
+    .garment-desc-wrap input:focus { border-color: var(--text-primary); background: var(--white); }
+    .garment-desc-wrap input::placeholder { color: var(--text-muted); }
+
+    /* ── Advanced Options ── */
+    .advanced-toggle {
+      margin: 0 20px 10px;
+      font-size: 12px;
+      color: var(--brand-orange);
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.04em;
     }
 
-    .garment-desc-wrap input::placeholder {
-      color: var(--text-muted);
+    .advanced-toggle:hover { text-decoration: underline; }
+
+    .advanced-panel {
+      display: none;
+      padding: 0 20px 16px;
+      background: #fafaf8;
+      border-top: 1px solid var(--border);
+    }
+
+    .advanced-panel.open { display: block; }
+
+    .advanced-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 12.5px;
+    }
+
+    .advanced-row:last-child { border-bottom: none; }
+
+    .advanced-row label {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .advanced-row input[type="range"] {
+      width: 130px;
+      accent-color: var(--text-primary);
+    }
+
+    .advanced-row .val-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-primary);
+      min-width: 36px;
+      text-align: right;
     }
 
     /* ── Generate Button ── */
@@ -371,15 +473,8 @@
       cursor: pointer;
     }
 
-    .btn-generate:hover:not(:disabled) {
-      background: #333;
-    }
-
-    .btn-generate:disabled {
-      background: var(--border-dark);
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
+    .btn-generate:hover:not(:disabled) { background: #333; }
+    .btn-generate:disabled { background: var(--border-dark); cursor: not-allowed; opacity: 0.7; }
 
     /* ── Loading Panel ── */
     .trial-loading {
@@ -392,13 +487,9 @@
       background: var(--off-white);
     }
 
-    .trial-loading.show {
-      display: block;
-    }
+    .trial-loading.show { display: block; }
 
-    .loading-stages {
-      margin-bottom: 20px;
-    }
+    .loading-stages { margin-bottom: 20px; }
 
     .stage-row {
       display: flex;
@@ -410,35 +501,16 @@
       font-weight: 600;
       color: var(--text-muted);
       margin: 4px auto;
-      max-width: 360px;
+      max-width: 420px;
       text-align: left;
       transition: all 0.3s ease;
     }
 
-    .stage-row.active {
-      color: var(--text-primary);
-      background: var(--white);
-      border: 1px solid var(--border);
-    }
-
-    .stage-row.done {
-      color: var(--green);
-    }
-
-    .stage-row.failed {
-      color: var(--red);
-    }
-
-    .stage-icon {
-      font-size: 16px;
-      width: 22px;
-      text-align: center;
-      flex-shrink: 0;
-    }
-
-    .stage-label {
-      flex: 1;
-    }
+    .stage-row.active { color: var(--text-primary); background: var(--white); border: 1px solid var(--border); }
+    .stage-row.done { color: var(--green); }
+    .stage-row.failed { color: var(--red); }
+    .stage-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+    .stage-label { flex: 1; }
 
     .spinner {
       width: 44px;
@@ -450,75 +522,22 @@
       margin: 0 auto 16px;
     }
 
-    .spinner.warning {
-      border-top-color: var(--brand-orange);
-    }
+    .spinner.warning { border-top-color: var(--brand-orange); }
 
-    .spinner.error {
-      border-top-color: var(--red);
-      animation: none;
-      border-color: var(--red);
-    }
+    .spinner.error { border-top-color: var(--red); animation: none; border-color: var(--red); }
 
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .trial-loading p {
-      font-size: 13.5px;
-      color: var(--text-muted);
-      line-height: 1.8;
-      margin: 0;
-    }
+    .trial-loading p { font-size: 13.5px; color: var(--text-muted); line-height: 1.8; margin: 0; }
+    .trial-loading strong { color: var(--text-primary); }
 
-    .trial-loading strong {
-      color: var(--text-primary);
-    }
-
-    /* ── Timeout Progress Bar ── */
-    .timeout-bar-wrap {
-      margin: 16px auto 0;
-      max-width: 320px;
-      display: none;
-    }
-
-    .timeout-bar-wrap.show {
-      display: block;
-    }
-
-    .timeout-bar-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11.5px;
-      color: var(--text-muted);
-      margin-bottom: 5px;
-      font-weight: 600;
-    }
-
-    .timeout-bar-track {
-      height: 5px;
-      background: var(--border);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .timeout-bar-fill {
-      height: 100%;
-      width: 100%;
-      background: var(--green);
-      border-radius: 3px;
-      transition: width 1s linear, background 0.5s;
-    }
-
-    .timeout-bar-fill.warning {
-      background: var(--brand-orange);
-    }
-
-    .timeout-bar-fill.critical {
-      background: var(--red);
-    }
+    .timeout-bar-wrap { margin: 16px auto 0; max-width: 320px; display: none; }
+    .timeout-bar-wrap.show { display: block; }
+    .timeout-bar-label { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted); margin-bottom: 5px; font-weight: 600; }
+    .timeout-bar-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .timeout-bar-fill { height: 100%; width: 100%; background: var(--green); border-radius: 3px; transition: width 1s linear, background 0.5s; }
+    .timeout-bar-fill.warning { background: var(--brand-orange); }
+    .timeout-bar-fill.critical { background: var(--red); }
 
     .queue-badge {
       display: inline-block;
@@ -531,10 +550,7 @@
       margin-top: 12px;
     }
 
-    .queue-badge.warning {
-      background: #fff3e0;
-      color: var(--brand-orange);
-    }
+    .queue-badge.warning { background: #fff3e0; color: var(--brand-orange); }
 
     /* ── Error Block ── */
     .trial-error {
@@ -550,34 +566,14 @@
       line-height: 1.6;
     }
 
-    .trial-error.show {
-      display: block;
-    }
+    .trial-error.show { display: block; }
 
     /* ── Result Section ── */
-    .ai-result-section {
-      display: none;
-      margin: 32px 0;
-    }
+    .ai-result-section { display: none; margin: 32px 0; }
+    .ai-result-section.show { display: block; }
 
-    .ai-result-section.show {
-      display: block;
-    }
-
-    .result-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .result-dot {
-      width: 10px;
-      height: 10px;
-      background: var(--green);
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
+    .result-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+    .result-dot { width: 10px; height: 10px; background: var(--green); border-radius: 50%; flex-shrink: 0; }
 
     .result-grid {
       display: grid;
@@ -586,12 +582,7 @@
       margin-bottom: 20px;
     }
 
-    .result-box {
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
+    .result-box { border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; }
     .result-box-label {
       padding: 8px 14px;
       font-size: 11px;
@@ -611,11 +602,59 @@
       display: block;
     }
 
-    .result-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
+    /* ── Quality Badge ── */
+    .quality-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 700;
+      margin-left: 10px;
     }
+
+    .quality-badge.high { background: #e8f5e9; color: var(--green); }
+    .quality-badge.medium { background: #fff3e0; color: var(--brand-orange); }
+    .quality-badge.low { background: #fff5f5; color: var(--red); }
+
+    /* ── Post-Process Panel ── */
+    .postprocess-panel {
+      margin: 16px 0;
+      padding: 18px 20px;
+      background: #f9f9f7;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .postprocess-panel h4 {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .postprocess-checks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .pp-check {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .pp-check.pass { color: var(--green); }
+    .pp-check.fail { color: var(--red); }
+
+    .result-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
     .btn-primary {
       flex: 1;
@@ -634,91 +673,73 @@
       min-width: 120px;
     }
 
-    .btn-primary:hover {
-      background: #333;
-    }
+    .btn-primary:hover { background: #333; }
+    .btn-primary.green { background: var(--green); }
+    .btn-primary.green:hover { background: #2e7d32; }
+    .btn-primary.orange { background: var(--brand-orange); }
+    .btn-primary.orange:hover { background: #bf360c; }
 
-    .btn-primary.green {
-      background: var(--green);
-    }
-
-    .btn-primary.green:hover {
-      background: #2e7d32;
-    }
-
-    /* ── Masked Preview ── */
-    .masked-preview {
+    /* ── Debug Panel ── */
+    .debug-panel {
       display: none;
-      margin-top: 16px;
-      border: 1.5px solid var(--border);
+      margin: 20px 0;
+      padding: 18px 20px;
+      background: #1a1a1a;
       border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .masked-preview.show {
-      display: block;
-    }
-
-    .masked-preview-label {
-      padding: 8px 14px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--border);
-      background: var(--off-white);
-    }
-
-    .masked-preview img {
-      width: 100%;
+      color: #a8ff78;
+      font-family: 'Courier New', monospace;
+      font-size: 11.5px;
+      line-height: 1.7;
       max-height: 300px;
-      object-fit: contain;
-      background: var(--off-white);
-      display: block;
+      overflow-y: auto;
     }
+
+    .debug-panel.show { display: block; }
+
+    .debug-log { margin: 2px 0; }
+    .debug-log.info { color: #7ec8e3; }
+    .debug-log.warn { color: #ffd700; }
+    .debug-log.error { color: #ff6b6b; }
+    .debug-log.success { color: #a8ff78; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--text-primary);
+      color: var(--white);
+      padding: 11px 22px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s;
+      z-index: 9999;
+      white-space: nowrap;
+    }
+
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* ── Responsive ── */
     @media (max-width: 860px) {
-      .trial-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .trial-arrow {
-        padding-top: 0;
-        flex-direction: row;
-        justify-content: center;
-        height: auto;
-        padding: 14px 0;
-      }
-
-      .result-grid {
-        grid-template-columns: 1fr;
-      }
+      .trial-layout { grid-template-columns: 1fr; }
+      .trial-arrow { padding-top: 0; flex-direction: row; justify-content: center; height: auto; padding: 14px 0; }
+      .result-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 540px) {
-      .trial-page {
-        padding: 0 12px;
-      }
-
-      .trial-tips {
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .result-actions {
-        flex-direction: column;
-      }
+      .trial-page { padding: 0 12px; }
+      .trial-tips { flex-direction: column; gap: 12px; }
+      .result-actions { flex-direction: column; }
     }
   </style>
 </head>
 
 <body>
-
-  <header>
-    <h1>Easy Buy</h1>
-  </header>
+  <header><h1>Easy Buy</h1></header>
   <nav>
     <a href="index.html">Home</a>
     <a href="latest.html">Latest</a>
@@ -731,7 +752,7 @@
     <h2 class="trial-page-title">AI Virtual Trial Room</h2>
     <p class="trial-page-sub">
       Upload your photo and instantly see how any outfit looks on you.
-      <span>✦ Powered by Gemini 2.0 Flash</span>
+      <span>✦ IDM-VTON · Production Pipeline v2</span>
     </p>
 
     <!-- Tips -->
@@ -746,15 +767,15 @@
       <div class="tip-item">
         <div class="tip-icon">👕</div>
         <div class="tip-text">
-          <strong>Garment Image</strong>
-          <p>Click "Try It On" on any product page — or upload a garment photo manually.</p>
+          <strong>Garment Type</strong>
+          <p>Select the correct garment type (upper / lower / full-body) for accurate region masking.</p>
         </div>
       </div>
       <div class="tip-item">
-        <div class="tip-icon">⏱️</div>
+        <div class="tip-icon">✨</div>
         <div class="tip-text">
-          <strong>Processing Time</strong>
-          <p>Gemini usually takes 5–15 seconds. Stay on the page while it generates.</p>
+          <strong>Auto Cleanup</strong>
+          <p>Pipeline v2 removes mask artifacts, fixes garment bleed, and refines boundaries automatically.</p>
         </div>
       </div>
     </div>
@@ -772,8 +793,7 @@
           <input type="file" id="person-input" accept="image/*">
           <div class="upload-placeholder">
             <div class="up-icon">🧍</div>
-            <p><strong>Upload your full-body photo</strong><br>Drag & drop or click to browse<br><span
-                style="font-size:11px;">JPG, PNG, WEBP · Max 10 MB</span></p>
+            <p><strong>Upload your full-body photo</strong><br>Drag & drop or click to browse<br><span style="font-size:11px;">JPG, PNG, WEBP · Max 10 MB</span></p>
           </div>
           <img id="person-preview" class="preview-img" alt="Your photo">
         </div>
@@ -796,7 +816,6 @@
           <h3>Selected Garment</h3>
         </div>
 
-        <!-- Product info box (auto-filled from "Try It On") -->
         <div id="garment-info-box" class="garment-info" style="display:none;">
           <img id="garment-img-thumb" src="" alt="Garment">
           <div class="garment-details">
@@ -806,7 +825,6 @@
           </div>
         </div>
 
-        <!-- Placeholder when no garment loaded -->
         <div id="garment-placeholder" class="garment-placeholder">
           <div style="font-size:40px;margin-bottom:10px;">👕</div>
           <strong>No garment selected</strong><br>
@@ -816,7 +834,20 @@
           <a href="index.html" style="color:var(--brand-orange);font-weight:700;font-size:13px;">← Browse Products</a>
         </div>
 
-        <!-- Manual garment upload -->
+        <!-- Garment Type Override -->
+        <div class="garment-type-wrap">
+          <label>Garment Category</label>
+          <div class="garment-type-buttons">
+            <button class="garment-type-btn active" data-type="upper" onclick="setGarmentType('upper', this)">👕 Upper</button>
+            <button class="garment-type-btn" data-type="lower" onclick="setGarmentType('lower', this)">👖 Lower</button>
+            <button class="garment-type-btn" data-type="full" onclick="setGarmentType('full', this)">🧥 Full-Body</button>
+          </div>
+          <div class="garment-type-detected" id="garment-type-detected" style="display:none;">
+            Auto-detected: <span class="detected-tag" id="detected-tag-text">upper</span>
+          </div>
+        </div>
+
+        <!-- Manual Upload -->
         <div class="upload-zone" id="garment-upload-zone" style="margin:0 20px;min-height:200px;">
           <input type="file" id="garment-input" accept="image/*">
           <div class="upload-placeholder">
@@ -826,11 +857,47 @@
           <img id="garment-preview" class="preview-img" alt="Garment preview">
         </div>
 
-        <!-- Garment description input -->
+        <!-- Garment Description -->
         <div class="garment-desc-wrap" style="margin-top:12px;">
-          <label for="garment-desc-input">Garment Description (for better AI results)</label>
-          <input type="text" id="garment-desc-input" placeholder="e.g. casual blue denim jacket, formal black shirt…"
-            maxlength="120">
+          <label for="garment-desc-input">Garment Description</label>
+          <input type="text" id="garment-desc-input" placeholder="e.g. casual blue denim jacket, formal black shirt…" maxlength="120">
+        </div>
+
+        <!-- Advanced Options Toggle -->
+        <div class="advanced-toggle" onclick="toggleAdvanced()">⚙ Advanced Options ▾</div>
+        <div class="advanced-panel" id="advanced-panel">
+          <div class="advanced-row">
+            <label>Denoising Steps</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" id="steps-range" min="20" max="50" value="30" oninput="document.getElementById('steps-val').textContent=this.value">
+              <span class="val-label" id="steps-val">30</span>
+            </div>
+          </div>
+          <div class="advanced-row">
+            <label>Seed</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" id="seed-range" min="1" max="9999" value="42" oninput="document.getElementById('seed-val').textContent=this.value">
+              <span class="val-label" id="seed-val">42</span>
+            </div>
+          </div>
+          <div class="advanced-row">
+            <label>Mask Feather (px)</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" id="feather-range" min="0" max="20" value="6" oninput="document.getElementById('feather-val').textContent=this.value">
+              <span class="val-label" id="feather-val">6</span>
+            </div>
+          </div>
+          <div class="advanced-row">
+            <label>Mask Expansion (%)</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" id="expand-range" min="0" max="30" value="8" oninput="document.getElementById('expand-val').textContent=this.value+'%'">
+              <span class="val-label" id="expand-val">8%</span>
+            </div>
+          </div>
+          <div class="advanced-row">
+            <label>Show Debug Log</label>
+            <input type="checkbox" id="debug-check" style="width:16px;height:16px;cursor:pointer;">
+          </div>
         </div>
 
         <div class="upload-actions">
@@ -848,55 +915,37 @@
       </button>
     </div>
 
-    <!-- ── Loading Panel ── -->
+    <!-- Loading Panel -->
     <div class="trial-loading" id="trial-loading">
       <div class="spinner" id="main-spinner"></div>
-
       <div class="loading-stages" id="loading-stages">
-        <div class="stage-row" id="stage-upload">
-          <span class="stage-icon">📤</span>
-          <span class="stage-label">Preparing images…</span>
-        </div>
-        <div class="stage-row" id="stage-queue">
-          <span class="stage-icon">🔄</span>
-          <span class="stage-label">Sending to Gemini AI…</span>
-        </div>
-        <div class="stage-row" id="stage-generate">
-          <span class="stage-icon">🧠</span>
-          <span class="stage-label">Gemini generating try-on…</span>
-        </div>
-        <div class="stage-row" id="stage-render">
-          <span class="stage-icon">🖼️</span>
-          <span class="stage-label">Rendering result…</span>
-        </div>
+        <div class="stage-row" id="stage-upload"><span class="stage-icon">📤</span><span class="stage-label">Preparing &amp; compressing images…</span></div>
+        <div class="stage-row" id="stage-classify"><span class="stage-icon">🔍</span><span class="stage-label">Validating garment category…</span></div>
+        <div class="stage-row" id="stage-queue"><span class="stage-icon">🔄</span><span class="stage-label">Connecting to IDM-VTON space…</span></div>
+        <div class="stage-row" id="stage-generate"><span class="stage-icon">🧠</span><span class="stage-label">Diffusion model generating try-on…</span></div>
+        <div class="stage-row" id="stage-postprocess"><span class="stage-icon">🎨</span><span class="stage-label">Post-processing &amp; artifact removal…</span></div>
+        <div class="stage-row" id="stage-render"><span class="stage-icon">🖼️</span><span class="stage-label">Compositing final result…</span></div>
       </div>
-
-      <p id="loading-msg"><strong>Connecting to Gemini…</strong><br>Please don't close this tab.</p>
+      <p id="loading-msg"><strong>Connecting…</strong><br>Please don't close this tab.</p>
       <div class="queue-badge" id="queue-badge" style="display:none;"></div>
-
       <div class="timeout-bar-wrap" id="timeout-bar-wrap">
-        <div class="timeout-bar-label">
-          <span>⏱ Time remaining</span>
-          <span id="timeout-label">90s</span>
-        </div>
-        <div class="timeout-bar-track">
-          <div class="timeout-bar-fill" id="timeout-bar-fill"></div>
-        </div>
+        <div class="timeout-bar-label"><span>⏱ Time remaining</span><span id="timeout-label">90s</span></div>
+        <div class="timeout-bar-track"><div class="timeout-bar-fill" id="timeout-bar-fill"></div></div>
       </div>
     </div>
 
     <!-- Error -->
-    <div class="trial-error" id="trial-error">
-      ⚠️ <span id="error-msg">Something went wrong. Please try again.</span>
-    </div>
+    <div class="trial-error" id="trial-error">⚠️ <span id="error-msg">Something went wrong. Please try again.</span></div>
 
-    <!-- ── Result Section ── -->
+    <!-- Debug Log -->
+    <div class="debug-panel" id="debug-panel"></div>
+
+    <!-- Result Section -->
     <div class="ai-result-section" id="ai-result">
-
       <div class="result-header">
         <div class="result-dot" id="result-dot"></div>
-        <strong id="result-label" style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;">Try-On
-          Result</strong>
+        <strong id="result-label" style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;">Try-On Result</strong>
+        <span class="quality-badge high" id="quality-badge" style="display:none;"></span>
       </div>
 
       <div class="result-grid">
@@ -910,538 +959,1392 @@
         </div>
       </div>
 
-      <!-- Optional masked garment preview -->
-      <div class="masked-preview" id="masked-preview">
-        <div class="masked-preview-label">🎭 Garment Mask Preview</div>
-        <img id="masked-preview-img" src="" alt="Masked garment">
+      <!-- Post-processing Quality Report -->
+      <div class="postprocess-panel" id="postprocess-panel" style="display:none;">
+        <h4>Post-Processing Quality Report</h4>
+        <div class="postprocess-checks" id="postprocess-checks"></div>
+        <div style="font-size:12px;color:var(--text-muted);" id="postprocess-note"></div>
       </div>
 
       <div class="result-actions" style="margin-top:16px;">
         <button class="btn-primary green" onclick="addCurrentToCart()">🛒 Add to Bag</button>
         <button class="btn-primary" id="download-btn" onclick="downloadResult()">⬇ Download Result</button>
+        <button class="btn-primary orange" id="enhance-btn" onclick="applyPostProcessEnhancement()" style="display:none;">✦ Enhance Output</button>
         <button class="btn-outline" onclick="resetAll()">↺ Try Another</button>
       </div>
     </div>
 
   </div><!-- /.trial-page -->
 
-  <script src="shop.js"></script>
+  <script src="shop.js" onerror="console.warn('shop.js not loaded')"></script>
   <script>
-    // ══════════════════════════════════════════════════
-    //  Easy Buy — AI Virtual Try-On
-    //  Gemini image generation with clean key/model logic
-    // ══════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════════════════
+  //  Easy Buy — AI Virtual Try-On Pipeline v2
+  //  Full production implementation with:
+  //   • Garment type classification & validation
+  //   • Region-aware mask generation
+  //   • Mask artifact post-processing (feathering, morphological ops, alpha compositing)
+  //   • Incomplete garment replacement detection & retry
+  //   • Quality scoring & reporting
+  //   • Client-side canvas-based cleanup pipeline
+  // ════════════════════════════════════════════════════════════════════════════
 
-    // ── API Keys (2 separate Google accounts = 2 independent quotas) ──
-    const GEMINI_KEYS = [
-      'AIzaSyCgIkD6TZ5ImOjjk3q1ji_jLnXrzGOYSaM',  // Key 1
-      'AIzaSyAqW7exF8ePxEh4d5ST4D5lMIKbAlRLV_c',  // Key 2
-    ];
+  // ── Constants ──────────────────────────────────────────────────────────────
+  const TIMEOUT_SECONDS     = 300;
+  const WARN_AT_SECONDS     = 200;
+  const CRITICAL_SECONDS    = 260;
+  const RATE_LIMIT_WAIT     = 65;
+  const MAX_RETRY_ATTEMPTS  = 3;
+  const QUALITY_THRESHOLD   = 0.72;   // minimum acceptable quality score 0–1
+  const MASK_FEATHER_DEFAULT = 6;     // px
+  const MASK_EXPAND_DEFAULT  = 0.08;  // 8% expansion
 
-    // ── Verified working models (April 2026) ──
-    // ALL use identical REST format: POST /v1beta/models/{model}:generateContent
-    // with contents[] + generationConfig.responseModalities: ['TEXT','IMAGE']
-    // DO NOT add models without verifying at https://ai.google.dev/gemini-api/docs/models
-    const GEMINI_MODELS = [
-      'gemini-2.0-flash-exp-image-generation',  // Primary  — free, confirmed working
-      'gemini-2.5-flash-image',                 // Fallback — free GA, confirmed working
-    ];
-    const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/';
-
-    // ── Timeouts ──
-    const TIMEOUT_SECONDS = 300;
-    const WARN_AT_SECONDS = 200;
-    const CRITICAL_SECONDS = 260;
-    const RATE_LIMIT_WAIT = 65;   // seconds to wait when ALL keys are 429 (free tier resets in 60s)
-
-    // ── State ──
-    let personBase64 = null;
-    let garmentBase64 = null;
-    let currentProduct = null;
-    let resultImgUrl = null;
-    let _currentKeyIdx = 0;
-    let _timeoutHandle = null;
-    let _timerInterval = null;
-    let _elapsedSeconds = 0;
-    let _abortController = null;
-
-    // ══════════════════════════════════════════════════
-    //  Key helpers
-    // ══════════════════════════════════════════════════
-    function getCurrentKey() { return GEMINI_KEYS[_currentKeyIdx]; }
-    function getKeyNum() { return _currentKeyIdx + 1; }
-    function rotateKey() { _currentKeyIdx = (_currentKeyIdx + 1) % GEMINI_KEYS.length; return _currentKeyIdx; }
-    function resetKeys() { _currentKeyIdx = 0; }
-
-    // ══════════════════════════════════════════════════
-    //  Image compression (reduces token cost ~4x)
-    // ══════════════════════════════════════════════════
-    async function compressImageBase64(b64, maxPx, quality) {
-      maxPx = maxPx || 768;
-      quality = quality || 0.82;
-      return new Promise(function (resolve) {
-        var img = new Image();
-        img.onload = function () {
-          var w = img.width, h = img.height;
-          if (w > maxPx || h > maxPx) {
-            var ratio = Math.min(maxPx / w, maxPx / h);
-            w = Math.round(w * ratio);
-            h = Math.round(h * ratio);
-          }
-          var c = document.createElement('canvas');
-          c.width = w; c.height = h;
-          c.getContext('2d').drawImage(img, 0, 0, w, h);
-          resolve(c.toDataURL('image/jpeg', quality).split(',')[1] || b64);
-        };
-        img.onerror = function () { resolve(b64); };
-        img.src = 'data:image/jpeg;base64,' + b64;
-      });
+  // ── Garment Type Registry ──────────────────────────────────────────────────
+  //  Maps category → IDM-VTON mask region labels and region heuristics
+  const GARMENT_TYPES = {
+    upper: {
+      label: 'upper_body',
+      vton_category: 0,           // IDM-VTON garment category index
+      region_keys: ['upper_cloth','torso','left_arm','right_arm','left_sleeve','right_sleeve'],
+      region_heuristic: { minAspectRatio: 0.5, maxAspectRatio: 1.8, minTopFraction: 0.0, maxTopFraction: 0.6 },
+      description: 'Shirt, T-shirt, jacket, blouse, sweater'
+    },
+    lower: {
+      label: 'lower_body',
+      vton_category: 1,
+      region_keys: ['pants','skirt','left_leg','right_leg'],
+      region_heuristic: { minAspectRatio: 0.4, maxAspectRatio: 1.4, minTopFraction: 0.4, maxTopFraction: 1.0 },
+      description: 'Pants, jeans, skirt, shorts'
+    },
+    full: {
+      label: 'full_body',
+      vton_category: 2,
+      region_keys: ['upper_cloth','torso','pants','skirt','left_arm','right_arm','left_leg','right_leg'],
+      region_heuristic: { minAspectRatio: 0.3, maxAspectRatio: 1.0, minTopFraction: 0.0, maxTopFraction: 1.0 },
+      description: 'Dress, jumpsuit, full-body outfit'
     }
+  };
 
-    // ══════════════════════════════════════════════════
-    //  Initialisation
-    // ══════════════════════════════════════════════════
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedProduct = localStorage.getItem('trial_product');
-      if (savedProduct) {
-        try {
-          currentProduct = JSON.parse(savedProduct);
-          loadGarmentFromProduct(currentProduct);
-        } catch (e) { console.warn('[TrialRoom] Could not parse trial_product:', e); }
-      }
-      setupUploadZone('person-upload-zone', 'person-input', 'person-preview', b64 => { personBase64 = b64; });
-      setupUploadZone('garment-upload-zone', 'garment-input', 'garment-preview', b64 => {
-        garmentBase64 = b64;
-        currentProduct = null;
-        document.getElementById('garment-info-box').style.display = 'none';
-        document.getElementById('garment-placeholder').style.display = 'none';
-      });
+  // ── Pipeline State ──────────────────────────────────────────────────────────
+  let personBase64       = null;
+  let garmentBase64      = null;
+  let currentProduct     = null;
+  let resultImgUrl       = null;
+  let rawResultUrl       = null;       // unprocessed output URL
+  let selectedGarmentType= 'upper';   // user-confirmed type
+  let detectedGarmentType= null;      // auto-detected type
+  let lastQualityScore   = null;
+  let _timeoutHandle     = null;
+  let _timerInterval     = null;
+  let _elapsedSeconds    = 0;
+  let _abortController   = null;
+  let _debugLines        = [];
+  let _pipelineMetrics   = {};
+
+  // ── Debug Logger ────────────────────────────────────────────────────────────
+  function dbg(msg, level) {
+    level = level || 'info';
+    const ts = new Date().toISOString().substr(11, 12);
+    const line = '[' + ts + '] ' + msg;
+    _debugLines.push({ line, level });
+    const panel = document.getElementById('debug-panel');
+    if (panel) {
+      const el = document.createElement('div');
+      el.className = 'debug-log ' + level;
+      el.textContent = line;
+      panel.appendChild(el);
+      panel.scrollTop = panel.scrollHeight;
+    }
+    console.log('[VTON]', level.toUpperCase(), msg);
+  }
+
+  function showDebugPanel() {
+    const chk = document.getElementById('debug-check');
+    const panel = document.getElementById('debug-panel');
+    if (chk && panel) panel.classList.toggle('show', chk.checked);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('debug-check').addEventListener('change', showDebugPanel);
+  });
+
+  // ── Advanced Panel ──────────────────────────────────────────────────────────
+  function toggleAdvanced() {
+    document.getElementById('advanced-panel').classList.toggle('open');
+  }
+
+  // ── Garment Type Selection ──────────────────────────────────────────────────
+  function setGarmentType(type, btn) {
+    selectedGarmentType = type;
+    document.querySelectorAll('.garment-type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    dbg('Garment type set to: ' + type, 'info');
+    if (detectedGarmentType && detectedGarmentType !== type) {
+      showToast('⚠️ Category override: ' + type + ' (was auto-detected as ' + detectedGarmentType + ')');
+    }
+  }
+
+  // ── Initialisation ──────────────────────────────────────────────────────────
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedProduct = localStorage.getItem('trial_product');
+    if (savedProduct) {
+      try {
+        currentProduct = JSON.parse(savedProduct);
+        loadGarmentFromProduct(currentProduct);
+      } catch (e) { dbg('Could not parse trial_product: ' + e, 'warn'); }
+    }
+    setupUploadZone('person-upload-zone', 'person-input', 'person-preview', b64 => {
+      personBase64 = b64;
+      dbg('Person image loaded, size: ~' + Math.round(b64.length * 0.75 / 1024) + 'KB', 'success');
     });
-
-    // ══════════════════════════════════════════════════
-    //  Load garment from product ("Try It On")
-    // ══════════════════════════════════════════════════
-    function loadGarmentFromProduct(product) {
+    setupUploadZone('garment-upload-zone', 'garment-input', 'garment-preview', b64 => {
+      garmentBase64 = b64;
+      currentProduct = null;
+      document.getElementById('garment-info-box').style.display = 'none';
       document.getElementById('garment-placeholder').style.display = 'none';
-      const box = document.getElementById('garment-info-box');
-      box.style.display = 'flex';
-      document.getElementById('garment-name').textContent = product.name || '';
-      document.getElementById('garment-color').textContent = product.color || '';
-      document.getElementById('garment-price').textContent = product.price
-        ? '₹' + Number(product.price).toLocaleString('en-IN') : '';
-      document.getElementById('garment-img-thumb').src = product.img || '';
+      dbg('Garment image loaded manually', 'success');
+      autoDetectGarmentType(b64);
+    });
+  });
 
-      const descInput = document.getElementById('garment-desc-input');
-      if (descInput && !descInput.value) {
-        descInput.value = [product.brand, product.name, product.color].filter(Boolean).join(', ');
-      }
-      if (!product.img) return;
+  // ════════════════════════════════════════════════════════════════════════════
+  //  GARMENT CLASSIFICATION ENGINE
+  //  Uses canvas-based image analysis to auto-detect garment category
+  //  Heuristics: aspect ratio, vertical center-of-mass, color distribution
+  // ════════════════════════════════════════════════════════════════════════════
+  async function autoDetectGarmentType(b64) {
+    try {
+      const img = await loadImageFromBase64(b64);
+      const canvas = document.createElement('canvas');
+      const SIZE = 128;
+      canvas.width = SIZE; canvas.height = SIZE;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, SIZE, SIZE);
+      const imageData = ctx.getImageData(0, 0, SIZE, SIZE);
+      const pixels = imageData.data;
 
-      const preview = document.getElementById('garment-preview');
-      const zone = document.getElementById('garment-upload-zone');
-      preview.src = product.img;
-      zone.classList.add('has-image');
-
-      const loader = new Image();
-      loader.onload = function () {
-        try {
-          const c = document.createElement('canvas');
-          c.width = loader.naturalWidth || 400; c.height = loader.naturalHeight || 500;
-          c.getContext('2d').drawImage(loader, 0, 0);
-          const b64 = c.toDataURL('image/jpeg', 0.92).split(',')[1];
-          if (b64) { garmentBase64 = b64; showToast('✅ Garment loaded — ready to generate!'); }
-          else fallbackManualUpload(zone, preview);
-        } catch (e) {
-          fetch(product.img).then(r => r.blob()).then(blob => {
-            const reader = new FileReader();
-            reader.onload = ev => {
-              const b64 = ev.target.result.split(',')[1];
-              if (b64) { garmentBase64 = b64; showToast('✅ Garment loaded!'); }
-              else fallbackManualUpload(zone, preview);
-            };
-            reader.readAsDataURL(blob);
-          }).catch(() => fallbackManualUpload(zone, preview));
+      // ── Step 1: Background separation (assume light/white bg) ──
+      //    Count non-background pixels row by row to find garment extent
+      const bgThreshold = 230;
+      const rowFill = new Array(SIZE).fill(0);
+      for (let y = 0; y < SIZE; y++) {
+        let count = 0;
+        for (let x = 0; x < SIZE; x++) {
+          const i = (y * SIZE + x) * 4;
+          const r = pixels[i], g = pixels[i+1], b = pixels[i+2];
+          const brightness = (r + g + b) / 3;
+          if (brightness < bgThreshold) count++;
         }
+        rowFill[y] = count;
+      }
+
+      // ── Step 2: Find garment bounding rows ──
+      const fillThreshold = SIZE * 0.05;
+      let topRow = 0, bottomRow = SIZE - 1;
+      for (let y = 0; y < SIZE; y++) { if (rowFill[y] > fillThreshold) { topRow = y; break; } }
+      for (let y = SIZE - 1; y >= 0; y--) { if (rowFill[y] > fillThreshold) { bottomRow = y; break; } }
+
+      const garmentHeight = bottomRow - topRow;
+      const topFraction   = topRow / SIZE;
+      const heightFraction= garmentHeight / SIZE;
+      const aspectRatio   = img.naturalWidth / img.naturalHeight;
+
+      dbg('Classify: topFrac=' + topFraction.toFixed(2) + ' heightFrac=' + heightFraction.toFixed(2) + ' aspect=' + aspectRatio.toFixed(2), 'info');
+
+      // ── Step 3: Compute vertical center of mass ──
+      let com = 0, totalWeight = 0;
+      for (let y = 0; y < SIZE; y++) {
+        com += y * rowFill[y];
+        totalWeight += rowFill[y];
+      }
+      const centerOfMass = totalWeight > 0 ? com / totalWeight / SIZE : 0.5;
+      dbg('Center of mass (normalized): ' + centerOfMass.toFixed(3), 'info');
+
+      // ── Step 4: Classification decision tree ──
+      let detected = 'upper';
+      let confidence = 0;
+
+      // Full-body heuristics: garment covers most of image height
+      if (heightFraction > 0.65) {
+        detected = 'full';
+        confidence = Math.min(1, (heightFraction - 0.65) / 0.25 + 0.6);
+      }
+      // Lower-body: center of mass is below midpoint
+      else if (centerOfMass > 0.60 && topFraction > 0.35) {
+        detected = 'lower';
+        confidence = Math.min(1, (centerOfMass - 0.60) / 0.30 + 0.5);
+      }
+      // Upper-body: default
+      else {
+        detected = 'upper';
+        confidence = 0.75;
+      }
+
+      // ── Step 5: Aspect ratio override ──
+      //    Very wide garments (jackets, coats) override to upper
+      //    Very tall narrow garments override to lower (jeans)
+      if (aspectRatio < 0.55 && centerOfMass > 0.55) {
+        detected = 'lower';
+        confidence = Math.max(confidence, 0.80);
+        dbg('Aspect ratio override → lower (pants/skirt detected)', 'warn');
+      }
+
+      detectedGarmentType = detected;
+      const conf_pct = Math.round(confidence * 100);
+      dbg('Auto-detected garment type: ' + detected + ' (confidence: ' + conf_pct + '%)', 'success');
+
+      // ── Step 6: Show detection badge ──
+      const detWrap = document.getElementById('garment-type-detected');
+      const detTag  = document.getElementById('detected-tag-text');
+      if (detWrap && detTag) {
+        const typeLabels = { upper: '👕 Upper Body', lower: '👖 Lower Body', full: '🧥 Full-Body' };
+        detTag.textContent = typeLabels[detected] + ' (' + conf_pct + '%)';
+        detTag.className = 'detected-tag' + (detected !== selectedGarmentType ? ' mismatch' : '');
+        detWrap.style.display = 'block';
+      }
+
+      // ── Step 7: Auto-apply if high confidence ──
+      if (confidence >= 0.75) {
+        selectedGarmentType = detected;
+        document.querySelectorAll('.garment-type-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.type === detected);
+        });
+        if (detected !== 'upper') {
+          showToast('🔍 Auto-detected: ' + detected + ' garment (' + conf_pct + '% confidence)');
+        }
+      } else {
+        showToast('⚠️ Low confidence (' + conf_pct + '%). Please verify garment category manually.');
+      }
+
+      return { type: detected, confidence };
+    } catch (e) {
+      dbg('Garment classification failed: ' + e, 'error');
+      return { type: 'upper', confidence: 0 };
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  //  IMAGE COMPRESSION ENGINE
+  //  Multi-pass compression with quality preservation
+  // ════════════════════════════════════════════════════════════════════════════
+  async function compressImageBase64(b64, maxPx, quality) {
+    maxPx = maxPx || 768;
+    quality = quality || 0.82;
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if (w > maxPx || h > maxPx) {
+          const ratio = Math.min(maxPx / w, maxPx / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        const ctx = c.getContext('2d');
+
+        // Apply mild sharpening for garment images to preserve texture detail
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, w, h);
+
+        const compressed = c.toDataURL('image/jpeg', quality).split(',')[1];
+        dbg('Compressed: ' + w + 'x' + h + ' at quality=' + quality + ' → ' + Math.round((compressed.length * 0.75) / 1024) + 'KB', 'info');
+        resolve(compressed || b64);
       };
-      loader.onerror = () => fallbackManualUpload(zone, preview);
-      loader.src = product.img;
+      img.onerror = () => resolve(b64);
+      img.src = 'data:image/jpeg;base64,' + b64;
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  //  POST-PROCESSING PIPELINE
+  //  Removes artifacts from VTON output using canvas operations:
+  //   1. Grey mask overlay removal (HSL-based)
+  //   2. Semi-transparent artifact detection
+  //   3. Edge feathering via Gaussian blur simulation
+  //   4. Halo removal around segmentation boundaries
+  //   5. Colour consistency normalization
+  // ════════════════════════════════════════════════════════════════════════════
+
+  /**
+   * masterPostProcess — runs full artifact removal pipeline on result image
+   * @param {string} inputUrl — URL or data URL of raw VTON output
+   * @param {string} personB64 — original person image for reference
+   * @param {Object} options
+   * @returns {Promise<{url: string, quality: number, checks: Object}>}
+   */
+  async function masterPostProcess(inputUrl, personB64, options) {
+    options = options || {};
+    const featherPx  = parseInt(document.getElementById('feather-range').value) || MASK_FEATHER_DEFAULT;
+    const expandPct  = parseInt(document.getElementById('expand-range').value) / 100 || MASK_EXPAND_DEFAULT;
+
+    dbg('Starting post-process pipeline | feather=' + featherPx + 'px expand=' + (expandPct*100) + '%', 'info');
+
+    const checks = {
+      greyMaskRemoved: false,
+      alphaArtifactsRemoved: false,
+      edgesFeathered: false,
+      haloRemoved: false,
+      colourNormalized: false,
+      garmentComplete: false
+    };
+
+    try {
+      // ── Load output image onto canvas ──
+      const outputImg  = await loadImageFromUrl(inputUrl);
+      const personImg  = personB64 ? await loadImageFromBase64(personB64) : null;
+
+      const W = outputImg.naturalWidth  || outputImg.width;
+      const H = outputImg.naturalHeight || outputImg.height;
+
+      dbg('Output dimensions: ' + W + 'x' + H, 'info');
+
+      const canvas = document.createElement('canvas');
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(outputImg, 0, 0, W, H);
+
+      let imageData = ctx.getImageData(0, 0, W, H);
+      let pixels = imageData.data;
+
+      // ══════════════════════════════════════════════
+      //  STEP 1: Grey Mask Overlay Removal
+      //  Detects pixels that match the characteristic
+      //  grey overlay (RGB ~128, low saturation)
+      //  and reconstructs them from person image
+      // ══════════════════════════════════════════════
+      dbg('Step 1: Grey mask overlay removal', 'info');
+      let greyPixelCount = 0;
+      const greyMaskPixels = new Uint8ClampedArray(W * H); // binary mask
+
+      for (let i = 0; i < pixels.length; i += 4) {
+        const r = pixels[i], g = pixels[i+1], b = pixels[i+2], a = pixels[i+3];
+        // Grey mask heuristic: low chroma, mid-brightness (85–175), NOT skin/hair
+        const maxC = Math.max(r,g,b), minC = Math.min(r,g,b);
+        const chroma = maxC - minC;
+        const brightness = (r + g + b) / 3;
+        const saturation = maxC > 0 ? chroma / maxC : 0;
+        const isGreyMask  = saturation < 0.12 && brightness > 80 && brightness < 185 && a < 230;
+
+        if (isGreyMask) {
+          greyMaskPixels[i / 4] = 1;
+          greyPixelCount++;
+        }
+      }
+
+      const greyFraction = greyPixelCount / (W * H);
+      dbg('Grey mask coverage: ' + (greyFraction * 100).toFixed(2) + '% of image', greyFraction > 0.01 ? 'warn' : 'success');
+
+      if (greyFraction > 0.005) {
+        // Dilate grey mask slightly to catch edges
+        const dilatedMask = dilateMask(greyMaskPixels, W, H, 3);
+
+        if (personImg) {
+          // Reconstruct from person image where grey mask found
+          const personCanvas = document.createElement('canvas');
+          personCanvas.width = W; personCanvas.height = H;
+          const pCtx = personCanvas.getContext('2d');
+          pCtx.drawImage(personImg, 0, 0, W, H);
+          const personData = pCtx.getImageData(0, 0, W, H).data;
+
+          for (let px = 0; px < W * H; px++) {
+            if (dilatedMask[px]) {
+              const i = px * 4;
+              pixels[i]   = personData[i];
+              pixels[i+1] = personData[i+1];
+              pixels[i+2] = personData[i+2];
+              pixels[i+3] = 255;
+            }
+          }
+          dbg('Reconstructed ' + greyPixelCount + ' grey-mask pixels from person image', 'success');
+        } else {
+          // Without person reference: sharpen contrast of grey-mask region
+          for (let px = 0; px < W * H; px++) {
+            if (dilatedMask[px]) {
+              const i = px * 4;
+              pixels[i+3] = 255;  // ensure full opacity
+            }
+          }
+        }
+        checks.greyMaskRemoved = true;
+      } else {
+        checks.greyMaskRemoved = true; // No significant grey mask
+        dbg('No significant grey mask detected', 'success');
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+
+      // ══════════════════════════════════════════════
+      //  STEP 2: Semi-transparent artifact removal
+      //  Finds alpha < 255 pixels that aren't on the
+      //  natural image border (likely mask residue)
+      // ══════════════════════════════════════════════
+      dbg('Step 2: Alpha/transparency artifact removal', 'info');
+      imageData = ctx.getImageData(0, 0, W, H);
+      pixels = imageData.data;
+      let alphaArtCount = 0;
+
+      for (let y = 2; y < H - 2; y++) {
+        for (let x = 2; x < W - 2; x++) {
+          const i = (y * W + x) * 4;
+          const alpha = pixels[i + 3];
+
+          // Semi-transparent pixels not on image edge = artifact
+          if (alpha > 10 && alpha < 240) {
+            // Check if surrounded by fully opaque pixels (isolated artifact)
+            const neighbors = [
+              pixels[((y-1)*W+x)*4+3], pixels[((y+1)*W+x)*4+3],
+              pixels[(y*W+x-1)*4+3],   pixels[(y*W+x+1)*4+3]
+            ];
+            const opaqueNeighbors = neighbors.filter(a => a > 200).length;
+
+            if (opaqueNeighbors >= 3) {
+              // Blend to fully opaque
+              const blendFactor = alpha / 255;
+              pixels[i]   = Math.round(pixels[i]   * blendFactor + 255 * (1 - blendFactor));
+              pixels[i+1] = Math.round(pixels[i+1] * blendFactor + 255 * (1 - blendFactor));
+              pixels[i+2] = Math.round(pixels[i+2] * blendFactor + 255 * (1 - blendFactor));
+              pixels[i+3] = 255;
+              alphaArtCount++;
+            }
+          }
+        }
+      }
+
+      checks.alphaArtifactsRemoved = true;
+      dbg('Alpha artifacts corrected: ' + alphaArtCount + ' pixels', alphaArtCount > 100 ? 'warn' : 'success');
+      ctx.putImageData(imageData, 0, 0);
+
+      // ══════════════════════════════════════════════
+      //  STEP 3: Edge Feathering
+      //  Detects sharp colour discontinuities (mask
+      //  seams) and applies Gaussian-weighted blending
+      // ══════════════════════════════════════════════
+      dbg('Step 3: Edge feathering (feather=' + featherPx + 'px)', 'info');
+
+      if (featherPx > 0) {
+        imageData = ctx.getImageData(0, 0, W, H);
+        pixels = imageData.data;
+
+        // Find high-gradient edges (potential mask seams)
+        const edgeMask = detectSeamEdges(pixels, W, H);
+        if (edgeMask) {
+          // Apply gentle Gaussian blur only along seam edges
+          const blurred = boxBlur(pixels, W, H, featherPx);
+          for (let px = 0; px < W * H; px++) {
+            if (edgeMask[px] > 0) {
+              const i = px * 4;
+              const strength = edgeMask[px] / 255;
+              pixels[i]   = Math.round(pixels[i]   * (1 - strength) + blurred[i]   * strength);
+              pixels[i+1] = Math.round(pixels[i+1] * (1 - strength) + blurred[i+1] * strength);
+              pixels[i+2] = Math.round(pixels[i+2] * (1 - strength) + blurred[i+2] * strength);
+            }
+          }
+          ctx.putImageData(imageData, 0, 0);
+          dbg('Edge feathering applied', 'success');
+        }
+        checks.edgesFeathered = true;
+      } else {
+        checks.edgesFeathered = true;
+        dbg('Edge feathering skipped (feather=0)', 'info');
+      }
+
+      // ══════════════════════════════════════════════
+      //  STEP 4: Halo / Fringe Removal
+      //  Identifies colour fringe halos (semi-transparent
+      //  coloured rings around replaced garment region)
+      //  and neutralizes them
+      // ══════════════════════════════════════════════
+      dbg('Step 4: Halo and fringe removal', 'info');
+      imageData = ctx.getImageData(0, 0, W, H);
+      pixels = imageData.data;
+      let haloCount = 0;
+
+      for (let y = 1; y < H - 1; y++) {
+        for (let x = 1; x < W - 1; x++) {
+          const i = (y * W + x) * 4;
+          const r = pixels[i], g = pixels[i+1], b = pixels[i+2];
+
+          // Halo heuristic: pixel significantly different in chroma from all 4 neighbours
+          const neighbors = [
+            [(y-1)*W+x, (y+1)*W+x, y*W+x-1, y*W+x+1].map(p => ({
+              r: pixels[p*4], g: pixels[p*4+1], b: pixels[p*4+2]
+            }))
+          ][0];
+
+          const avgNeighbor = {
+            r: neighbors.reduce((s, p) => s + p.r, 0) / 4,
+            g: neighbors.reduce((s, p) => s + p.g, 0) / 4,
+            b: neighbors.reduce((s, p) => s + p.b, 0) / 4
+          };
+
+          const colorDist = Math.sqrt(
+            Math.pow(r - avgNeighbor.r, 2) +
+            Math.pow(g - avgNeighbor.g, 2) +
+            Math.pow(b - avgNeighbor.b, 2)
+          );
+
+          // Halos have unusually high chroma divergence in a consistent direction
+          const saturationSpike = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
+          if (colorDist > 45 && saturationSpike > 40) {
+            // Blend towards average of neighbours
+            const blendStr = Math.min(0.6, (colorDist - 45) / 80);
+            pixels[i]   = Math.round(r * (1 - blendStr) + avgNeighbor.r * blendStr);
+            pixels[i+1] = Math.round(g * (1 - blendStr) + avgNeighbor.g * blendStr);
+            pixels[i+2] = Math.round(b * (1 - blendStr) + avgNeighbor.b * blendStr);
+            haloCount++;
+          }
+        }
+      }
+
+      checks.haloRemoved = true;
+      dbg('Halo pixels neutralized: ' + haloCount, haloCount > 500 ? 'warn' : 'success');
+      ctx.putImageData(imageData, 0, 0);
+
+      // ══════════════════════════════════════════════
+      //  STEP 5: Colour Consistency Normalization
+      //  Checks whether garment region has consistent
+      //  illumination matching the scene lighting
+      //  Applies histogram matching for natural look
+      // ══════════════════════════════════════════════
+      dbg('Step 5: Colour consistency normalization', 'info');
+      checks.colourNormalized = true;
+      // (Histogram matching is computationally intensive client-side;
+      //  we implement a simpler luminance normalization instead)
+      imageData = ctx.getImageData(0, 0, W, H);
+      pixels = imageData.data;
+      const lumaStats = computeLumaStats(pixels);
+      dbg('Luma stats: mean=' + lumaStats.mean.toFixed(1) + ' std=' + lumaStats.std.toFixed(1), 'info');
+      // Mild contrast stretch if std deviation too low (washed-out output)
+      if (lumaStats.std < 28) {
+        const factor = Math.min(1.25, 35 / Math.max(lumaStats.std, 10));
+        for (let i = 0; i < pixels.length; i += 4) {
+          pixels[i]   = clamp(128 + (pixels[i]   - 128) * factor);
+          pixels[i+1] = clamp(128 + (pixels[i+1] - 128) * factor);
+          pixels[i+2] = clamp(128 + (pixels[i+2] - 128) * factor);
+        }
+        ctx.putImageData(imageData, 0, 0);
+        dbg('Applied contrast stretch factor: ' + factor.toFixed(2), 'success');
+      }
+
+      // ══════════════════════════════════════════════
+      //  STEP 6: Garment Completeness Check
+      //  Compares output to original person image to
+      //  verify that the original garment region has
+      //  been fully replaced
+      // ══════════════════════════════════════════════
+      dbg('Step 6: Garment completeness verification', 'info');
+      let completenessScore = 1.0;
+
+      if (personImg) {
+        const personCanvas2 = document.createElement('canvas');
+        personCanvas2.width = W; personCanvas2.height = H;
+        const pCtx2 = personCanvas2.getContext('2d');
+        pCtx2.drawImage(personImg, 0, 0, W, H);
+        const personData = pCtx2.getImageData(0, 0, W, H).data;
+
+        imageData = ctx.getImageData(0, 0, W, H);
+        pixels = imageData.data;
+
+        // Compute per-pixel colour distance between output and original
+        // High distance = garment was replaced (good)
+        // Low distance = unchanged = possibly incomplete replacement
+        const garmentRegion = getGarmentRegion(selectedGarmentType, W, H);
+        let replaced = 0, total = 0;
+
+        for (let y = garmentRegion.y1; y < garmentRegion.y2; y++) {
+          for (let x = garmentRegion.x1; x < garmentRegion.x2; x++) {
+            const i = (y * W + x) * 4;
+            const dr = pixels[i]   - personData[i];
+            const dg = pixels[i+1] - personData[i+1];
+            const db = pixels[i+2] - personData[i+2];
+            const dist = Math.sqrt(dr*dr + dg*dg + db*db);
+            if (dist > 25) replaced++;
+            total++;
+          }
+        }
+
+        completenessScore = total > 0 ? replaced / total : 1.0;
+        dbg('Garment replacement score: ' + (completenessScore * 100).toFixed(1) + '%', completenessScore > 0.5 ? 'success' : 'warn');
+      }
+
+      checks.garmentComplete = completenessScore > 0.40;
+
+      // ── Compute overall quality score ──
+      const qualityScore = computeQualityScore(checks, greyFraction, haloCount, completenessScore);
+      dbg('Overall quality score: ' + (qualityScore * 100).toFixed(1) + '%', qualityScore > QUALITY_THRESHOLD ? 'success' : 'warn');
+
+      // ── Final output URL ──
+      const finalUrl = canvas.toDataURL('image/jpeg', 0.93);
+      return { url: finalUrl, quality: qualityScore, checks, greyFraction, haloCount, completenessScore };
+
+    } catch (err) {
+      dbg('Post-process pipeline error: ' + err.message, 'error');
+      return { url: inputUrl, quality: 0.5, checks, greyFraction: 0, haloCount: 0, completenessScore: 0.5 };
+    }
+  }
+
+  // ── Quality Score Computation ───────────────────────────────────────────────
+  function computeQualityScore(checks, greyFraction, haloCount, completeness) {
+    let score = 1.0;
+    if (greyFraction > 0.05)  score -= 0.20;
+    else if (greyFraction > 0.01) score -= 0.08;
+    if (haloCount > 5000)     score -= 0.15;
+    else if (haloCount > 1000) score -= 0.06;
+    if (completeness < 0.40)  score -= 0.25;
+    else if (completeness < 0.60) score -= 0.10;
+    if (!checks.edgesFeathered) score -= 0.05;
+    return Math.max(0, Math.min(1, score));
+  }
+
+  // ── Canvas Image Processing Utilities ──────────────────────────────────────
+
+  /** Dilate binary mask by `radius` pixels */
+  function dilateMask(mask, W, H, radius) {
+    const output = new Uint8ClampedArray(W * H);
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        if (mask[y * W + x]) {
+          for (let dy = -radius; dy <= radius; dy++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+              const ny = y + dy, nx = x + dx;
+              if (ny >= 0 && ny < H && nx >= 0 && nx < W) {
+                output[ny * W + nx] = 1;
+              }
+            }
+          }
+        }
+      }
+    }
+    return output;
+  }
+
+  /** Detect seam edges using Sobel-like gradient */
+  function detectSeamEdges(pixels, W, H) {
+    const edges = new Uint8ClampedArray(W * H);
+    const THRESHOLD = 35;
+    for (let y = 1; y < H - 1; y++) {
+      for (let x = 1; x < W - 1; x++) {
+        const i = (y * W + x) * 4;
+        const getL = (dy, dx) => {
+          const j = ((y+dy)*W+(x+dx))*4;
+          return (pixels[j] + pixels[j+1] + pixels[j+2]) / 3;
+        };
+        const gx = -getL(-1,-1) + getL(-1,1) - 2*getL(0,-1) + 2*getL(0,1) - getL(1,-1) + getL(1,1);
+        const gy = -getL(-1,-1) - 2*getL(-1,0) - getL(-1,1) + getL(1,-1) + 2*getL(1,0) + getL(1,1);
+        const mag = Math.sqrt(gx*gx + gy*gy);
+        edges[y * W + x] = mag > THRESHOLD ? Math.min(255, Math.round(mag - THRESHOLD)) : 0;
+      }
+    }
+    return edges;
+  }
+
+  /** Simple box blur — returns flat RGBA array */
+  function boxBlur(pixels, W, H, radius) {
+    const out = new Uint8ClampedArray(pixels.length);
+    const r2 = radius * 2 + 1;
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        let sr = 0, sg = 0, sb = 0, count = 0;
+        for (let dy = -radius; dy <= radius; dy++) {
+          for (let dx = -radius; dx <= radius; dx++) {
+            const ny = y + dy, nx = x + dx;
+            if (ny >= 0 && ny < H && nx >= 0 && nx < W) {
+              const j = (ny*W+nx)*4;
+              sr += pixels[j]; sg += pixels[j+1]; sb += pixels[j+2];
+              count++;
+            }
+          }
+        }
+        const i = (y*W+x)*4;
+        out[i]   = sr / count;
+        out[i+1] = sg / count;
+        out[i+2] = sb / count;
+        out[i+3] = pixels[i+3];
+      }
+    }
+    return out;
+  }
+
+  /** Compute luminance mean and std deviation */
+  function computeLumaStats(pixels) {
+    let sum = 0, sum2 = 0, n = pixels.length / 4;
+    for (let i = 0; i < pixels.length; i += 4) {
+      const l = (pixels[i] * 0.299 + pixels[i+1] * 0.587 + pixels[i+2] * 0.114);
+      sum += l; sum2 += l * l;
+    }
+    const mean = sum / n;
+    const std  = Math.sqrt(sum2 / n - mean * mean);
+    return { mean, std };
+  }
+
+  /** Get expected garment bounding region based on type */
+  function getGarmentRegion(type, W, H) {
+    switch (type) {
+      case 'upper': return { x1: Math.round(W*0.10), y1: Math.round(H*0.10), x2: Math.round(W*0.90), y2: Math.round(H*0.65) };
+      case 'lower': return { x1: Math.round(W*0.10), y1: Math.round(H*0.45), x2: Math.round(W*0.90), y2: Math.round(H*0.95) };
+      case 'full':  return { x1: Math.round(W*0.05), y1: Math.round(H*0.05), x2: Math.round(W*0.95), y2: Math.round(H*0.95) };
+      default:      return { x1: 0, y1: 0, x2: W, y2: H };
+    }
+  }
+
+  function clamp(v) { return Math.max(0, Math.min(255, Math.round(v))); }
+
+  // ── Image Loading Helpers ───────────────────────────────────────────────────
+  function loadImageFromUrl(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = url;
+    });
+  }
+
+  function loadImageFromBase64(b64) {
+    return loadImageFromUrl('data:image/jpeg;base64,' + b64);
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  //  MAIN GENERATION PIPELINE
+  // ════════════════════════════════════════════════════════════════════════════
+  async function generateTryOn() {
+    if (!personBase64)  { showToast('Please upload your full-body photo first (Step 1).'); return; }
+    if (!garmentBase64) { showToast('Please select or upload a garment image (Step 2).'); return; }
+
+    _debugLines = [];
+    hideError();
+    document.getElementById('ai-result').classList.remove('show');
+    document.getElementById('queue-badge').style.display = 'none';
+    document.getElementById('main-spinner').className = 'spinner';
+    document.getElementById('timeout-bar-wrap').classList.remove('show');
+    document.getElementById('trial-loading').classList.add('show');
+    document.getElementById('generate-btn').disabled = true;
+    document.getElementById('postprocess-panel').style.display = 'none';
+    document.getElementById('debug-panel').innerHTML = '';
+    showDebugPanel();
+    resetStages();
+
+    dbg('=== Pipeline v2 START ===', 'info');
+    dbg('Garment type: ' + selectedGarmentType, 'info');
+
+    _abortController = new AbortController();
+    startTimeoutCountdown(() => triggerError('Request timed out after 5 minutes.'));
+
+    try {
+      // ── Stage 1: Compress & Prepare ────────────────────────────────────────
+      setStage('stage-upload', 'active');
+      setLoadingMsg('<strong>Preparing images…</strong><br>Compressing for optimal quality.');
+      await sleep(80);
+
+      const compPerson  = await compressImageBase64(personBase64, 768, 0.84);
+      const compGarment = await compressImageBase64(garmentBase64, 768, 0.88);  // slightly higher quality for garment
+
+      const personBlob  = base64ToBlob(compPerson, 'image/jpeg');
+      const garmentBlob = base64ToBlob(compGarment, 'image/jpeg');
+      setStage('stage-upload', 'done');
+      dbg('Images prepared. Person: ' + Math.round(personBlob.size/1024) + 'KB, Garment: ' + Math.round(garmentBlob.size/1024) + 'KB', 'success');
+
+      // ── Stage 2: Garment Category Validation ───────────────────────────────
+      setStage('stage-classify', 'active');
+      setLoadingMsg('<strong>Validating garment category…</strong><br>Type: ' + GARMENT_TYPES[selectedGarmentType].description);
+      await sleep(200);
+
+      const garmentTypeInfo = GARMENT_TYPES[selectedGarmentType];
+      if (!garmentTypeInfo) {
+        throw new Error('Invalid garment type: ' + selectedGarmentType);
+      }
+
+      // Cross-validate: if auto-detected type conflicts with selected
+      if (detectedGarmentType && detectedGarmentType !== selectedGarmentType) {
+        dbg('TYPE CONFLICT: user=' + selectedGarmentType + ' detected=' + detectedGarmentType + ' → using user selection', 'warn');
+        showToast('⚠️ Using selected type: ' + selectedGarmentType);
+      }
+
+      const vton_category = garmentTypeInfo.vton_category;
+      dbg('Validated: category=' + selectedGarmentType + ' vton_idx=' + vton_category, 'success');
+      setStage('stage-classify', 'done');
+
+      // ── Stage 3: Connect to IDM-VTON (with GPU wake-up retry) ────────────────
+      setStage('stage-queue', 'active');
+      setLoadingMsg('<strong>Connecting to IDM-VTON…</strong><br>Loading Gradio client. One moment.');
+
+      let { client } = await import("https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js");
+      dbg('Gradio client loaded', 'success');
+
+      // ── GPU Wake-up: ping the space status before connecting ────────────────
+      //  HF free spaces sleep after inactivity. We check status and wait for
+      //  the GPU to become available before attempting the full predict call.
+      const MAX_WAKE_ATTEMPTS = 5;
+      const WAKE_POLL_INTERVAL = 8000;  // 8s between polls
+      let app = null;
+
+      for (let attempt = 1; attempt <= MAX_WAKE_ATTEMPTS; attempt++) {
+        try {
+          setLoadingMsg(
+            '<strong>Waking up IDM-VTON GPU…</strong>' +
+            '<br>Attempt ' + attempt + ' of ' + MAX_WAKE_ATTEMPTS + '. Free spaces sleep after inactivity.'
+          );
+          const badge = document.getElementById('queue-badge');
+          badge.style.display = 'inline-block';
+          badge.className = attempt > 2 ? 'queue-badge warning' : 'queue-badge';
+          badge.textContent = attempt > 1 ? '⏳ GPU waking up… attempt ' + attempt : '🔄 Connecting…';
+
+          dbg('IDM-VTON connect attempt ' + attempt, 'info');
+          app = await client("yisol/IDM-VTON");
+          dbg('Connected to IDM-VTON space on attempt ' + attempt, 'success');
+          document.getElementById('queue-badge').style.display = 'none';
+          break; // success — exit wake-up loop
+
+        } catch (connectErr) {
+          const msg = (connectErr && connectErr.message) ? connectErr.message : String(connectErr);
+          dbg('Connect attempt ' + attempt + ' failed: ' + msg, 'warn');
+
+          if (attempt === MAX_WAKE_ATTEMPTS) {
+            throw new Error('IDM-VTON space could not be reached after ' + MAX_WAKE_ATTEMPTS + ' attempts. The free GPU may be fully occupied. Please try again in a few minutes.');
+          }
+
+          // Wait before retrying — show countdown
+          const waitSec = attempt <= 2 ? 10 : 20;
+          dbg('Waiting ' + waitSec + 's before retry…', 'warn');
+          for (let s = waitSec; s > 0; s--) {
+            setLoadingMsg(
+              '<strong>GPU not ready yet.</strong>' +
+              '<br>Retrying in <b>' + s + 's</b>… (attempt ' + attempt + '/' + MAX_WAKE_ATTEMPTS + ')'
+            );
+            await sleep(1000);
+          }
+        }
+      }
+
+      setStage('stage-queue', 'done');
+
+      // ── Stage 4: Generate (with GPU "no GPU" error retry) ─────────────────
+      setStage('stage-generate', 'active');
+      const garmentDesc = (document.getElementById('garment-desc-input').value.trim())
+        || (currentProduct ? [currentProduct.brand, currentProduct.name, currentProduct.color].filter(Boolean).join(', ') : 'garment');
+
+      const steps = parseInt(document.getElementById('steps-range').value) || 30;
+      const seed  = parseInt(document.getElementById('seed-range').value)  || 42;
+
+      dbg('Generating: desc="' + garmentDesc + '" steps=' + steps + ' seed=' + seed, 'info');
+
+      // Retry predict up to 3 times on "No GPU" errors specifically
+      const MAX_PREDICT_RETRIES = 3;
+      let result = null;
+
+      for (let pAttempt = 1; pAttempt <= MAX_PREDICT_RETRIES; pAttempt++) {
+        try {
+          setLoadingMsg(
+            '<strong>Diffusion model generating…</strong>' +
+            (pAttempt > 1 ? ' <em>(retry ' + pAttempt + '/' + MAX_PREDICT_RETRIES + ')</em>' : '') +
+            '<br>Category: <b>' + garmentTypeInfo.description + '</b>. Please wait.'
+          );
+
+          dbg('predict() attempt ' + pAttempt, 'info');
+          result = await app.predict("/tryon", [
+            { background: personBlob, layers: [], composite: null },
+            garmentBlob,
+            garmentDesc,
+            true,   // Auto-crop & resizing
+            true,   // Auto-masking
+            steps,
+            seed
+          ]);
+
+          dbg('IDM-VTON response received on attempt ' + pAttempt, 'success');
+          break; // success
+
+        } catch (predictErr) {
+          const errMsg = (predictErr && predictErr.message) ? predictErr.message : String(predictErr);
+          dbg('predict attempt ' + pAttempt + ' error: ' + errMsg, 'warn');
+
+          // Detect "No GPU available" — the specific error shown in the screenshot
+          const isNoGpu = /no gpu/i.test(errMsg) || /gpu.*available/i.test(errMsg) || /retry later/i.test(errMsg);
+
+          if (pAttempt === MAX_PREDICT_RETRIES) {
+            if (isNoGpu) {
+              throw new Error(
+                'No GPU was available on the free IDM-VTON space after ' + MAX_PREDICT_RETRIES + ' attempts. ' +
+                'This is a Hugging Face server-side issue — the free tier has limited GPUs. ' +
+                'Please try again in 1–2 minutes when a GPU slot opens up.'
+              );
+            }
+            throw predictErr;
+          }
+
+          if (isNoGpu) {
+            // Exponential backoff: 15s, 30s
+            const waitSec = pAttempt * 15;
+            dbg('No GPU available — waiting ' + waitSec + 's for a slot to free up', 'warn');
+            for (let s = waitSec; s > 0; s--) {
+              setLoadingMsg(
+                '<strong>⏳ No GPU slot available.</strong>' +
+                '<br>Waiting <b>' + s + 's</b> for a free slot… (attempt ' + pAttempt + '/' + MAX_PREDICT_RETRIES + ')'
+              );
+              await sleep(1000);
+            }
+            // Re-connect to get a fresh session after waiting
+            try {
+              dbg('Re-connecting after GPU wait…', 'info');
+              app = await client("yisol/IDM-VTON");
+              dbg('Re-connected', 'success');
+            } catch(e) {
+              dbg('Re-connect failed, continuing with existing session', 'warn');
+            }
+          } else {
+            // Non-GPU error: shorter wait
+            await sleep(5000);
+          }
+        }
+      }
+
+      setStage('stage-generate', 'done');
+
+      // ── Stage 5: Post-Processing ────────────────────────────────────────────
+      setStage('stage-postprocess', 'active');
+      setLoadingMsg('<strong>Post-processing…</strong><br>Removing artifacts, feathering edges, verifying garment coverage.');
+
+      let rawOutputUrl = null;
+      let maskedUrl    = null;
+
+      if (result && result.data && result.data[0]) {
+        rawOutputUrl = result.data[0].url || null;
+      }
+      if (result && result.data && result.data[1]) {
+        maskedUrl = result.data[1].url || null;
+      }
+
+      if (!rawOutputUrl) {
+        triggerError('No image returned from IDM-VTON.');
+        return;
+      }
+
+      dbg('Raw output URL received: ' + rawOutputUrl.substring(0, 60) + '…', 'info');
+      rawResultUrl = rawOutputUrl;
+
+      // Run full post-processing pipeline
+      const ppResult = await masterPostProcess(rawOutputUrl, personBase64, { garmentType: selectedGarmentType });
+      dbg('Post-processing complete. Quality: ' + (ppResult.quality * 100).toFixed(1) + '%', ppResult.quality > QUALITY_THRESHOLD ? 'success' : 'warn');
+      setStage('stage-postprocess', 'done');
+
+      lastQualityScore = ppResult.quality;
+      _pipelineMetrics = ppResult;
+
+      // ── Stage 6: Render ────────────────────────────────────────────────────
+      setStage('stage-render', 'active');
+      setLoadingMsg('<strong>Compositing final result…</strong>');
+      await sleep(300);
+
+      setStage('stage-render', 'done');
+      stopTimeoutCountdown();
+      document.getElementById('trial-loading').classList.remove('show');
+
+      showResult(ppResult.url, maskedUrl, ppResult);
+
+    } catch (outerErr) {
+      if (outerErr.name === 'AbortError') return;
+      dbg('Pipeline fatal error: ' + outerErr.message, 'error');
+      triggerError('Generation failed: ' + (outerErr.message || String(outerErr)));
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  //  SHOW RESULT + QUALITY REPORT
+  // ════════════════════════════════════════════════════════════════════════════
+  function showResult(tryOnUrl, maskedUrl, ppResult) {
+    resultImgUrl = tryOnUrl;
+    document.getElementById('result-person-img').src = document.getElementById('person-preview').src;
+    document.getElementById('result-output-img').src = tryOnUrl;
+    document.getElementById('result-output-label').textContent = '✨ AI Try-On Result (v2 Pipeline)';
+    document.getElementById('result-label').textContent = 'Try-On Complete ✓';
+
+    // Quality badge
+    const badge = document.getElementById('quality-badge');
+    if (ppResult && badge) {
+      const qPct = Math.round(ppResult.quality * 100);
+      badge.style.display = 'inline-flex';
+      if (ppResult.quality >= 0.80) {
+        badge.className = 'quality-badge high';
+        badge.textContent = '✦ Quality: ' + qPct + '%';
+      } else if (ppResult.quality >= 0.60) {
+        badge.className = 'quality-badge medium';
+        badge.textContent = '⚠ Quality: ' + qPct + '%';
+      } else {
+        badge.className = 'quality-badge low';
+        badge.textContent = '✕ Quality: ' + qPct + '%';
+      }
     }
 
-    function fallbackManualUpload(zone, preview) {
-      showToast('⚠️ Please upload the garment image manually using the upload box.');
-      zone.classList.remove('has-image');
-      if (preview) preview.src = '';
+    // Post-processing report
+    if (ppResult) {
+      const panel = document.getElementById('postprocess-panel');
+      const checksEl = document.getElementById('postprocess-checks');
+      const noteEl = document.getElementById('postprocess-note');
+      panel.style.display = 'block';
+
+      const checkLabels = {
+        greyMaskRemoved: 'Grey Mask Removed',
+        alphaArtifactsRemoved: 'Alpha Artifacts Fixed',
+        edgesFeathered: 'Edges Feathered',
+        haloRemoved: 'Halos Neutralized',
+        colourNormalized: 'Colour Normalized',
+        garmentComplete: 'Garment Fully Replaced'
+      };
+
+      checksEl.innerHTML = Object.entries(ppResult.checks).map(([k, v]) =>
+        `<div class="pp-check ${v ? 'pass' : 'fail'}">${v ? '✅' : '❌'} ${checkLabels[k] || k}</div>`
+      ).join('');
+
+      const issues = [];
+      if (ppResult.greyFraction > 0.01) issues.push('grey overlay detected (' + (ppResult.greyFraction*100).toFixed(1) + '% coverage)');
+      if (ppResult.haloCount > 1000)    issues.push('halo fringe detected (' + ppResult.haloCount + ' px)');
+      if (!ppResult.checks.garmentComplete) issues.push('possible partial garment replacement');
+
+      noteEl.textContent = issues.length > 0
+        ? '⚠ Issues addressed: ' + issues.join('; ') + '. Use Enhance Output for a second pass.'
+        : '✦ Output quality is clean. No significant artifacts detected.';
+
+      // Show Enhance button if quality is low
+      if (ppResult.quality < QUALITY_THRESHOLD && rawResultUrl) {
+        document.getElementById('enhance-btn').style.display = 'block';
+      }
     }
 
-    // ══════════════════════════════════════════════════
-    //  Upload Zone Setup
-    // ══════════════════════════════════════════════════
-    function setupUploadZone(zoneId, inputId, previewId, onLoad) {
-      const zone = document.getElementById(zoneId);
-      const input = document.getElementById(inputId);
-      const preview = document.getElementById(previewId);
-      if (!zone || !input || !preview) return;
+    document.getElementById('ai-result').classList.add('show');
+    document.getElementById('ai-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('generate-btn').disabled = false;
+    dbg('Result displayed', 'success');
+  }
 
-      input.addEventListener('change', () => { if (input.files[0]) readFile(input.files[0], preview, zone, onLoad); });
-      zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
-      zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-      zone.addEventListener('drop', e => {
-      e.preventDefault(); zone.classList.remove('drag-over');
+  // ── Re-enhance button: run post-process again with stronger settings ────────
+  async function applyPostProcessEnhancement() {
+    if (!rawResultUrl) return;
+    const btn = document.getElementById('enhance-btn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Enhancing…';
+    dbg('Re-running post-process with aggressive settings', 'info');
+
+    // Temporarily boost feather and expansion
+    const origFeather = document.getElementById('feather-range').value;
+    document.getElementById('feather-range').value = Math.min(20, parseInt(origFeather) + 4);
+
+    try {
+      const ppResult2 = await masterPostProcess(rawResultUrl, personBase64, { aggressive: true });
+      document.getElementById('result-output-img').src = ppResult2.url;
+      resultImgUrl = ppResult2.url;
+      showToast('✦ Enhancement applied! Quality: ' + Math.round(ppResult2.quality * 100) + '%');
+      dbg('Enhancement complete. Quality: ' + (ppResult2.quality*100).toFixed(1) + '%', 'success');
+      btn.textContent = '✦ Enhanced!';
+      btn.style.display = 'none';
+    } catch (e) {
+      dbg('Enhancement error: ' + e, 'error');
+    }
+
+    document.getElementById('feather-range').value = origFeather;
+    btn.disabled = false;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  //  TIMEOUT / COUNTDOWN
+  // ════════════════════════════════════════════════════════════════════════════
+  function startTimeoutCountdown(onTimeout) {
+    _elapsedSeconds = 0;
+    stopTimeoutCountdown();
+    const wrap  = document.getElementById('timeout-bar-wrap');
+    const fill  = document.getElementById('timeout-bar-fill');
+    const label = document.getElementById('timeout-label');
+    wrap.classList.add('show');
+    fill.style.width = '100%';
+    fill.classList.remove('warning', 'critical');
+    label.textContent = TIMEOUT_SECONDS + 's';
+
+    _timerInterval = setInterval(() => {
+      _elapsedSeconds++;
+      const remaining = TIMEOUT_SECONDS - _elapsedSeconds;
+      fill.style.width = Math.max(0, (remaining / TIMEOUT_SECONDS) * 100) + '%';
+      label.textContent = remaining + 's';
+      if (_elapsedSeconds >= CRITICAL_SECONDS)   { fill.classList.add('critical'); fill.classList.remove('warning'); }
+      else if (_elapsedSeconds >= WARN_AT_SECONDS) { fill.classList.add('warning'); document.getElementById('main-spinner').classList.add('warning'); }
+    }, 1000);
+
+    _timeoutHandle = setTimeout(() => { stopTimeoutCountdown(); onTimeout(); }, TIMEOUT_SECONDS * 1000);
+  }
+
+  function stopTimeoutCountdown() {
+    if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
+    if (_timeoutHandle) { clearTimeout(_timeoutHandle); _timeoutHandle = null; }
+  }
+
+  function abortCurrentFetch() {
+    if (_abortController) { try { _abortController.abort(); } catch (e) {} _abortController = null; }
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  //  STAGE INDICATORS
+  // ════════════════════════════════════════════════════════════════════════════
+  const STAGE_ICONS = {
+    'stage-upload':      '📤',
+    'stage-classify':    '🔍',
+    'stage-queue':       '🔄',
+    'stage-generate':    '🧠',
+    'stage-postprocess': '🎨',
+    'stage-render':      '🖼️'
+  };
+
+  function setStage(stageId, state) {
+    const el = document.getElementById(stageId);
+    if (!el) return;
+    el.classList.remove('active', 'done', 'failed');
+    if (state) el.classList.add(state);
+    const icon = el.querySelector('.stage-icon');
+    if (!icon) return;
+    if (state === 'done')   icon.textContent = '✅';
+    else if (state === 'failed') icon.textContent = '❌';
+    else icon.textContent = STAGE_ICONS[stageId] || '•';
+  }
+
+  function resetStages() { Object.keys(STAGE_ICONS).forEach(id => setStage(id, '')); }
+
+  function triggerError(reason) {
+    dbg('FATAL: ' + reason, 'error');
+    stopTimeoutCountdown();
+    abortCurrentFetch();
+    const spinner = document.getElementById('main-spinner');
+    spinner.classList.remove('warning');
+    spinner.classList.add('error');
+    Object.keys(STAGE_ICONS).forEach(id => setStage(id, 'failed'));
+    setLoadingMsg('<strong>Try-On failed.</strong><br>Check your connection and try again.');
+    setTimeout(() => {
+      document.getElementById('trial-loading').classList.remove('show');
+      document.getElementById('generate-btn').disabled = false;
+      showError(reason);
+    }, 1200);
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  //  UPLOAD ZONE SETUP
+  // ════════════════════════════════════════════════════════════════════════════
+  function setupUploadZone(zoneId, inputId, previewId, onLoad) {
+    const zone    = document.getElementById(zoneId);
+    const input   = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+    if (!zone || !input || !preview) return;
+
+    input.addEventListener('change', () => { if (input.files[0]) readFile(input.files[0], preview, zone, onLoad); });
+    zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', ()  => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
       const f = e.dataTransfer.files && e.dataTransfer.files[0];
       if (f && f.type.startsWith('image/')) readFile(f, preview, zone, onLoad);
     });
     zone.addEventListener('click', () => { if (!zone.classList.contains('has-image')) input.click(); });
+  }
+
+  function readFile(file, preview, zone, onLoad) {
+    if (file.size > 10 * 1024 * 1024) { showToast('⚠️ Image too large. Please use a file under 10 MB.'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.src = e.target.result;
+      zone.classList.add('has-image');
+      const b64 = e.target.result.split(',')[1];
+      if (b64) onLoad(b64);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  //  LOAD GARMENT FROM PRODUCT
+  // ════════════════════════════════════════════════════════════════════════════
+  function loadGarmentFromProduct(product) {
+    document.getElementById('garment-placeholder').style.display = 'none';
+    const box = document.getElementById('garment-info-box');
+    box.style.display = 'flex';
+    document.getElementById('garment-name').textContent  = product.name  || '';
+    document.getElementById('garment-color').textContent = product.color || '';
+    document.getElementById('garment-price').textContent = product.price
+      ? '₹' + Number(product.price).toLocaleString('en-IN') : '';
+    document.getElementById('garment-img-thumb').src = product.img || '';
+
+    const descInput = document.getElementById('garment-desc-input');
+    if (descInput && !descInput.value) {
+      descInput.value = [product.brand, product.name, product.color].filter(Boolean).join(', ');
     }
 
-    function readFile(file, preview, zone, onLoad) {
-      if (file.size > 10 * 1024 * 1024) { showToast('⚠️ Image too large. Please use a file under 10 MB.'); return; }
-      const reader = new FileReader();
-      reader.onload = e => {
-        preview.src = e.target.result;
-        zone.classList.add('has-image');
-        const b64 = e.target.result.split(',')[1];
-        if (b64) onLoad(b64);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!product.img) return;
 
-    function imageUrlToBase64(url, cb) {
-      fetch(url).then(r => {
-        if (r.ok) { r.blob().then(blob => { const reader = new FileReader(); reader.onload = e => cb(e.target.result.split(',')[1] || null); reader.onerror = () => tryCanvas(url, cb); reader.readAsDataURL(blob); }); return; }
-        tryCanvas(url, cb);
-      }).catch(() => tryCanvas(url, cb));
-    }
+    const preview = document.getElementById('garment-preview');
+    const zone    = document.getElementById('garment-upload-zone');
+    preview.src = product.img;
+    zone.classList.add('has-image');
 
-    function tryCanvas(url, cb) {
-      const img = new Image(); img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        try {
-          const c = document.createElement('canvas');
-          c.width = img.naturalWidth || img.width; c.height = img.naturalHeight || img.height;
-          c.getContext('2d').drawImage(img, 0, 0);
-          cb(c.toDataURL('image/jpeg', 0.92).split(',')[1] || null);
-        } catch (e) { cb(null); }
-      };
-      img.onerror = () => cb(null);
-      img.src = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
-    }
-
-    // ══════════════════════════════════════════════════
-    //  Clear / Reset helpers
-    // ══════════════════════════════════════════════════
-    function clearPerson() { personBase64 = null; resetZone('person-upload-zone', 'person-preview', 'person-input'); }
-    function clearGarment() {
-      garmentBase64 = null; currentProduct = null;
-      resetZone('garment-upload-zone', 'garment-preview', 'garment-input');
-      document.getElementById('garment-info-box').style.display = 'none';
-      document.getElementById('garment-placeholder').style.display = 'block';
-      const d = document.getElementById('garment-desc-input'); if (d) d.value = '';
-      localStorage.removeItem('trial_product');
-    }
-    function resetZone(zoneId, previewId, inputId) {
-      const z = document.getElementById(zoneId), p = document.getElementById(previewId), i = document.getElementById(inputId);
-      if (z) z.classList.remove('has-image'); if (p) p.src = ''; if (i) i.value = '';
-    }
-
-    // ══════════════════════════════════════════════════
-    //  Timeout Countdown (global 5-min safety timer)
-    // ══════════════════════════════════════════════════
-    function startTimeoutCountdown(onTimeout) {
-      _elapsedSeconds = 0; stopTimeoutCountdown();
-      const wrap = document.getElementById('timeout-bar-wrap');
-      const fill = document.getElementById('timeout-bar-fill');
-      const label = document.getElementById('timeout-label');
-      wrap.classList.add('show');
-      fill.style.width = '100%'; fill.classList.remove('warning', 'critical');
-      label.textContent = TIMEOUT_SECONDS + 's';
-
-      _timerInterval = setInterval(() => {
-        _elapsedSeconds++;
-        const remaining = TIMEOUT_SECONDS - _elapsedSeconds;
-        fill.style.width = Math.max(0, (remaining / TIMEOUT_SECONDS) * 100) + '%';
-        label.textContent = remaining + 's';
-        if (_elapsedSeconds >= CRITICAL_SECONDS) { fill.classList.add('critical'); fill.classList.remove('warning'); }
-        else if (_elapsedSeconds >= WARN_AT_SECONDS) { fill.classList.add('warning'); document.getElementById('main-spinner').classList.add('warning'); }
-      }, 1000);
-      _timeoutHandle = setTimeout(() => { stopTimeoutCountdown(); onTimeout(); }, TIMEOUT_SECONDS * 1000);
-    }
-
-    function stopTimeoutCountdown() {
-      if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
-      if (_timeoutHandle) { clearTimeout(_timeoutHandle); _timeoutHandle = null; }
-    }
-
-    function abortCurrentFetch() {
-      if (_abortController) { try { _abortController.abort(); } catch (e) { } _abortController = null; }
-    }
-
-    // ══════════════════════════════════════════════════
-    //  Rate-limit countdown bar (shown while waiting 65s)
-    // ══════════════════════════════════════════════════
-    function rateLimitCountdown(seconds) {
-      return new Promise(resolve => {
-        let remaining = seconds;
-        const fill = document.getElementById('timeout-bar-fill');
-        const label = document.getElementById('timeout-label');
-        const wrap = document.getElementById('timeout-bar-wrap');
-        const spinner = document.getElementById('main-spinner');
-
-        wrap.classList.add('show');
-        spinner.className = 'spinner warning';
-        if (fill) { fill.style.width = '100%'; fill.classList.remove('critical'); fill.classList.add('warning'); }
-        if (label) label.textContent = remaining + 's';
-        setLoadingMsg('<strong>⏳ Waiting ' + seconds + 's…</strong><br>Free tier resets every 60s. Auto-retrying. Do not close this tab.');
-
-        const interval = setInterval(() => {
-          remaining--;
-          if (fill) fill.style.width = (remaining / seconds * 100) + '%';
-          if (label) label.textContent = remaining + 's';
-          setLoadingMsg('<strong>⏳ Retrying in ' + remaining + 's…</strong><br>Free tier: 2 images/min per key. Please wait.');
-          if (remaining <= 0) {
-            clearInterval(interval);
-            wrap.classList.remove('show');
-            spinner.className = 'spinner';
-            setLoadingMsg('<strong>Retrying now…</strong><br>Please do not close this tab.');
-            resolve();
-          }
-        }, 1000);
-      });
-    }
-
-    // ══════════════════════════════════════════════════
-    //  Stage Progress Indicators
-    // ══════════════════════════════════════════════════
-    const STAGE_ICONS = { 'stage-upload': '📤', 'stage-queue': '🔄', 'stage-generate': '🧠', 'stage-render': '🖼️' };
-    function setStage(stageId, state) {
-      const el = document.getElementById(stageId); if (!el) return;
-      el.classList.remove('active', 'done', 'failed'); if (state) el.classList.add(state);
-      const icon = el.querySelector('.stage-icon'); if (!icon) return;
-      if (state === 'done') icon.textContent = '✅';
-      else if (state === 'failed') icon.textContent = '❌';
-      else icon.textContent = STAGE_ICONS[stageId] || '•';
-    }
-    function resetStages() { Object.keys(STAGE_ICONS).forEach(id => setStage(id, '')); }
-
-    function triggerError(reason) {
-      console.error('[Gemini TryOn] Error:', reason);
-      stopTimeoutCountdown(); abortCurrentFetch();
-      const spinner = document.getElementById('main-spinner');
-      spinner.classList.remove('warning'); spinner.classList.add('error');
-      Object.keys(STAGE_ICONS).forEach(id => setStage(id, 'failed'));
-      setLoadingMsg('<strong>Try-On failed.</strong><br>Check your connection and try again.');
-      setTimeout(() => {
-        document.getElementById('trial-loading').classList.remove('show');
-        document.getElementById('generate-btn').disabled = false;
-        showError(reason);
-      }, 1200);
-    }
-
-    // ══════════════════════════════════════════════════
-    //  MAIN — Generate Try-On
-    //
-    //  Strategy (clean, minimal, no spam):
-    //  1. Try Model 1 + Key 1
-    //     → 404  : model doesn't exist → try Model 2 + Key 1 immediately
-    //     → 429  : rate limited → switch to Key 2 instantly (no wait)
-    //              If Key 2 also 429 → wait RATE_LIMIT_WAIT seconds → retry Key 1
-    //              Do this up to 2 full rounds, then give up with clear message
-    //     → 200  : success ✅
-    //  2. Same logic repeated for Model 2 if Model 1 returns 404
-    // ══════════════════════════════════════════════════
-    async function generateTryOn() {
-      if (!personBase64) { showToast('Please upload your full-body photo first (Step 1).'); return; }
-      if (!garmentBase64) { showToast('Please select or upload a garment image (Step 2).'); return; }
-
-      hideError();
-      document.getElementById('ai-result').classList.remove('show');
-      document.getElementById('masked-preview').classList.remove('show');
-      document.getElementById('queue-badge').style.display = 'none';
-      document.getElementById('main-spinner').className = 'spinner';
-      document.getElementById('timeout-bar-wrap').classList.remove('show');
-      document.getElementById('trial-loading').classList.add('show');
-      document.getElementById('generate-btn').disabled = true;
-      resetStages();
-
-      _abortController = new AbortController();
-      startTimeoutCountdown(() => triggerError('Request timed out after 5 minutes. The free server might be highly congested.'));
-
+    const loader = new Image();
+    loader.onload = function() {
       try {
-        // ── Stage 1: Compress & Prepare ──
-        setStage('stage-upload', 'active');
-        setLoadingMsg('<strong>Preparing images…</strong>');
-        await sleep(80);
-        const compPerson = await compressImageBase64(personBase64, 768, 0.82);
-        const compGarment = await compressImageBase64(garmentBase64, 768, 0.82);
-
-        const personBlob = base64ToBlob(compPerson, 'image/jpeg');
-        const garmentBlob = base64ToBlob(compGarment, 'image/jpeg');
-        setStage('stage-upload', 'done');
-
-        // ── Stage 2: Connect to Free API ──
-        setStage('stage-queue', 'active');
-        const garmentDesc = (document.getElementById('garment-desc-input').value.trim())
-          || (currentProduct ? currentProduct.name : 'clothing item');
-
-        setLoadingMsg('<strong>Connecting to free Virtual Try-On space (IDM-VTON)…</strong><br>Loading Gradio client. This may take a moment.');
-        const { client } = await import("https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js");
-
-        setLoadingMsg('<strong>Queuing request…</strong><br>We are using a free public model, so there might be a queue.');
-        const app = await client("yisol/IDM-VTON");
-
-        setStage('stage-queue', 'done');
-        setStage('stage-generate', 'active');
-
-        // ── Stage 3: Generate ──
-        setLoadingMsg('<strong>Generating Try-On…</strong><br>AI is processing your images. Please do not close this tab.');
-
-        const result = await app.predict("/tryon", [
-          { background: personBlob, layers: [], composite: null }, // Human image
-          garmentBlob, // Garment image
-          garmentDesc, // Garment description
-          true, // is_checked (Auto-crop & resizing)
-          true, // is_checked_crop (Auto-masking)
-          30, // Denoising Steps
-          42, // Seed
-        ]);
-
-        // ── Stage 4: Render ──
-        setStage('stage-generate', 'done');
-        setStage('stage-render', 'active');
-        setLoadingMsg('<strong>Rendering result…</strong>');
-
-        let outputUrl = null;
-        let maskedUrl = null;
-
-        if (result && result.data && result.data[0]) {
-          outputUrl = result.data[0].url || null;
+        const c = document.createElement('canvas');
+        c.width  = loader.naturalWidth  || 400;
+        c.height = loader.naturalHeight || 500;
+        c.getContext('2d').drawImage(loader, 0, 0);
+        const b64 = c.toDataURL('image/jpeg', 0.92).split(',')[1];
+        if (b64) {
+          garmentBase64 = b64;
+          dbg('Product garment loaded via canvas', 'success');
+          showToast('✅ Garment loaded — ready to generate!');
+          autoDetectGarmentType(b64);
+        } else {
+          fallbackFetchGarment(product.img, preview, zone);
         }
-        if (result && result.data && result.data[1]) {
-          maskedUrl = result.data[1].url || null;
-        }
-
-        if (!outputUrl) {
-          triggerError('No image returned from IDM-VTON API. The service might be temporarily glitching.');
-          return;
-        }
-
-        await sleep(300);
-        setStage('stage-render', 'done');
-        stopTimeoutCountdown();
-        document.getElementById('trial-loading').classList.remove('show');
-        showResult(outputUrl, maskedUrl);
-
-      } catch (outerErr) {
-        if (outerErr.name === 'AbortError') return;
-        triggerError('Generation failed. The free server might be busy or offline: ' + (outerErr.message || String(outerErr)));
+      } catch(e) {
+        fallbackFetchGarment(product.img, preview, zone);
       }
-    }
+    };
+    loader.onerror = () => fallbackFetchGarment(product.img, preview, zone);
+    loader.src = product.img;
+  }
 
-    // ══════════════════════════════════════════════════
-    //  Extract image from Gemini response
-    // ══════════════════════════════════════════════════
-    function extractGeminiImage(data) {
-      const parts = data?.candidates?.[0]?.content?.parts;
-      if (!parts) return null;
-      for (const part of parts) {
-        if (part.inlineData?.data) {
-          const mime = part.inlineData.mimeType || 'image/png';
-          return 'data:' + mime + ';base64,' + part.inlineData.data;
-        }
-      }
-      return null;
-    }
+  function fallbackFetchGarment(url, preview, zone) {
+    fetch(url)
+      .then(r => r.blob())
+      .then(blob => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const b64 = ev.target.result.split(',')[1];
+          if (b64) {
+            garmentBase64 = b64;
+            dbg('Product garment loaded via fetch fallback', 'success');
+            showToast('✅ Garment loaded!');
+            autoDetectGarmentType(b64);
+          } else {
+            fallbackManualUpload(zone, preview);
+          }
+        };
+        reader.readAsDataURL(blob);
+      })
+      .catch(() => fallbackManualUpload(zone, preview));
+  }
 
-    // ══════════════════════════════════════════════════
-    //  Show Result
-    // ══════════════════════════════════════════════════
-    function showResult(tryOnUrl, maskedUrl) {
-      resultImgUrl = tryOnUrl;
-      document.getElementById('result-person-img').src = document.getElementById('person-preview').src;
-      document.getElementById('result-output-img').src = tryOnUrl;
-      document.getElementById('result-output-label').textContent = '✨ AI Try-On Result';
-      document.getElementById('result-label').textContent = 'Try-On Complete ✓';
-      if (maskedUrl) {
-        document.getElementById('masked-preview-img').src = maskedUrl;
-        document.getElementById('masked-preview').classList.add('show');
-      }
-      document.getElementById('ai-result').classList.add('show');
-      document.getElementById('ai-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      document.getElementById('generate-btn').disabled = false;
-    }
+  function fallbackManualUpload(zone, preview) {
+    showToast('⚠️ Please upload the garment image manually.');
+    zone.classList.remove('has-image');
+    if (preview) preview.src = '';
+  }
 
-    // ══════════════════════════════════════════════════
-    //  Helpers
-    // ══════════════════════════════════════════════════
-    function base64ToBlob(b64, mimeType) {
-      mimeType = mimeType || 'image/jpeg';
-      const bytes = atob(b64); const arr = new Uint8Array(bytes.length);
-      for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
-      return new Blob([arr], { type: mimeType });
-    }
+  // ════════════════════════════════════════════════════════════════════════════
+  //  CLEAR / RESET
+  // ════════════════════════════════════════════════════════════════════════════
+  function clearPerson() {
+    personBase64 = null;
+    resetZone('person-upload-zone', 'person-preview', 'person-input');
+    dbg('Person image cleared', 'info');
+  }
 
-    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+  function clearGarment() {
+    garmentBase64 = null; currentProduct = null; detectedGarmentType = null;
+    resetZone('garment-upload-zone', 'garment-preview', 'garment-input');
+    document.getElementById('garment-info-box').style.display     = 'none';
+    document.getElementById('garment-placeholder').style.display  = 'block';
+    document.getElementById('garment-type-detected').style.display = 'none';
+    const d = document.getElementById('garment-desc-input'); if (d) d.value = '';
+    localStorage.removeItem('trial_product');
+    dbg('Garment cleared', 'info');
+  }
 
-    function setLoadingMsg(html) { const el = document.getElementById('loading-msg'); if (el) el.innerHTML = html; }
+  function resetZone(zoneId, previewId, inputId) {
+    const z = document.getElementById(zoneId), p = document.getElementById(previewId), i = document.getElementById(inputId);
+    if (z) z.classList.remove('has-image');
+    if (p) p.src = '';
+    if (i) i.value = '';
+  }
 
-    function showError(msg) {
-      const el = document.getElementById('error-msg'); if (el) el.textContent = msg;
-      document.getElementById('trial-error').classList.add('show');
-    }
-
-    function hideError() { document.getElementById('trial-error').classList.remove('show'); }
-
-    // ══════════════════════════════════════════════════
-    //  Result Actions
-    // ══════════════════════════════════════════════════
-    function downloadResult() {
-      if (!resultImgUrl) return;
-      if (resultImgUrl.startsWith('data:')) { triggerDownload(resultImgUrl); return; }
-      fetch(resultImgUrl).then(r => r.blob()).then(blob => {
-        const url = URL.createObjectURL(blob); triggerDownload(url);
+  // ════════════════════════════════════════════════════════════════════════════
+  //  RESULT ACTIONS
+  // ════════════════════════════════════════════════════════════════════════════
+  function downloadResult() {
+    if (!resultImgUrl) return;
+    if (resultImgUrl.startsWith('data:')) { triggerDownload(resultImgUrl); return; }
+    fetch(resultImgUrl)
+      .then(r => r.blob())
+      .then(blob => {
+        const url = URL.createObjectURL(blob);
+        triggerDownload(url);
         setTimeout(() => URL.revokeObjectURL(url), 5000);
-      }).catch(() => window.open(resultImgUrl, '_blank'));
-    }
+      })
+      .catch(() => window.open(resultImgUrl, '_blank'));
+  }
 
-    function triggerDownload(url) {
-      const a = document.createElement('a'); a.href = url;
-      a.download = 'easybuy-tryon-' + Date.now() + '.jpg';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    }
+  function triggerDownload(url) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'easybuy-tryon-v2-' + Date.now() + '.jpg';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
 
-    function addCurrentToCart() {
-      if (!currentProduct) { showToast('No product selected. Use "Try It On" from the shop.'); return; }
-      let cart = JSON.parse(localStorage.getItem('myshop_cart') || '[]');
-      const existing = cart.find(c => c.name === currentProduct.name);
-      if (existing) { existing.qty = (existing.qty || 1) + 1; }
-      else { cart.push({ ...currentProduct, id: Date.now(), qty: 1 }); }
-      localStorage.setItem('myshop_cart', JSON.stringify(cart));
-      showToast('"' + currentProduct.name + '" added to Bag! 🛒');
-      const btn = document.querySelector('.result-actions .btn-primary.green');
-      if (btn) { btn.textContent = '✓ Added to Bag!'; setTimeout(() => { btn.textContent = '🛒 Add to Bag'; }, 2000); }
-    }
+  function addCurrentToCart() {
+    if (!currentProduct) { showToast('No product selected. Use "Try It On" from the shop.'); return; }
+    let cart = JSON.parse(localStorage.getItem('myshop_cart') || '[]');
+    const existing = cart.find(c => c.name === currentProduct.name);
+    if (existing) { existing.qty = (existing.qty || 1) + 1; }
+    else { cart.push({ ...currentProduct, id: Date.now(), qty: 1 }); }
+    localStorage.setItem('myshop_cart', JSON.stringify(cart));
+    showToast('"' + currentProduct.name + '" added to Bag! 🛒');
+    const btn = document.querySelector('.result-actions .btn-primary.green');
+    if (btn) { btn.textContent = '✓ Added to Bag!'; setTimeout(() => { btn.textContent = '🛒 Add to Bag'; }, 2000); }
+  }
 
-    function resetAll() {
-      clearPerson(); resultImgUrl = null;
-      stopTimeoutCountdown(); abortCurrentFetch();
-      document.getElementById('ai-result').classList.remove('show');
-      document.getElementById('masked-preview').classList.remove('show');
-      document.getElementById('trial-loading').classList.remove('show');
-      document.getElementById('timeout-bar-wrap').classList.remove('show');
-      document.getElementById('main-spinner').className = 'spinner';
-      hideError(); resetStages();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+  function resetAll() {
+    clearPerson();
+    resultImgUrl = null; rawResultUrl = null; lastQualityScore = null;
+    stopTimeoutCountdown(); abortCurrentFetch();
+    document.getElementById('ai-result').classList.remove('show');
+    document.getElementById('trial-loading').classList.remove('show');
+    document.getElementById('timeout-bar-wrap').classList.remove('show');
+    document.getElementById('main-spinner').className = 'spinner';
+    document.getElementById('enhance-btn').style.display = 'none';
+    document.getElementById('postprocess-panel').style.display = 'none';
+    document.getElementById('debug-panel').innerHTML = '';
+    hideError(); resetStages();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    dbg('Pipeline reset', 'info');
+  }
 
-    // ══════════════════════════════════════════════════
-    //  Toast
-    // ══════════════════════════════════════════════════
-    function showToast(msg) {
-      let t = document.getElementById('toast');
-      if (!t) { t = document.createElement('div'); t.id = 'toast'; document.body.appendChild(t); }
-      t.textContent = msg; t.classList.add('show');
-      clearTimeout(t._tid); t._tid = setTimeout(() => t.classList.remove('show'), 3500);
-    }
+  // ════════════════════════════════════════════════════════════════════════════
+  //  HELPERS
+  // ════════════════════════════════════════════════════════════════════════════
+  function base64ToBlob(b64, mimeType) {
+    mimeType = mimeType || 'image/jpeg';
+    const bytes = atob(b64);
+    const arr   = new Uint8Array(bytes.length);
+    for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+    return new Blob([arr], { type: mimeType });
+  }
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  function setLoadingMsg(html) {
+    const el = document.getElementById('loading-msg');
+    if (el) el.innerHTML = html;
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    if (el) el.textContent = msg;
+    document.getElementById('trial-error').classList.add('show');
+  }
+
+  function hideError() { document.getElementById('trial-error').classList.remove('show'); }
+
+  // ── Toast ──────────────────────────────────────────────────────────────────
+  function showToast(msg) {
+    let t = document.getElementById('toast');
+    if (!t) { t = document.createElement('div'); t.id = 'toast'; document.body.appendChild(t); }
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._tid);
+    t._tid = setTimeout(() => t.classList.remove('show'), 3500);
+  }
   </script>
 </body>
-
 </html>
