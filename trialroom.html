@@ -1183,10 +1183,42 @@
       // ── Step 5: Aspect ratio override ──
       //    Very wide garments (jackets, coats) override to upper
       //    Very tall narrow garments override to lower (jeans)
+     // ── Step 5: Aspect ratio + keyword override ──
       if (aspectRatio < 0.55 && centerOfMass > 0.55) {
         detected = 'lower';
         confidence = Math.max(confidence, 0.80);
         dbg('Aspect ratio override → lower (pants/skirt detected)', 'warn');
+      }
+
+      // ── Step 5b: Description keyword override (most reliable signal) ──
+      const descVal = (document.getElementById('garment-desc-input').value || '').toLowerCase();
+      const productName = (currentProduct && currentProduct.name ? currentProduct.name : '').toLowerCase();
+      const combinedText = descVal + ' ' + productName;
+      const lowerKeywords = ['pant','trouser','jean','denim','skirt','short','cargo','chino','legging','jogger','bottom'];
+      const upperKeywords = ['shirt','tee','t-shirt','jacket','coat','hoodie','sweater','blouse','top','kurta','sweatshirt'];
+      const fullKeywords  = ['dress','jumpsuit','romper','overall','saree','suit'];
+
+      if (fullKeywords.some(k => combinedText.includes(k))) {
+        detected = 'full'; confidence = 0.95;
+        dbg('Keyword override → full (matched: ' + combinedText + ')', 'warn');
+      } else if (lowerKeywords.some(k => combinedText.includes(k))) {
+        detected = 'lower'; confidence = 0.95;
+        dbg('Keyword override → lower (matched: ' + combinedText + ')', 'warn');
+      } else if (upperKeywords.some(k => combinedText.includes(k))) {
+        detected = 'upper'; confidence = 0.95;
+        dbg('Keyword override → upper (matched: ' + combinedText + ')', 'warn');
+      }
+
+      // ── Step 5c: Dark background correction ──
+      // If avg brightness of entire image is low, bg-separation failed
+      let totalBrightness = 0;
+      for (let i = 0; i < pixels.length; i += 4) {
+        totalBrightness += (pixels[i] + pixels[i+1] + pixels[i+2]) / 3;
+      }
+      const avgBrightness = totalBrightness / (SIZE * SIZE);
+      if (avgBrightness < 100) {
+        dbg('Dark background detected (avg=' + avgBrightness.toFixed(0) + ') — pixel heuristics unreliable, using keyword/aspect only', 'warn');
+        confidence = Math.min(confidence, 0.55); // force low confidence if no keyword matched
       }
 
       detectedGarmentType = detected;
